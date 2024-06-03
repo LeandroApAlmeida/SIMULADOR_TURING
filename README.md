@@ -2,6 +2,12 @@ Este programa escrito em linguagem Java implementa um simulador de máquina de T
 
 Em futuras atualizações, serão feitas as validações necessárias e será implementado um modelo de máquina de Turing padrão, que terá a capacidade de rodar qualquer outro modelo de máquina de Turing.
 
+
+
+
 ![Imagem 1](https://github.com/LeandroApAlmeida/SIMULADOR_TURING/assets/158072587/93d9a848-1881-4446-8b1e-1a95f31280c6)
+
+
+
 
 ![Imagem 2](https://github.com/LeandroApAlmeida/SIMULADOR_TURING/assets/158072587/128964d9-a06b-44d3-a8fe-28b473493054)
