@@ -2,7 +2,7 @@ Este programa escrito em linguagem Java implementa um simulador de máquina de T
 
 Em futuras atualizações, serão feitas as validações necessárias e será implementado um modelo de máquina de Turing padrão, que terá a capacidade de rodar qualquer outro modelo de máquina de Turing.
 
-Execute os programas no diretório exemplos para testar, ou tente escrever seu próprio programa.
+Execute os programas no diretório EXEMPLOS para testar, ou tente escrever seu próprio programa.
 
 
 
