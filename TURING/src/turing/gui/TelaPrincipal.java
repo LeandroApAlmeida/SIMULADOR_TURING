@@ -667,9 +667,13 @@ OuvinteTemporizador {
                     funcaoTransicao = configuracoes.getFuncaoTransicao();
                     jspNumeroFitas.setValue(configuracoes.getNumeroFitas());
                     
-                    if (!configuracoes.getNome().isEmpty() && 
-                    !configuracoes.getNome().isBlank()) {
-                        nome = configuracoes.getNome();
+                    if (configuracoes.getNome() != null) {
+                        if (!configuracoes.getNome().isEmpty() && 
+                        !configuracoes.getNome().isBlank()) {
+                            nome = configuracoes.getNome();
+                        } else {
+                            nome = "Máquina de Turing";
+                        }
                     } else {
                         nome = "Máquina de Turing";
                     }
@@ -1509,19 +1513,17 @@ OuvinteTemporizador {
         if (nome != null) {
             if (jtpSimulador.getSelectedIndex() == 0) {
                 setTitle(
-                    "SIMULADOR DE MÁQUINA DE TURING  [ PROGRAMA: " + 
+                    titulo + "  [ PROGRAMA: " + 
                     nome.toUpperCase() + " ]"
                 );
             } else {
                 if (arquivoAberto) {
                     setTitle(
-                        "SIMULADOR DE MÁQUINA DE TURING - " + 
+                        titulo + " - " + 
                         arquivo.getArquivo().getAbsolutePath()
                     );
                 } else {
-                    setTitle(
-                        "SIMULADOR DE MÁQUINA DE TURING"
-                    );
+                    setTitle(titulo);
                 }
             }
         }
