@@ -1,0 +1,55 @@
+// Este programa soma dois números binários quaisquer.
+// 
+// Exemplo:
+//
+// Entrada: 11#10
+// Resultado: 101 (o resultado está na 3ª fita). 
+
+
+[Descricao]
+
+	Nome =  Soma de números binários
+
+
+[Parametros]
+
+	AlfabetoEntrada = {0, 1}
+	AlfabetoAuxiliar = {}
+	Estados = {q0, q1, q2, q3, q4, q5}
+	EstadoInicial = q0
+	EstadosTerminais = {q5}
+	NumeroFitas = 3
+
+
+[Programa]
+
+	q0, 0, _, _ = q0, 0, _, _, D, P, P
+	q0, 1, _, _ = q0, 1, _, _, D, P, P
+	q0, #, _, _ = q1, _, _, _, D, P, P
+	q1, 0, _, _ = q1, _, 0, _, D, D, P
+	q1, 1, _, _ = q1, _, 1, _, D, D, P
+	q1, _, _, _ = q2, _, _, _, E, E, P
+	q2, _, 0, _ = q2, _, 0, _, E, P, P
+	q2, _, 1, _ = q2, _, 1, _, E, P, P
+	q2, 1, 0, _ = q3, 1, 0, _, P, P, P
+	q2, 1, 1, _ = q3, 1, 1, _, P, P, P
+	q2, 0, 1, _ = q3, 0, 1, _, P, P, P
+	q2, 0, 0, _ = q3, 0, 0, _, P, P, P
+	q3, 1, 0, _ = q3, 1, 0, 1, E, E, E
+	q3, 0, 1, _ = q3, 0, 1, 1, E, E, E
+	q3, 0, 0, _ = q3, 0, 0, 0, E, E, E
+	q3, 1, 1, _ = q4, 1, 1, 0, E, E, E
+	q3, _, _, _ = q5, _, _, _, P, P, P
+	q3, 1, _, _ = q3, 1, _, 1, E, E, E
+	q3, 0, _, _ = q3, 0, _, 0, E, E, E
+	q3, _, 1, _ = q3, _, 1, 1, E, E, E
+	q3, _, 0, _ = q3, _, 0, 0, E, E, E
+	q4, 0, 0, _ = q3, 0, 0, 1, E, E, E
+	q4, 0, 1, _ = q4, 0, 1, 0, E, E, E
+	q4, 1, 0, _ = q4, 1, 0, 0, E, E, E
+	q4, 1, 1, _ = q4, 1, 1, 1, E, E, E
+	q4, _, 0, _ = q3, _, 0, 1, E, E, E
+	q4, _, 1, _ = q4, _, 1, 0, E, E, E
+	q4, 1, _, _ = q4, 1, _, 0, E, E, E
+	q4, 0, _, _ = q3, 0, _, 1, E, E, E
+	q4, _, _, _ = q5, _, _, 1, P, P, P

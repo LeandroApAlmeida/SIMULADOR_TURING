@@ -1,0 +1,32 @@
+// Este programa verifica se um número binário é divisível por 3.
+// 
+// Exemplo:
+//
+// Entrada: 11
+// Resultado: Aceita
+
+
+[Descricao]
+
+	Nome =  Número Binário divisível por 3
+
+
+[Parametros]
+
+	AlfabetoEntrada = {0, 1}
+	AlfabetoAuxiliar = {}
+	Estados = {q0, q1, q2, qAccept}
+	EstadoInicial = q0
+	EstadosTerminais = {qAccept}
+	NumeroFitas = 1
+
+
+[Programa]
+
+	q0, 0 = q0, 0, D
+	q0, 1 = q1, 1, D
+	q1, 0 = q2, 0, D
+	q1, 1 = q0, 1, D
+	q2, 0 = q1, 0, D
+	q2, 1 = q2, 1, D
+	q0, _ = qAccept, _, P

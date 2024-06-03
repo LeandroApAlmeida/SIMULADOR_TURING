@@ -1,0 +1,34 @@
+// Este programa verifica se um número binário é um palíndromo (mesmos dígitos lido da esquerda para direita, e da direita para a esquerda).
+// 
+// Exemplo:
+//
+// Entrada: 1111
+// Resultado: Aceita
+
+
+[Descricao]
+
+	Nome =  Reconhecedor de palíndromos
+
+
+[Parametros]
+
+	AlfabetoEntrada = {0, 1}
+	AlfabetoAuxiliar = {}
+	Estados = {qAccept, qCopy, qReturn, qTest}
+	EstadoInicial = qCopy
+	EstadosTerminais = {qAccept}
+	NumeroFitas = 2
+
+
+[Programa]
+
+	qCopy, 0, _ = qCopy, 0, 0, D, D
+	qCopy, 1, _ = qCopy, 1, 1, D, D
+	qCopy, _, _ = qReturn, _, _, P, E
+	qReturn, _, 0 = qReturn, _, 0, P, E
+	qReturn, _, 1 = qReturn, _, 1, P, E
+	qReturn, _, _ = qTest, _, _, E, D
+	qTest, 0, 0 = qTest, 0, 0, E, D
+	qTest, 1, 1 = qTest, 1, 1, E, D
+	qTest, _, _ = qAccept, _, _, P, P
