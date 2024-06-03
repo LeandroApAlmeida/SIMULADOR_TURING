@@ -4,6 +4,7 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import javax.swing.JFileChooser;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -18,6 +19,48 @@ public final class DialogoSeletorArquivos extends JFileChooser {
     /**Flag para controle de execução do evento ActionPerformed somente na classe
     especializada.*/
     private boolean ignorarAcao;
+    
+    
+    static {
+        UIManager.put("FileChooser.lookInLabelText", "Diretório");
+        UIManager.put("FileChooser.saveInLabelMnemonic", "I");
+        UIManager.put("FileChooser.saveInLabelText", "");
+        UIManager.put("FileChooser.upFolderToolTipText", "Diretório acima");
+        UIManager.put("FileChooser.upFolderAccessibleName", "Diretório acima");
+        UIManager.put("FileChooser.homeFolderToolTipText", "Diretório inicial");
+        UIManager.put("FileChooser.homeFolderAccessibleName", "Diretório inicial");
+        UIManager.put("FileChooser.newFolderToolTipText", "Novo diretório");
+        UIManager.put("FileChooser.newFolderAccessibleName", "Novo diretório");
+        UIManager.put("FileChooser.listViewButtonToolTipText", "Exibição em lista");
+        UIManager.put("FileChooser.listViewButtonAccessibleName", "Exibição em lista");
+        UIManager.put("FileChooser.detailsViewButtonToolTipText", "Detalhes");
+        UIManager.put("FileChooser.detailsViewButtonAccessibleName", "Detalhes");
+        UIManager.put("FileChooser.fileNameLabelMnemonic", "N");
+        UIManager.put("FileChooser.fileNameLabelText", "Nome do arquivo");
+        UIManager.put("FileChooser.filesOfTypeLabelMnemonic", "A");
+        UIManager.put("FileChooser.filesOfTypeLabelText", "Tipo do arquivo");
+        UIManager.put("FileChooser.fileNameHeaderText", "Nome");
+        UIManager.put("FileChooser.fileSizeHeaderText", "Tamanho");
+        UIManager.put("FileChooser.fileTypeHeaderText", "Tipo");
+        UIManager.put("FileChooser.fileDateHeaderText", "Data");
+        UIManager.put("FileChooser.fileAttrHeaderText", "Atributos");
+        UIManager.put("FileChooser.cancelButtonText", "Cancelar");
+        UIManager.put("FileChooser.cancelButtonMnemonic", "C");
+        UIManager.put("FileChooser.cancelButtonToolTipText", "Cancelar");
+        UIManager.put("FileChooser.openButtonText", "Abrir");
+        UIManager.put("FileChooser.openButtonMnemonic", "O");
+        UIManager.put("FileChooser.openButtonToolTipText", "Abrir");
+        UIManager.put("FileChooser.saveButtonText", "Salvar");
+        UIManager.put("FileChooser.saveButtonToolTipText", "S");
+        UIManager.put("FileChooser.saveButtonToolTipText", "Salvar");
+        UIManager.put("FileChooser.updateButtonText", "Atualizar");
+        UIManager.put("FileChooser.updateButtonToolTipText", "U");
+        UIManager.put("FileChooser.updateButtonToolTipText", "Atualizar");
+        UIManager.put("FileChooser.helpButtonText", "Ajuda");
+        UIManager.put("FileChooser.helpButtonToolTipText", "H");
+        UIManager.put("FileChooser.helpButtonToolTipText", "Ajuda");
+        UIManager.put("FileChooser.acceptAllFileFilterText", "Todos os arquivos");
+    }
     
     
     /**
@@ -42,6 +85,7 @@ public final class DialogoSeletorArquivos extends JFileChooser {
         addActionListener((ActionEvent e) -> {
             acaoPadraoExecutada(e);
         });
+
         
     }
     

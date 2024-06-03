@@ -9,6 +9,8 @@ import java.util.List;
  * conjunto de símbolos.
  * 
  * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
  */
 public class Alfabeto implements Iterable<Simbolo> {
     
@@ -40,8 +42,7 @@ public class Alfabeto implements Iterable<Simbolo> {
      */
     public boolean inserirSimbolo(Simbolo simbolo) {
         if (!simbolos.contains(simbolo)) {
-            simbolos.add(simbolo);
-            return true;
+            return simbolos.add(simbolo);
         } else {
             return false; 
         }
@@ -135,27 +136,6 @@ public class Alfabeto implements Iterable<Simbolo> {
     
     
     /**
-     * Verificar se um símbolo pertence ao alfabeto. O critério de verificação
-     * é pelo caractere do símbolo.
-     * 
-     * @param simbolo símbolo
-     * 
-     * @return Se true, o símbolo pertence ao alfabeto. Se false, o símbolo não
-     * pertence ao alfabeto.
-     */
-    public boolean contemSimbolo(char simbolo) {
-        boolean contem = false;
-        for (Simbolo simbolo1 : simbolos) {
-            if (simbolo1.getCaracter() == simbolo) {
-                contem = true;
-                break;
-            }
-        }
-        return contem;
-    }
-    
-    
-    /**
      * Remover todos os símbolos do alfabeto.
      */
     public void esvaziar() {
@@ -193,7 +173,7 @@ public class Alfabeto implements Iterable<Simbolo> {
     
     
     /**
-     * Ordenar o alfabeto em ordem crescente.
+     * Ordenar o alfabeto em ordem crescente dos caracteres dos símbolos.
      */
     public void ordenar() {
         simbolos.sort(comparator);

@@ -10,14 +10,17 @@ import java.util.List;
  * 
  * O alfabeto da fita contém o alfabeto de entrada (Σ), o alfabeto auxiliar (V),
  * mais todos os símbolos reservados, como o símbolo de branco (β), o símbolo de 
- * início da fita (⊛) e o símbolo de delimitador de seções (#).
+ * início da fita (⊛) e o símbolo de delimitador de seções (#). É o total de
+ * símbolos que podem ser inscritos na(s) fita(s) da máquina de Turing.
  * 
  * @author Leandro Ap. Almeida
+ * 
+ * @since 1.0
  */
 public class AlfabetoFita extends Alfabeto {
     
     
-    /**Caractere de início da fita, que a delimita a fita à esquerda.*/
+    /**Caractere de início da fita, que a delimita à esquerda.*/
     public static final char INICIO_FITA = '*';
     
     /**Caractere de branco, para marcar as células que estão vazias.*/
@@ -53,7 +56,7 @@ public class AlfabetoFita extends Alfabeto {
      * 
      * @param simbolo símbolo a ser inserido.
      * 
-     * @return Se true, o símbolo foi inserido. Se false,  o símbolo não foi
+     * @return Se true, o símbolo foi inserido. Se false, o símbolo não foi
      * inserido.
      */
     @Override
@@ -89,7 +92,8 @@ public class AlfabetoFita extends Alfabeto {
     
     
     /**
-     * Obter alfabeto de entrada. 
+     * Obter o alfabeto de entrada.
+     * 
      * @return alfabeto de entrada.
      */
     public Alfabeto getAlfabetoEntrada() {
@@ -107,6 +111,7 @@ public class AlfabetoFita extends Alfabeto {
     
     /**
      * Obter o alfabeto auxiliar.
+     * 
      * @return alfabeto auxiliar.
      */
     public Alfabeto getAlfabetoAuxiliar() {
@@ -124,6 +129,7 @@ public class AlfabetoFita extends Alfabeto {
     
     /**
      * Obter os símbolos reservados.
+     * 
      * @return símbolos reservados.
      */
     public List<Simbolo> getSimbolosReservados() {
@@ -139,6 +145,7 @@ public class AlfabetoFita extends Alfabeto {
     
     /**
      * Obter o símbolo de início da fita.
+     * 
      * @return símbolo de início da fita.
      */
     public Simbolo getSimboloInicio() {
@@ -148,6 +155,7 @@ public class AlfabetoFita extends Alfabeto {
     
     /**
      * Obter o símbolo de branco.
+     * 
      * @return símbolo de branco.
      */
     public Simbolo getSimboloBranco() {
@@ -157,6 +165,7 @@ public class AlfabetoFita extends Alfabeto {
     
     /**
      * Obter o símbolo de delimitador de seção na fita.
+     * 
      * @return símbolo de delimitador de seção na fita.
      */
     public Simbolo getSimboloDelimitador() {

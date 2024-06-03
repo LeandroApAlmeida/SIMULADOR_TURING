@@ -27,6 +27,8 @@ import java.util.List;
  * processo, serão verificados os erros no código.
  * 
  * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
  */
 public final class Compilador {
     
@@ -120,7 +122,7 @@ public final class Compilador {
      * 
      * @param str string.
      * 
-     * @return caractere do símbolo do alfabeto, ou null, caso não seja um 
+     * @return Caractere do símbolo do alfabeto, ou null, caso não seja um 
      * símbolo válido.
      */
     private Character getSimbolo(String str) {
@@ -242,7 +244,6 @@ public final class Compilador {
      * <pre>
      * [Descricao]
      * 
-     *     Modelo = padrao
      *     Nome = Programa para a máquina de Turing
      * 
      * [Parametros]
@@ -268,17 +269,13 @@ public final class Compilador {
      *
      * 
      * <b>[Descricao]</b>: Cabeçalho da seção de Descricao. A seção Descricao
-     * serve para identificar o programa a ser executado e o modelo de máquina
-     * de Turing utilizado. Obrigatóriamente, deve ser a primeira seção do código
-     * do programa. Ela tem os seguintes campos: 
+     * serve para identificar o programa a ser executado. Obrigatóriamente, deve
+     * ser a primeira seção do código do programa. Ela tem os seguintes campos: 
      * 
      * <br><br>
      * 
      * 
      * <ul>
-     * 
-     * <li>&nbsp;<b>Modelo = </b>: Modelo da máquina de Turing. No exemplo 
-     * acima: padrao</li><br>
      * 
      * <li>&nbsp;<b>Nome = </b>: Nome do programa. No exemplo acima: Programa 
      * para a máquina de Turing</li>
@@ -298,13 +295,13 @@ public final class Compilador {
      * 
      * <li>&nbsp;<b>AlfabetoEntrada = </b>: Alfabeto de entrada. Este campo usa
      * a notação de conjunto { ... }. Cada símbolo do alfabeto deve ser separado
-     * por vírgula. No exemplo acima: { a, b, c }</li>
+     * por vírgula em caso de mais de um símbolo. No exemplo acima: { a, b, c }</li>
      * 
      * <br>
      * 
      * <li>&nbsp;<b>AlfabetoAuxiliar = </b>: Alfabeto auxiliar. Este campo usa a 
      * notação de conjunto { ... }. Cada símbolo do alfabeto deve ser separado 
-     * por vírgula. No exemplo acima: { X, Y, Z }.</li>
+     * por vírgula em caso de mais de um símbolo. No exemplo acima: { X, Y, Z }.</li>
      * 
      * <br>
      * 
