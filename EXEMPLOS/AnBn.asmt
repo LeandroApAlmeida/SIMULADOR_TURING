@@ -1,0 +1,31 @@
+// Programa para validação de palavra duplamente balanceada.
+
+
+[Descricao]
+
+	Nome =  Palavra duplamente balanceada.
+
+
+[Parametros]
+
+	AlfabetoEntrada = {a, b}
+	AlfabetoAuxiliar = {A, B}
+	Estados = {q0, q1, q2, q3, q4}
+	EstadoInicial = q0
+	EstadosTerminais = {q4}
+	NumeroFitas = 1
+
+
+[Programa]
+
+	q0, a = q1, A, D
+	q0, B = q3, B, D
+	q0, _ = q4, _, D
+	q1, a = q1, a, D
+	q1, b = q2, B, E
+	q1, B = q1, B, D
+	q2, a = q2, a, E
+	q2, A = q0, A, D
+	q2, B = q2, B, E
+	q3, B = q3, B, D
+	q3, _ = q4, _, E

@@ -9,6 +9,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import turing.classes.AlfabetoFita;
+import turing.classes.Fita;
 import static turing.gui.Constantes.COR_CURSOR_FITA;
 import static turing.gui.Constantes.formatarSimbolos;
 
@@ -22,9 +23,13 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
     private Icon icone;
     
     private String branco;
+    
+    private Fita fita;
 
     
-    public RendererizadorFita() {
+    public RendererizadorFita(Fita fita) {
+        
+        this.fita = fita;
         
         branco = String.valueOf(AlfabetoFita.BRANCO);
         
@@ -48,6 +53,7 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
         textField.setFont(table.getFont());
         textField.setOpaque(true);
         String text = (String)value;
+       
         
         if (text != null) {
         
@@ -83,7 +89,17 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
                 
                 textField.setBackground(Color.WHITE);
                 textField.setText(text);
-                textField.setBorder(BorderFactory.createEmptyBorder());
+                
+                if (fita != null) {
+                    if (column != fita.getCelulaPivo()) {
+                        textField.setBorder(BorderFactory.createEmptyBorder());
+                    } else {
+                        //textField.setBorder(BorderFactory.createSoftBevelBorder(2));
+                        textField.setBorder(BorderFactory.createLineBorder(Color.BLUE, 1, false));
+                    }
+                } else {
+                    textField.setBorder(BorderFactory.createEmptyBorder());
+                }
                 
             }
         
@@ -98,6 +114,11 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
         
         return textField;
         
+    }
+    
+    
+    public Fita getFita() {
+        return this.fita;
     }
     
     

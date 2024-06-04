@@ -1,20 +1,24 @@
 package turing.classes;
 
 /**
- * Direção do movimento da cabeça de leitura.
+ * Direção do movimento da cabeça de leitura. Esta implementação aceita os
+ * movimentos à Direita, à Esquerda e também Parado, que mantém a cabeça de
+ * leitura na mesma célula (técnicamente, significa Esquerda/Direita ou Direita/Esquerda).
  * 
  * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
  */
 public enum DirecaoMovimento {
     
     
-    /**Movimento para a direita.*/
+    /**Movimento para a direita (D).*/
     DIREITA("D"),
     
-    /**Movimento para a esquerda.*/
+    /**Movimento para a esquerda (E).*/
     ESQUERDA("E"),
     
-    /**Nenhum movimento (ficar parado).*/
+    /**Nenhum movimento - parado (P).*/
     PARADO("P");
     
     
@@ -24,6 +28,7 @@ public enum DirecaoMovimento {
     
     /**
      * Constructor padrão.
+     * 
      * @param id identificador string da direçao.
      */
     private DirecaoMovimento(String id) {
@@ -33,6 +38,7 @@ public enum DirecaoMovimento {
     
     /**
      * Obter o identificador string da direçao.
+     * 
      * @return identificador string da direção.
      */
     public String getId() {
@@ -42,7 +48,9 @@ public enum DirecaoMovimento {
     
     /**
      * Obter a direção com base no identificador string.
+     * 
      * @param id identificador string.
+     * 
      * @return Direção do movimento, ou null, caso o identificador string
      * seja inválido.
      */

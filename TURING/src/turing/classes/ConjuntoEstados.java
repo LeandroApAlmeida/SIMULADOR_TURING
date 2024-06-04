@@ -1,26 +1,20 @@
 package turing.classes;
 
 /**
- * Conjunto de todos os estados da máquina de Turing (Q).
+ * Conjunto de todos os estados da máquina de Turing (Q). Pertence ao conjunto
+ * dos estados o estado inicial (q<sub>0</sub>) e o conjuntos dos estados
+ * terminais (F).
  * 
  * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
  */
 public class ConjuntoEstados extends ListaEstados {
 
     
-    @Override
-    public boolean inserirEstado(Estado estado) {
-        if (super.inserirEstado(estado)) {
-            //ordenar();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    
     /**
      * Obter o conjunto dos estados que não são terminais.
+     * 
      * @return conjunto dos estados que não são terminais.
      */
     public ListaEstados getEstadosNaoTerminais() {
@@ -36,6 +30,7 @@ public class ConjuntoEstados extends ListaEstados {
     
     /**
      * Obter o conjunto dos estados terminais.
+     * 
      * @return conjunto dos estados terminais.
      */
     public ListaEstados getEstadosTerminais() {
@@ -51,6 +46,7 @@ public class ConjuntoEstados extends ListaEstados {
     
     /**
      * Obter o estado inicial.
+     * 
      * @return estado inicial.
      */
     public Estado getEstadoInicial() {
@@ -67,6 +63,7 @@ public class ConjuntoEstados extends ListaEstados {
     
     /**
      * Definir o estado inicial.
+     * 
      * @param estadoInicial estado inicial.
      */
     public void setEstadoInicial(Estado estadoInicial) {
@@ -77,13 +74,14 @@ public class ConjuntoEstados extends ListaEstados {
                 estado.setInicial(false);
             }
         }
-        //ordenar();
     }
     
     
     /**
      * Marcar/desmarcar um estado como terminal.
+     * 
      * @param estado estado.
+     * 
      * @param valor Se true, o estado é terminal. Se false, não é terminal.
      */
     public void setEstadoTerminal(Estado estado, boolean valor) {
@@ -92,42 +90,6 @@ public class ConjuntoEstados extends ListaEstados {
                 estado.setTerminal(valor);
             }
         }
-        //ordenar();
-    }
-    
-    
-    @Override
-    public void ordenar() {
-        
-        ListaEstados estadosTerminais = getEstadosTerminais();
-        
-        ListaEstados estadosNTerminais = getEstadosNaoTerminais();
-        
-        estadosTerminais.ordenar();
-        
-        estadosNTerminais.ordenar();
-        
-        estados.clear();
-        
-        estados.addAll(estadosNTerminais.estados);
-        
-        estados.addAll(estadosTerminais.estados);
-        
-        int indice = -1;
-        
-        for (int i = 0; i < estados.size(); i++) {
-            if (estados.get(i).isInicial()) {
-                indice = i;
-                break;
-            }
-        }
-        
-        if (indice > 0) {
-            Estado estado = estados.get(indice);
-            estados.remove(estado);
-            estados.add(0, estado);
-        }
-       
     }
     
     

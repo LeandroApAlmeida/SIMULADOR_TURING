@@ -1746,7 +1746,7 @@ OuvinteTemporizador {
             }
         });
 
-        RendererizadorFita renderer = new RendererizadorFita();
+        RendererizadorFita renderer = new RendererizadorFita(null);
 
         for (int i = 0; i < jtFitas.getColumnCount(); i++) {
             jtFitas.getColumnModel().getColumn(i).setCellRenderer(renderer);
@@ -1766,7 +1766,8 @@ OuvinteTemporizador {
 
     private void configurarFitas(Fita[] fitas, Map<Integer, Integer> cursores) {
 
-        if (jtFitas.getColumnCount() != fitas[0].getComprimento()) {
+        if (jtFitas.getColumnCount() != fitas[0].getComprimento() || 
+        ((RendererizadorFita)jtFitas.getColumnModel().getColumn(0).getCellRenderer()).getFita() == null) {
         
             String[][] listaFitas = new String[fitas.length][fitas[0].getComprimento()];
             String[] titulos = new String[fitas[0].getComprimento()];
@@ -1778,7 +1779,7 @@ OuvinteTemporizador {
                 }
             });
             
-            RendererizadorFita renderer = new RendererizadorFita();
+            RendererizadorFita renderer = new RendererizadorFita(fitas[0]);
         
             for (int i = 0; i < jtFitas.getColumnCount(); i++) {
                 jtFitas.getColumnModel().getColumn(i).setCellRenderer(renderer);
@@ -2550,14 +2551,13 @@ OuvinteTemporizador {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(21, 21, 21)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jtfNumPassos, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-                        .addComponent(jLabel3)
-                        .addComponent(jtfEstadoAtual, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-                        .addComponent(jLabel7)
-                        .addComponent(jtfResultado, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jtfNumPassos, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                    .addComponent(jLabel3)
+                    .addComponent(jtfEstadoAtual, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                    .addComponent(jLabel7)
+                    .addComponent(jtfResultado, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(20, 20, 20))
         );
 

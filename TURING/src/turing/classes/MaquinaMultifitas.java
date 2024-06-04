@@ -89,7 +89,7 @@ public class MaquinaMultifitas implements MaquinaTuring {
         int celulasAdicionais = palavra.length() > 25 ? 10 : 25 - (palavra.length());
         
         for (int i = 0; i < numeroFitas; i++) {
-            fitas[i] = new Fita(alfabetoFita, true, palavra.length(), celulasAdicionais);
+            fitas[i] = new Fita(alfabetoFita, true, palavra.length() + celulasAdicionais, 1);
             cabecasLeitura.put(i, fitas[i].getCelulaInicial());
         }
         
@@ -156,8 +156,8 @@ public class MaquinaMultifitas implements MaquinaTuring {
                 int celulasDireita = 0;
                 
                 for (int i = 0; i < indicesRelativos.size(); i++) {
-                    if (indicesRelativos.get(i) < 0) {
-                        celulasEsquerda = indicesRelativos.get(i);
+                    if (indicesRelativos.get(i) <= 0) {
+                        celulasEsquerda = indicesRelativos.get(i) - 1;
                     } else if (indicesRelativos.get(i) >= fitas[i].getComprimento()) {
                         celulasDireita = (indicesRelativos.get(i) - fitas[i].getComprimento()) + 1;
                     }                 

@@ -1,9 +1,11 @@
 package turing.classes;
 
 /**
- * Classe que representa um estado.
+ * Classe que representa um estado da máquina de Turing.
  * 
  * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
  */
 public class Estado {
     
@@ -23,9 +25,9 @@ public class Estado {
      * 
      * @param rotulo rótulo do estado.
      * 
-     * @param terminal estatus de terminal.
+     * @param terminal estatus de estado terminal.
      * 
-     * @param inicial estatus de inicial.
+     * @param inicial estatus de estado inicial.
      * 
      * @throws Exception erro na sintaxe do rótulo do estado.
      */
@@ -42,6 +44,7 @@ public class Estado {
 
     /**
      * Obter o rótulo do estado.
+     * 
      * @return rótulo do estado.
      */
     public String getRotulo() {
@@ -51,6 +54,7 @@ public class Estado {
     
     /**
      * Obter o estatus de estado terminal.
+     * 
      * @return Se true, o estado é terminal. Se false, o estado não é terminal.
      */
     public boolean isTerminal() {
@@ -60,6 +64,7 @@ public class Estado {
     
     /**
      * Obter o estatus de estado inicial.
+     * 
      * @return Se true, o estado é inicial. Se false, o estado não é inicial.
      */
     public boolean isInicial() {
@@ -69,7 +74,9 @@ public class Estado {
     
     /**
      * Definir o rótulo do estado.
+     * 
      * @param rotulo rótulo do estado.
+     * 
      * @throws Exception erro na sintaxe do rótulo do estado.
      */
     protected void setRotulo(String rotulo) throws Exception {
@@ -83,6 +90,7 @@ public class Estado {
     
     /**
      * Definir o estatus de estado terminal.
+     * 
      * @param terminal Se true, o estado é terminal. Se false, o estado não é
      * terminal.
      */
@@ -93,6 +101,7 @@ public class Estado {
     
     /**
      * Definir o estatus de estado inicial.
+     * 
      * @param inicial Se true, o estado é inicial. Se false, o estado não é 
      * inicial.
      */
@@ -104,6 +113,30 @@ public class Estado {
     /**
      * Validar a sintaxe do rótulo de um estado. O rótulo de um estado deve iniciar
      * com a letra 'q', seguida de letras maiúsculas ou minúsculas e números.
+     * 
+     * <br><br>
+     * 
+     * Exemplo:
+     * 
+     * <br><br>
+     * 
+     * <BLOCKQUOTE>
+     * 
+     * q0, q1, qInicial, qfinal, qAceita1
+     * 
+     * </BLOCKQUOTE>
+     * 
+     * <br>
+     * 
+     * São exemplos de rótulos de estado incorretos:
+     * 
+     * <br><br>
+     * 
+     * <BLOCKQUOTE>
+     * 
+     * q, a1, q#1, qfinal*, q_0
+     * 
+     * </BLOCKQUOTE>
      * 
      * @param rotuloEstado rótulo do estado.
      * 
@@ -121,13 +154,19 @@ public class Estado {
 
         boolean sintaxeCorreta = true;
         
+        // Caractere numérico.
         boolean numeral;
+        
+        // Caractere alfabético maiúsculo.
         boolean maiuscula;
+        
+        // Caractere alfabético minúsculo.
         boolean minuscula;
         
         for (int i = 1; i < rotuloEstado.length(); i++) {
             
             int codigoUTF8 = (int) rotuloEstado.charAt(i);
+            
             
             numeral = (codigoUTF8 >= 48 && codigoUTF8 <= 57);
             maiuscula = (codigoUTF8 >= 65 && codigoUTF8 <= 90);

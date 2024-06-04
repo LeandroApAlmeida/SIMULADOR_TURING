@@ -16,17 +16,26 @@ public class Main {
     
     
     static {
+        
         //Tradução das caixas de mensagens (JOptionPane).
         UIManager.put("OptionPane.yesButtonText", "Sim");
         UIManager.put("OptionPane.noButtonText", "Não");
         UIManager.put("OptionPane.cancelButtonText", "Cancelar");
         UIManager.put("OptionPane.okButtonText", "OK");
+        
+        // A interface gráfica foi testada para usar esta Skin padrão.
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage()); 
+        }
+        
     }
 
 
     /**
      * Ponto de entrada do programa. Trata a abertura de arquivo passado por 
-     * linha de comando a partir do terminal de comandos.
+     * linha de comando a partir do prompt de comandos do Windows/Linux.
      * 
      * <br><br>
      * 
@@ -36,12 +45,12 @@ public class Main {
      * <br><br>
      * 
      * Para usar com esta opção, no terminal de comandos, deverá ser passado o
-     * seguinte comando:
+     * seguinte comando (em sistemas Windows):
      * 
      * <br><br>
      * 
      * <BLOCKQUOTE>
-     * > java.exe -jar "TURING.java" "D:\TesteTuring.asmt
+     * > java.exe -jar "TURING.jar" "D:\TesteTuring.asmt"
      * </BLOCKQUOTE>
      * 
      * <br>
@@ -52,21 +61,21 @@ public class Main {
      * comandos.
      */
     public static void main(String[] args) {
-        
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-        } catch (Exception ex) {
-        }
-        
+
         java.awt.EventQueue.invokeLater(() -> {
+            
             TelaPrincipal telaPrincipal = new TelaPrincipal();
+            
             if (args.length == 1) {
+                // Abre o arquivo passado como parâmetro.
                 File file = new File(args[0]);
                 if (file.exists()) {
                     telaPrincipal.abrirArquivo(file);
                 }
             }
+            
             telaPrincipal.setVisible(true);
+            
         });
         
     }

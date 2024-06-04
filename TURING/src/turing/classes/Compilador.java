@@ -16,15 +16,14 @@ import java.util.List;
  * algoritmo. Logo, as instruções obtidas com a compilação do código do programa
  * vai recuperar não somente o que seria o programa, que em termos formais é 
  * denominado de função de transição, inscrito na seção [Programa], mas também
- * todos os parâmetros para a construção da máquina em si, que inclui o tipo de
- * máquina a ser gerado, o alfabeto da fita, o conjunto dos estados, o estado 
- * inicial, os estados terminais.
+ * todos os parâmetros para a construção da máquina em si, que inclui o alfabeto
+ * da fita, o conjunto dos estados, o estado inicial, os estados terminais.
  *  
  * <br><br>
  * 
  * Neste contexto, o que o compilador do código do programa faz é construir a
  * máquina de Turing e configurar o programa para o funcionamento da mesma. No
- * processo, serão verificados os erros no código.
+ * processo, será verificado se existem erros no código.
  * 
  * @author Leandro Ap. de Almeida
  * 
@@ -295,7 +294,7 @@ public final class Compilador {
      * 
      * <li>&nbsp;<b>AlfabetoEntrada = </b>: Alfabeto de entrada. Este campo usa
      * a notação de conjunto { ... }. Cada símbolo do alfabeto deve ser separado
-     * por vírgula em caso de mais de um símbolo. No exemplo acima: { a, b, c }</li>
+     * por vírgula em caso de mais de um símbolo. No exemplo acima: { a, b, c }.</li>
      * 
      * <br>
      * 
@@ -306,8 +305,8 @@ public final class Compilador {
      * <br>
      * 
      * <li>&nbsp;<b>Estados = </b>: Conjunto dos Estados. Este campo usa a notação
-     * de conjunto { ... }. Cada estado do conjunto deve ser separado por vírgula.
-     * No exemplo acima: { q0, q1, q2, q3 }.</li>
+     * de conjunto { ... }. Cada estado do conjunto deve ser separado por vírgula
+     * em caso de mais de um estado. No exemplo acima: { q0, q1, q2, q3 }.</li>
      * 
      * <br>
      * 
@@ -318,8 +317,9 @@ public final class Compilador {
      * 
      * <li>&nbsp;<b>EstadosTerminais = </b>: Conjunto dos Estados terminais. Este 
      * campo usa a notação de conjunto { ... }. Cada estado do conjunto deve ser 
-     * separado por vírgula. Cada um dos estados deste conjunto deve, obrigatóriamente,
-     * pertencer ao conjunto dos estados. No exemplo acima: { q2, q3 }</li>
+     * separado por vírgula em caso de mais de um estado. Cada um dos estados 
+     * deste conjunto deve, obrigatóriamente, pertencer ao conjunto dos estados.
+     * No exemplo acima: { q2, q3 }</li>
      * 
      * <br>
      * 
@@ -389,12 +389,10 @@ public final class Compilador {
      * 
      * <ul>
      * 
-     * <li>&nbsp;O campo modelo aceita apenas dois valores: padrao ou multifitas.</li><br>
-     * 
      * <li>&nbsp;Em campo com notação de conjunto, se houver mais do que um item,
      * cada item deve estar separado por vírgula.</li><br>
      * 
-     * <li>&nbsp;O símbolo de um alfabeto devem ter um único caracter. Se houver
+     * <li>&nbsp;O símbolo de um alfabeto deve ter um único caracter. Se houver
      * mais do que um caracter, está errado, com exceção do símbolo de vírgula,
      * que é representado pela TAG $v e o símbolo de espaço é representado pela
      * TAG $e, que serão convertidos para os respectivos caracteres.</li><br>
@@ -423,7 +421,7 @@ public final class Compilador {
      * 
      * @param codigoPrograma códido do programa
      * 
-     * @return instruções para a construção da máquina de Turing.
+     * @return Instruções para a construção da máquina de Turing.
      * 
      * @throws Exception erro detectado no processamento do código do programa.
      */
@@ -531,7 +529,7 @@ public final class Compilador {
         // presentes. Caso um ou mais campos não exista, o programa será considerado 
         // incorreto e não poderá prosseguir com a compilação.
         
-        // 1. Verifica a existência dos campos Modelo e Nome da seção [Descricao].
+        // 1. Verifica a existência do campo Nome da seção [Descricao].
 
         int indiceCampoNome = -1;
 
@@ -745,6 +743,10 @@ public final class Compilador {
                         Character caractere = getSimbolo(simbolo);
 
                         if (caractere != null) {
+                            
+                            // Verifica se o símbolo pertence ao alfabeto
+                            // de entrada, que já foi inserido no alfabeto 
+                            // da fita.
                             
                             boolean inserir = true;
                             

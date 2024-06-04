@@ -2,20 +2,22 @@ package turing.classes;
 
 /**
  * Configurações para montagem de uma máquina de Turing. Inclui todos os parâmetros
- * da máquina como o alfabeta da fita, o conjunto dos estados, a função de transição.
+ * da máquina como o alfabeta da fita, o conjunto dos estados e a função de transição.
  * 
  * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
  */
 public class ConfigMaqTuring {
     
     
-    /**Nome.*/
+    /**Nome a máquina de Turing.*/
     private final String nome;
     
     /**Alfabeto da fita.*/
     private final AlfabetoFita alfabetoFita;
     
-    /**Estados*/
+    /**Estados da máquina de Turing.*/
     private final ConjuntoEstados conjuntoEstados;
     
     /**Função de transição.*/
@@ -28,17 +30,15 @@ public class ConfigMaqTuring {
     /**
      * Constructor padrão.
      * 
-     * @param nome nome.
+     * @param nome nome da máquina de Turing.
      * 
      * @param alfabetoFita alfabeto da fita.
      * 
-     * @param conjuntoEstados estados.
+     * @param conjuntoEstados estados da máquina de Turing.
      * 
      * @param funcaoTransicao função de transição.
      * 
      * @param numeroFitas número de fitas.
-     * 
-     * @param modelo modelo da máquina de Turing.
      */
     public ConfigMaqTuring(String nome, AlfabetoFita alfabetoFita, 
     ConjuntoEstados conjuntoEstados, FuncaoTransicao funcaoTransicao,
@@ -52,8 +52,9 @@ public class ConfigMaqTuring {
 
     
     /**
-     * Obter o nome.
-     * @return nome.
+     * Obter o nome da máquina de Turing.
+     * 
+     * @return nome da máquina de Turing.
      */
     public String getNome() {
         return nome;
@@ -62,6 +63,7 @@ public class ConfigMaqTuring {
     
     /**
      * Obter o alfabeto da fita.
+     * 
      * @return alfabeto da fita.
      */
     public AlfabetoFita getAlfabetoFita() {
@@ -70,8 +72,9 @@ public class ConfigMaqTuring {
 
     
     /**
-     * Obter o conjunto estados.
-     * @return conjunto dos estados.
+     * Obter os estados da máquina de Turing.
+     * 
+     * @return estados da máquina de Turing.
      */
     public ConjuntoEstados getConjuntoEstados() {
         return conjuntoEstados;
@@ -80,6 +83,7 @@ public class ConfigMaqTuring {
     
     /**
      * Obter a função de transição.
+     * 
      * @return função de transição.
      */
     public FuncaoTransicao getFuncaoTransicao() {
@@ -89,6 +93,7 @@ public class ConfigMaqTuring {
     
     /**
      * Obter o número de fitas.
+     * 
      * @return número de fitas.
      */
     public int getNumeroFitas() {
