@@ -17,16 +17,16 @@ import java.util.Arrays;
  * 
  * <br><br>
  * 
- * Esta fita simula a propriedade de infinitude de uma fita da máquina de Turing.
+ * Esta classe simula a propriedade de infinito de uma fita da máquina de Turing.
  * Obviamente que em se tratando de computadores reais, isto não  é possível. O
- * que mais próximo chegamos disso, é limitar a quantidade de células ao intervalo
+ * mais próximo que chegamos disso é limitar a quantidade de células ao intervalo
  * de valores possíveis de uma variável int (Integer) e atrelar o tamanho de uma
  * fita a este parâmetro.
  * 
  * <br><br>
  * 
  * Valores integer em java são representados por 4 bytes. Para indexar arranjos,
- * são permitidos apenas a porção de números inteiros, logo, temos disponível a
+ * são permitidos apenas a porção de números positivos, logo, temos disponível a
  * seguinte quantidade de valores distintos na faixa positiva:
  * 
  * <br><br>
@@ -40,81 +40,189 @@ import java.util.Arrays;
  * 
  * <br>
  * 
- * Este será o tamanho máximo de nossa fita. A posição inicial do cursor na fita
- * estabeleci que ficará no "centro", ou seja, na posição:
+ * Este será o tamanho máximo da nossa fita. A posição inicial do cursor na fita
+ * está estabelecido que ficará no "centro", ou seja, na posição:
  * 
  * <br><br>
  * 
  * <BLOCKQUOTE>
  * 
- * (2<sup>31</sup> - 1)/2 = 1.073.741.824
+ * (2<sup>31</sup> - 1) / 2 = 1.073.741.824
  * 
  * </BLOCKQUOTE>
  * 
  * <br>
  * 
- * Obviamente, este endereço é "virtual". Não vou alocar um arranjo com mais de
- * um bilhão de posições na memória do computador. O arranjo real tem um tamanho
+ * Obviamente, este endereço é "virtual". Não vai alocar um arranjo com mais de
+ * dois bilhões de posições na memória do computador. O arranjo real tem um tamanho
  * limitado, definido no constructor da classe, geralmente com o tamanho da cadeia
  * de entrada mais algumas células para evitar muitos redimensionamentos. Conforme
  * se torna necessário adicionar células à esquerda ou à direita, este arranjo 
- * inicial vai sendo redimensionado. Assim como eu estabeleci um endereço virtual
+ * inicial vai sendo redimensionado. Assim como foi estabelecido um endereço virtual
  * que marca a posição inicial do cursor no endereço 1.073.741.824, que seria o 
- * centro de um arranjo idexado por integer, faço o mesmo com o arranjo real, 
- * estabelecendo uma célula pivô aonde o cursor inicializa nela, e a partir da 
- * qual vou alocando células à esquerda e à direita dela, conforme necessário.
+ * centro de um arranjo idexado por integer, metade do "infinito" o mesmo é feito 
+ * com o arranjo real, estabelecendo uma célula pivô aonde o cursor inicializa 
+ * nela, e a partir da qual vai alocando células à esquerda e à direita dela, 
+ * conforme necessário.
  * 
  * <br><br>
- *
- * <pre >
- *      Fita Virtual. O cursor aponta inicialmente para a posição 1.073.741.824,
- *      que demarca o centro da fita com 2.147.483.647 posições. Este valor é
- *      o mais próximo de "infinito" que podemos chegar com um computador real,
- *      usando arranjos da linguagem Java.
  * 
- *      <                    * 1.073.741.824      >
- *     ______________________________________________
- * ... _|_____|_____|_____|_____|_____|_____|_____|__ ...
+ * <BLOCKQUOTE>
  * 
+ * <i>Fita Virtual</i>. O cursor aponta inicialmente para a posição 1.073.741.824, que 
+ * demarca o centro da fita com 2.147.483.647 posições. Este valor é o mais próximo
+ * de "infinito" que podemos chegar com um computador real, usando arranjos da 
+ * linguagem Java.
  * 
+ * <br><br>
  * 
- *      Fita real. O cursor aponta inicialmente para a posição 1. Conforme o
- *      simulador processa o programa, ele pode alocar espaço à esquerda e à
- *      direita desta posição. Esta posição sempre será apontada, e é chamada
- *      de célula pivô. Igual à fita virtual, ela delimita uma posição a partir
- *      da qual a fita poderá crescer em ambas as direções a partir dela.
+ * <table width="800" cellpadding="2" cellspacing="0" style="background: transparent; 
+ * page-break-before: always">
  * 
- *      <      * 1                                >
- *     ______________________________________________
- *    |_____|_____|_____|_____|_____|_____|_____|____|
- * </pre>
+ *  <tr style="background: transparent">
+ * 
+ *      <td height="30" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000;
+ *      border-left: none; border-right: none; padding: 0.05cm 0cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">...</font></p>
+ *      </td>
+ * 
+ *      <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000;
+ *      border-left: 1px solid #000000; border-right: none; padding-top: 0.05cm;
+ *      padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">1.073.741.822</font></p>
+ *      </td>
+ * 
+ *      <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; 
+ *      border-left: 1px solid #000000; border-right: none; padding-top: 0.05cm;
+ *      padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">1.073.741.823</font></p>
+ *      </td>
+ * 
+ *      <td bgcolor="#2a6099" style="background: #2a6099; border-top: 1px solid #000000;
+ *      border-bottom: 1px solid #000000; border-left: 1px solid #000000; 
+ *      border-right: none; padding-top: 0.05cm; padding-bottom: 0.05cm; 
+ *      padding-left: 0.05cm; padding-right: 0cm">
+ *      <p align="center"><font size="2" style="font-size: 14pt" color="#ffffff">
+ *      <b>1.073.741.824</b></font></p>
+ *      </td>
+ * 
+ *      <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; 
+ *      border-left: 1px solid #000000; border-right: none; padding-top: 0.05cm;
+ *      padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">1.073.741.825</font></p>
+ *      </td>
+ * 
+ *      <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; 
+ *      border-left: 1px solid #000000; border-right: none; padding-top: 0.05cm;
+ *      padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">1.073.741.826</font></p>
+ *      </td>
+ * 
+ *      <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000;
+ *      border-left: 1px solid #000000; border-right: none; padding-top: 0.05cm;
+ *      padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">...</font></p>
+ *      </td>
+ * 
+ *  </tr>
+ * 
+ * </table>
+ * 
+ * <br><br>
+ * 
+ * <i>Fita real</i>. No exemplo o cursor aponta para a posição 1. Conforme o simulador 
+ * processa o programa, ele pode alocar espaço à esquerda e à direita desta posição.
+ * Esta posição é chamada de célula pivô. Igual à fita virtual, ela delimita uma
+ * posição a partir da qual a fita poderá crescer em ambas as direções a partir
+ * dela.
+ * 
+ * <br><br>
+ * 
+ * <table width="800" cellpadding="2" cellspacing="0" style="background: transparent; 
+ * page-break-before: always">
+ * 
+ *  <tr style="background: transparent">
+ * 
+ *      <td height="30" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; 
+ *      border-left: 1px solid #000000; border-right: none; padding-top: 0.05cm;
+ *      padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">0</font></p>
+ *      </td>
+ * 
+ *      <td bgcolor="#2a6099" style="background: #2a6099; border-top: 1px solid #000000;
+ *      border-bottom: 1px solid #000000; border-left: 1px solid #000000; 
+ *      border-right: none; padding-top: 0.05cm; padding-bottom: 0.05cm; 
+ *      padding-left: 0.05cm; padding-right: 0cm">
+ *      <p align="center"><font size="2" style="font-size: 14pt" color="#ffffff"><b>1</b></font></p>
+ *      </td>
+ * 
+ *      <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; 
+ *      border-left: 1px solid #000000; border-right: none; padding-top: 0.05cm;
+ *      padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">2</font></p>
+ *      </td>
+ * 
+ *      <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000;
+ *      border-left: 1px solid #000000; border-right: none; padding-top: 0.05cm;
+ *      padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">3</font></p>
+ *      </td>
+ * 
+ *      <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; 
+ *      border-left: 1px solid #000000; border-right: none; padding-top: 0.05cm;
+ *      padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">4</font></p>
+ *      </td>
+ * 
+ *      <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; 
+ *      border-left: 1px solid #000000; border-right: none; padding-top: 0.05cm;
+ *      padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">5</font></p>
+ *      </td>
+ * 
+ *      <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000;
+ *      border-left: 1px solid #000000; border-right: 1px; padding-top: 0.05cm;
+ *      padding-bottom: 0.05cm; padding-left: 0.05cm; padding-right: 0.05cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">...</font></p>
+ *      </td>
+ * 
+ *      <td style="border: 1px solid #000000; padding: 0.05cm">
+ *      <p align="center"><font size="2" style="font-size: 12pt">n</font></p>
+        </td>
+ * 
+ *  </tr>
+ * 
+ * </table>
+ * 
+ * </BLOCKQUOTE>
  * 
  * <br>
  * 
  * Para escrever e ler a fita, você deve sempre fazê-lo por meio do endereço
  * virtual. Logo, a primeira posição da fita, aonde o cursor deve ser posicionado
- * inicialmente será será na célula de endereço 1.073.741.824. Na prática, este
+ * inicialmente será na célula de endereço 1.073.741.824. Na prática, este
  * endereço virtual corresponde ao endereço 1 no arranjo realmente alocado na
- * memória. Se a cabeça de leitura move o cursor para a direita para ler e gravar
- * na célula, então na fita virtual corresponde ao endereço 1.073.741.825, e no
- * arranjo real 2. Se o cursor vai para a esquerda, na fita virtual corresponde
- * ao endereço 1.073.741.823 e na fita real 0. Mais um movimento da cabeça de 
- * leitura para a esquerda estando o endereço real em 0, e eu teria -1 e sairia
- * do limites do arranjo. Logo, se mover para a esquerda, eu preciso alocar mais
- * uma célula nesta direção, copiar todos os elementos à direita dela, fazê-la 
- * ficar com o marcador de branco e mudar a célula pivô para uma casa adiante,
- * matendo a referência de que célula eu iniciei apontando para ela. O mesmo se
+ * memória do exemplo. Se a cabeça de leitura move o cursor para a direita para
+ * ler e gravar na célula, então na fita virtual corresponde ao endereço 
+ * 1.073.741.825, e no arranjo real 2. Se o cursor vai para a esquerda, na fita
+ * virtual corresponde ao endereço 1.073.741.823 e na fita real 0. Mais um movimento
+ * da cabeça de leitura para a esquerda estando o endereço real em 0, se teria 
+ * -1 e sairia dos limites do arranjo. Logo, se mover para a esquerda, é preciso
+ * alocar mais uma célula nesta direção, copiar todos os elementos à direita dela,
+ * fazê-la ficar com o marcador de branco e mudar a célula pivô para uma casa adiante,
+ * matendo a referência de que célula iniciou-se apontando para ela. O mesmo se
  * a cabeça de leitura for posicionada para um endereço além da extremidade
- * posterior da fita. Preciso alocar mais uma célula, colocar um marcador branco
+ * posterior da fita. É preciso alocar mais uma célula, colocar um marcador branco
  * nela, mas dessa vez os símbolos não são movidos nem a célula pivô muda de posição.
  * 
  * <br><br>
  * 
  * O redimensionamento é feito automáticamente ao ler ou escrever a fita. Ela se 
  * autoredimensiona para manter a consistência dos endereços virtuais e ter células
- * em cada posição que o cursor é movido, teoricamente até a celula virtual 0 e 
- * a célula virtual 2.147.483.647. O arranjo real vai crescendo conforme necessário
- * para o processamento do programa incrito na função de transição.
+ * em cada posição que o cursor é movido, teoricamente até a celula virtual 0 à 
+ * esquerda e a célula virtual 2.147.483.647 à direita, que é o limite máximo de
+ * células da fita. O arranjo real vai crescendo conforme necessário para o 
+ * processamento do programa incrito na função de transição.
  * 
  * @author Leandro Ap. de Almeida
  * 
@@ -184,9 +292,8 @@ public final class Fita {
     
     
     /**
-     * Inicializa a fita com a cadeia de entrada, a partir da posição mais à 
-     * esquerda, delimitada pela célula pivô. Todas as demais células da fita
-     * são preenchidas com branco.
+     * Inicializa a fita com a cadeia de entrada, a partir do endereço virtual
+     * 1.073.741.824. Todas as demais células da fita são preenchidas com branco.
      * 
      * @param palavra cadeia de entrada.
      */
@@ -202,17 +309,13 @@ public final class Fita {
     }
     
     
-    public void limpar() {
-        for (int i = 0; i < celulas.length; i++) {
-            celulas[i] = alfabetoFita.getSimboloBranco();
-        }
-    }
-    
-    
     /**
-     * Escrever um símbolo em uma célula da fita.
+     * Escrever um símbolo em uma célula da fita. Caso a célula não exista, será 
+     * redimensionado o arranjo, à esquerda ou à direita da extremidade da fita
+     * e atribuído um símbolo de branco para cada nova célula criada e escrito
+     * o símbolo na célula referenciada.
      * 
-     * @param celula célula da fita.
+     * @param celula endereço virtual da célula.
      * 
      * @param simbolo símbolo a escrever.
      * 
@@ -287,12 +390,13 @@ public final class Fita {
     
     
     /**
-     * Ler um símbolo em uma célula da fita.
+     * Ler um símbolo em uma célula da fita. Caso a célula não exista, será 
+     * redimensionado o arranjo, à esquerda ou à direita da extremidade da fita
+     * e atribuído um símbolo de branco a cada nova célula criada.
      * 
-     * @param celula célula da fita.
+     * @param celula endereço virtual da célula.
      * 
-     * @return Símbolo lido, ou null, caso o índice da célula esteja fora 
-     * da faixa.
+     * @return Símbolo lido, ou null, caso o índice da célula esteja fora da faixa.
      */
     public Simbolo ler(int celula) {
         
@@ -356,31 +460,141 @@ public final class Fita {
     }
     
     
-    public void ajustar(int qtdCelulas) {
+    /**
+     * Redimensionar a fita, adicionando células à esquerda ou à direita nas
+     * extremidades. 
+     * 
+     * @param qtdEsquerda quantidade de células a adicionar à esquerda da fita.
+     * 
+     * @param qtdDireita quantidade de células a adicionar à direita da fita.
+     * 
+     * @return Se true, a fita foi redimensionada. Se false, a fita não foi
+     * redimensionada.
+     */
+    public boolean redimensionar(int qtdEsquerda, int qtdDireita) {
         
-        int valor = Math.abs(qtdCelulas);
+        if (qtdEsquerda >= 0 && qtdDireita >= 0) {
         
-        Simbolo[] celulasTmp = new Simbolo[celulas.length + valor];
+            Simbolo[] celulasTmp = new Simbolo[celulas.length + qtdDireita +
+            qtdEsquerda];
 
-        if (qtdCelulas < 0) {
-            System.arraycopy(celulas, 0, celulasTmp, valor , celulas.length);
-            for (int i = 0; i < valor; i++) {
-                celulasTmp[i] = alfabetoFita.getSimboloBranco();
+            boolean deslocou =  false;
+
+            if (qtdEsquerda > 0) {
+                System.arraycopy(celulas, 0, celulasTmp, qtdEsquerda , celulas.length);
+                for (int i = 0; i < qtdEsquerda; i++) {
+                    celulasTmp[i] = alfabetoFita.getSimboloBranco();
+                }
+                celulaPivo = celulaPivo + qtdEsquerda;
+                deslocou = true;
+            } 
+
+            if (qtdDireita > 0) {
+                if (!deslocou) {
+                    System.arraycopy(celulas, 0, celulasTmp, 0 , celulas.length);
+                }
+                for (int i = celulas.length; i < celulasTmp.length; i++) {
+                    celulasTmp[i] = alfabetoFita.getSimboloBranco();
+                }
             }
-            celulaPivo = celulaPivo + valor;
-        } else {
-            System.arraycopy(celulas, 0, celulasTmp, 0 , celulas.length);
-             for (int i = celulas.length; i < celulasTmp.length; i++) {
-                celulasTmp[i] = alfabetoFita.getSimboloBranco();
-            }
-        }
+
+            celulas = celulasTmp;
+            
+            return true;
         
-        celulas = celulasTmp;
+        } else {
+            
+            return false;
+            
+        }
 
     }
     
     
-    public int getPosicaoRelativa(int celula) {
+    public boolean redimensionar(int celula, int qtdEsquerda, int qtdDireita) {
+        
+        if (qtdEsquerda >= 0 && qtdDireita >= 0) {
+        
+            Simbolo[] celulasTmp = new Simbolo[celulas.length + qtdDireita +
+            qtdEsquerda];
+
+            boolean deslocou =  false;
+
+            if (qtdEsquerda > 0) {
+                System.arraycopy(celulas, 0, celulasTmp, qtdEsquerda , celulas.length);
+                for (int i = 0; i < qtdEsquerda; i++) {
+                    celulasTmp[i] = alfabetoFita.getSimboloBranco();
+                }
+                celulaPivo = celulaPivo + qtdEsquerda;
+                deslocou = true;
+            } 
+
+            if (qtdDireita > 0) {
+                if (!deslocou) {
+                    System.arraycopy(celulas, 0, celulasTmp, 0 , celulas.length);
+                }
+                for (int i = celulas.length; i < celulasTmp.length; i++) {
+                    celulasTmp[i] = alfabetoFita.getSimboloBranco();
+                }
+            }
+
+            celulas = celulasTmp;
+            
+            return true;
+        
+        } else {
+            
+            return false;
+            
+        }
+
+    }
+    
+    
+    /**
+     * Marcar todas as células da fita com marcador de branco.
+     */
+    public void limpar() {
+        for (int i = 0; i < celulas.length; i++) {
+            celulas[i] = alfabetoFita.getSimboloBranco();
+        }
+    }
+    
+    
+    /**
+     * Obter o endereço virtual da primeira célula da fita. Se a fita for infinita
+     * à esquerda, a posição será 1.073.741.824. Se a fita for finita à esquerda,
+     * a posição será 0.
+     * 
+     * @return Índice virtual da primeira célula da fita.
+     */
+    public int getCelulaInicial() {
+        if (infinitaEsquerda) {
+            return POSICAO_INICIAL;
+        } else {
+            return 0;
+        }
+    }
+    
+    
+    /**
+     * Obter o endereço absoluto da célula pivô.
+     * 
+     * @return endereço absoluto da célula pivô.
+     */
+    public int getCelulaPivo() {
+        return celulaPivo;
+    }
+    
+    
+    /**
+     * Obter o endereço absoluto de uma célula no arranjo.
+     * 
+     * @param celula endereço virtual da célula.
+     * 
+     * @return endereço absoluto da célula no arranjo em memória.
+     */
+    public int getEnderecoAbsoluto(int celula) {
         
         int indice = celulaPivo;
         int deslocamento;
@@ -400,32 +614,29 @@ public final class Fita {
     }
     
     
+    /**
+     * Obter as células da fita.
+     * 
+     * @return células da fita. 
+     */
     public Simbolo[] getCelulas() {
-        return celulas;
+        return celulas.clone();
     }
     
     
+    /**
+     * Obter o número de células da fita em expansão.
+     * 
+     * @return número de células da fita em expansão.
+     */
     public int getComprimento() {
         return celulas.length;
-    }
-    
-    
-    public int getCelulaInicial() {
-        if (infinitaEsquerda) {
-            return POSICAO_INICIAL;
-        } else {
-            return 0;
-        }
-    }
-    
-    
-    public int getCelulaPivo() {
-        return celulaPivo;
     }
 
     
     /**
      * Indicador de fita infinita à esquerda.
+     * 
      * @return Se true, a fita é infinita à esquerda. Se false, a fita é finita
      * à esquerda.
      */

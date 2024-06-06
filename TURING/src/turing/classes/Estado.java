@@ -79,11 +79,12 @@ public class Estado {
      * 
      * @throws Exception erro na sintaxe do rótulo do estado.
      */
-    protected void setRotulo(String rotulo) throws Exception {
+    protected boolean setRotulo(String rotulo) throws Exception {
         if (rotuloValido(rotulo)) {
             this.rotulo = rotulo;
+            return true;
         } else {
-            throw new Exception("Sintaxe do rótulo do estado incorreta.");
+            return false;
         }
     }
 
@@ -153,14 +154,9 @@ public class Estado {
         }
 
         boolean sintaxeCorreta = true;
-        
-        // Caractere numérico.
+
         boolean numeral;
-        
-        // Caractere alfabético maiúsculo.
         boolean maiuscula;
-        
-        // Caractere alfabético minúsculo.
         boolean minuscula;
         
         for (int i = 1; i < rotuloEstado.length(); i++) {

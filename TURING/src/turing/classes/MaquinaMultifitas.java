@@ -16,7 +16,7 @@ public class MaquinaMultifitas implements MaquinaTuring {
     
     private final ConjuntoEstados conjuntoEstados;
     
-    private final List<OuvinteMaqTuring> ouvintes;
+    private final List<OuvinteEtapa> ouvintes;
     
     private Fita[] fitas;
     
@@ -29,8 +29,6 @@ public class MaquinaMultifitas implements MaquinaTuring {
     private boolean emExecucao;
     
     private boolean aceita;
-    
-    private boolean rejeita;
     
     private int numeroPassos;
     
@@ -70,7 +68,7 @@ public class MaquinaMultifitas implements MaquinaTuring {
     private Map<Integer, Integer> getIndicesRelativos() {
         Map<Integer, Integer> map = new HashMap<>();
         for (int i = 0; i < cabecasLeitura.size(); i++) {
-            map.put(i, fitas[i].getPosicaoRelativa(cabecasLeitura.get(i)));
+            map.put(i, fitas[i].getEnderecoAbsoluto(cabecasLeitura.get(i)));
         }
         return map;
     }
@@ -79,35 +77,55 @@ public class MaquinaMultifitas implements MaquinaTuring {
     @Override
     public void reiniciar() {
         
-        aceita = false;
-        rejeita = false;
-        emExecucao = true;
-        numeroPassos = 0;
+        boolean simboloInvalido = aceita = emExecucao = false;
         
-        estadoAtual = conjuntoEstados.getEstadoInicial();
-        
-        int celulasAdicionais = palavra.length() > 25 ? 10 : 25 - (palavra.length());
-        
-        for (int i = 0; i < numeroFitas; i++) {
-            fitas[i] = new Fita(alfabetoFita, true, palavra.length() + celulasAdicionais, 1);
-            cabecasLeitura.put(i, fitas[i].getCelulaInicial());
+        for (int i = 0; i < palavra.length(); i++) {
+            Simbolo simbolo = alfabetoFita.getSimbolo(palavra.charAt(i));
+            if (simbolo != null) {
+                if (simbolo.isAuxiliar()) {
+                    aceita = true;
+                    break;
+                }
+            }
         }
         
-        fitas[0].iniciar(palavra);
-        
-        char[] simbolosFitas = lerSimbolosFitas();
-        
-        indiceTransicao = funcaoTransicao.indiceDe(estadoAtual, simbolosFitas);
+        estadoAtual = conjuntoEstados.getEstadoInicial();
 
-        for (OuvinteMaqTuring ouvinte : ouvintes) {
+        int celulasAdicionais = palavra.length() > 25 ? 10 : 25 - (palavra.length());
+
+        for (int i = 0; i < numeroFitas; i++) {
+            fitas[i] = new Fita(
+                alfabetoFita,
+                true,
+                palavra.length() + celulasAdicionais,
+                1
+            );
+            cabecasLeitura.put(i, fitas[i].getCelulaInicial());
+        }
+
+        fitas[0].iniciar(palavra);
+
+        numeroPassos = 0;
+
+        if (!simboloInvalido) {
+            char[] simbolosFitas = lerSimbolosFitas();
+            indiceTransicao = funcaoTransicao.indiceDe(estadoAtual, simbolosFitas);
+            emExecucao = true;      
+        } else {
+            indiceTransicao = -1;
+            emExecucao = false;
+        }
+
+        for (OuvinteEtapa ouvinte : ouvintes) {
             
-            ouvinte.atualizarMaqTuring(estadoAtual,
+            ouvinte.atualizarEtapa(
+                estadoAtual,
                 fitas, 
                 getIndicesRelativos(),
                 indiceTransicao,
                 numeroPassos,
                 aceita,
-                rejeita
+                !emExecucao
             );
             
         }
@@ -157,20 +175,15 @@ public class MaquinaMultifitas implements MaquinaTuring {
                 
                 for (int i = 0; i < indicesRelativos.size(); i++) {
                     if (indicesRelativos.get(i) <= 0) {
-                        celulasEsquerda = indicesRelativos.get(i) - 1;
+                        celulasEsquerda = Math.abs(indicesRelativos.get(i) - 1);
                     } else if (indicesRelativos.get(i) >= fitas[i].getComprimento()) {
-                        celulasDireita = (indicesRelativos.get(i) - fitas[i].getComprimento()) + 1;
+                        celulasDireita = (indicesRelativos.get(i) - fitas[i].getComprimento()) + 2;
                     }                 
                 }
                 
                 if (celulasEsquerda != 0 || celulasDireita != 0) {
                     for (Fita fita : fitas) {
-                        if (celulasEsquerda != 0) {
-                            fita.ajustar(celulasEsquerda);
-                        }
-                        if (celulasDireita != 0) {
-                            fita.ajustar(celulasDireita);
-                        }
+                        fita.redimensionar(celulasEsquerda, celulasDireita);
                     }
                 }
 
@@ -179,7 +192,6 @@ public class MaquinaMultifitas implements MaquinaTuring {
                 if (estadoAtual.isTerminal()) {
                     emExecucao = false;
                     aceita = true;
-                    rejeita = false;
                 } else {
                     simbolos = lerSimbolosFitas();
                     indiceTransicao = funcaoTransicao.indiceDe(estadoAtual, simbolos);
@@ -188,21 +200,20 @@ public class MaquinaMultifitas implements MaquinaTuring {
             } else {
                 emExecucao = false;
                 aceita = false;
-                rejeita = true;
             }
         
         }
         
-        for (OuvinteMaqTuring ouvinte : ouvintes) {
+        for (OuvinteEtapa ouvinte : ouvintes) {
             
-            ouvinte.atualizarMaqTuring(
+            ouvinte.atualizarEtapa(
                 estadoAtual,
                 fitas,
                 getIndicesRelativos(),
                 indiceTransicao,
                 numeroPassos,
                 aceita,
-                rejeita
+                !emExecucao
             );
             
         }
@@ -211,13 +222,13 @@ public class MaquinaMultifitas implements MaquinaTuring {
 
     
     @Override
-    public void adicionarOuvinte(OuvinteMaqTuring ouvinte) {
+    public void adicionarOuvinte(OuvinteEtapa ouvinte) {
         ouvintes.add(ouvinte);
     }
 
     
     @Override
-    public boolean removerOuvinte(OuvinteMaqTuring ouvinte) {
+    public boolean removerOuvinte(OuvinteEtapa ouvinte) {
         return ouvintes.remove(ouvinte);
     }
 

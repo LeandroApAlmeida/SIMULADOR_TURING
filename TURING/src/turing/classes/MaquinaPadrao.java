@@ -94,13 +94,13 @@ public class MaquinaPadrao implements MaquinaTuring {
 
     
     @Override
-    public void adicionarOuvinte(OuvinteMaqTuring ouvinte) {
+    public void adicionarOuvinte(OuvinteEtapa ouvinte) {
         
     }
 
     
     @Override
-    public boolean removerOuvinte(OuvinteMaqTuring ouvinte) {
+    public boolean removerOuvinte(OuvinteEtapa ouvinte) {
         return true;
     }
     

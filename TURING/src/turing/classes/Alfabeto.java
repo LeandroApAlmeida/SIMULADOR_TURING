@@ -73,8 +73,8 @@ public class Alfabeto implements Iterable<Simbolo> {
      */
     public boolean alterarSimbolo(Simbolo simbolo, char novoCaractere) {
         boolean existe = false;
-        for (Simbolo simbolo2 : simbolos) {
-           if (simbolo2.getCaracter() == novoCaractere) {
+        for (Simbolo simb : simbolos) {
+           if (simb.getCaracter() == novoCaractere) {
                existe = true;
                break;
            } 

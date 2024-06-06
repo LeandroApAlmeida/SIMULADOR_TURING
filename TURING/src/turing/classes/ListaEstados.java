@@ -38,7 +38,7 @@ public class ListaEstados implements Iterable<Estado> {
      * inserido.
      */
     public boolean inserirEstado(Estado estado) {
-        if (!contemEstado(estado)) {
+        if (!estados.contains(estado)) {
             estados.add(estado);
             ordenar();
             return true;
@@ -73,15 +73,14 @@ public class ListaEstados implements Iterable<Estado> {
      */
     public boolean alterarEstado(Estado estado, String novoRotulo) throws Exception {
         boolean existe = false;
-        for (Estado estado2 : estados) {
-            if (estado2.getRotulo().equals(novoRotulo)) {
+        for (Estado est : estados) {
+            if (est.getRotulo().equals(novoRotulo)) {
                 existe = true;
                 break;
             }
         }
         if (!existe) {
-            estado.setRotulo(novoRotulo);
-            return true;
+            return estado.setRotulo(novoRotulo);
         } else {
             return false;
         }

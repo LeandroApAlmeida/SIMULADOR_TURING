@@ -23,13 +23,6 @@ public class Main {
         UIManager.put("OptionPane.cancelButtonText", "Cancelar");
         UIManager.put("OptionPane.okButtonText", "OK");
         
-        // A interface gráfica foi testada para usar esta Skin padrão.
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage()); 
-        }
-        
     }
 
 

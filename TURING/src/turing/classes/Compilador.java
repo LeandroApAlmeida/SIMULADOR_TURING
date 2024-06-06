@@ -103,6 +103,35 @@ public final class Compilador {
     }
     
     
+    private String[] getElementosConjunto(String token) {
+        
+        String[] listaItens = null;
+        
+        token = normalizar(token);
+
+        if (token.startsWith("{") && token.endsWith("}")) {
+
+            token = token.substring(token.indexOf("{") + 1, token.indexOf("}"));
+
+            if (token.contains(",")) {
+                listaItens = token.split(",");
+            } else {
+                
+                if (!token.isEmpty()) {
+                    listaItens = new String[1];
+                    listaItens[0] = token;
+                } else {
+                    listaItens = new String[0];
+                }
+            }
+
+        }
+        
+        return listaItens;
+            
+    }
+    
+    
     /**
      * Extrair o caractere do símbolo do alfabeto a partir da string passada. Será
      * realizado a seguinte validação:
@@ -136,7 +165,7 @@ public final class Compilador {
             return caractere;
         }
     }
-    
+
     
     /**
      * Obter a transição inscrita em uma linha do texto.
@@ -662,47 +691,23 @@ public final class Compilador {
         
         if (tokens.length > 1) {
             
-            String listaSimbolos = tokens[1];
+            String[] listaSimbolos = getElementosConjunto(tokens[1]);
             
-            if (listaSimbolos.startsWith("{") && listaSimbolos.endsWith("}")) {
+            if (listaSimbolos != null) {
                 
-                listaSimbolos = listaSimbolos.replace("{", "").replace("}", "");
-                
-                if (listaSimbolos.contains(",")) {
+                for (String simbolo : listaSimbolos) {
                     
-                    String[] simbolos = listaSimbolos.split(",");
+                    Character caractere = getSimbolo(simbolo);
                     
-                    for (String simbolo : simbolos) {
-                        Character caractere = getSimbolo(simbolo);
-                        if (caractere != null) {
-                            alfabetoFita.inserirSimbolo(
-                                new Simbolo(caractere, false)
-                            );
-                        } else {
-                            sb.append("\u22B3 Símbolo do 'AlfabetoEntrada' inválido (linha ");
-                            sb.append(String.valueOf(indiceCampoAlfabetoEntrada + 1));
-                            sb.append("): ");
-                            sb.append(simbolo);
-                            sb.append("\n");
-                            erro = true; 
-                        }
-                    }
-                    
-                } else {
-                    
-                    if (!listaSimbolos.isEmpty()) {
-                        Character caractere = getSimbolo(listaSimbolos);
-                        if (caractere != null) {
-                            alfabetoFita.inserirSimbolo(
-                                new Simbolo(caractere, false)
-                            );
-                        } else {
-                            sb.append("\u22B3 Símbolo do 'AlfabetoEntrada' inválido (linha ");
-                            sb.append(String.valueOf(indiceCampoAlfabetoEntrada + 1));
-                            sb.append("): ");
-                            sb.append(listaSimbolos);
-                            sb.append("\n");
-                        }
+                    if (caractere != null) {
+                        alfabetoFita.inserirSimbolo(new Simbolo(caractere, false));
+                    } else {
+                        sb.append("\u22B3 Símbolo do 'AlfabetoEntrada' inválido (linha ");
+                        sb.append(String.valueOf(indiceCampoAlfabetoEntrada + 1));
+                        sb.append("): ");
+                        sb.append(simbolo);
+                        sb.append("\n");
+                        erro = true; 
                     }
                     
                 }
@@ -711,9 +716,9 @@ public final class Compilador {
                 sb.append("\u22B3 Sintaxe do campo 'AlfabetoEntrada' incorreta (linha ");
                 sb.append(String.valueOf(indiceCampoAlfabetoEntrada + 1));
                 sb.append(")\n");
-                erro = true; 
+                erro = true;
             }
-            
+
         } else {
             sb.append("\u22B3 Sintaxe do campo 'AlfabetoEntrada' incorreta (linha ");
             sb.append(String.valueOf(indiceCampoAlfabetoEntrada + 1));
@@ -728,49 +733,32 @@ public final class Compilador {
         
         if (tokens.length > 1) {
             
-            String listaSimbolos = tokens[1];
+            String[] listaSimbolos = getElementosConjunto(tokens[1]);
             
-            if (listaSimbolos.startsWith("{") && listaSimbolos.endsWith("}")) {
+            if (listaSimbolos != null) {
                 
-                listaSimbolos = listaSimbolos.replace("{", "").replace("}", "");
-                
-                if (listaSimbolos.contains(",")) {
+                for (String simbolo : listaSimbolos) {
                     
-                    String[] simbolos = listaSimbolos.split(",");
+                    Character caractere = getSimbolo(simbolo);
                     
-                    for (String simbolo : simbolos) {
-                        
-                        Character caractere = getSimbolo(simbolo);
+                    if (caractere != null) {
+                       
+                        // Verifica se o símbolo pertence ao alfabeto
+                        // de entrada, que já foi inserido no alfabeto 
+                        // da fita.
 
-                        if (caractere != null) {
-                            
-                            // Verifica se o símbolo pertence ao alfabeto
-                            // de entrada, que já foi inserido no alfabeto 
-                            // da fita.
-                            
-                            boolean inserir = true;
-                            
-                            for (Simbolo s : alfabetoFita) {
-                                if (s.getCaracter() == simbolo.charAt(0)) {
-                                    inserir = false;
-                                    break;
-                                }
-                            }
-                            
-                            if (inserir) {
-                                alfabetoFita.inserirSimbolo(
-                                    new Simbolo(caractere, true)
-                                );
-                            } else {
-                                sb.append("\u22B3 Símbolo do 'AlfabetoAuxiliar' inválido (linha ");
-                                sb.append(String.valueOf(indiceCampoAlfabetoAuxiliar + 1));
-                                sb.append("): ");
-                                sb.append(simbolo);
-                                sb.append("\n");
-                                erro = true;
-                            }
+                        boolean inserir = true;
 
-                        } else { 
+                        for (Simbolo s : alfabetoFita) {
+                            if (s.getCaracter() == simbolo.charAt(0)) {
+                                inserir = false;
+                                break;
+                            }
+                        }
+
+                        if (inserir) {
+                            alfabetoFita.inserirSimbolo(new Simbolo(caractere, true));
+                        } else {
                             sb.append("\u22B3 Símbolo do 'AlfabetoAuxiliar' inválido (linha ");
                             sb.append(String.valueOf(indiceCampoAlfabetoAuxiliar + 1));
                             sb.append("): ");
@@ -779,61 +767,27 @@ public final class Compilador {
                             erro = true;
                         }
                         
-                    }
-                    
-                } else {
-                    
-                    if (!listaSimbolos.isEmpty()) {
-                        
-                        Character caractere = getSimbolo(listaSimbolos);
-                        
-                        if (caractere != null) {
-                            
-                            boolean inserir = true;
-                            
-                            for (Simbolo s : alfabetoFita) {
-                                if (s.getCaracter() == listaSimbolos.charAt(0)) {
-                                    inserir = false;
-                                    break;
-                                }
-                            }
-                            
-                            if (inserir) {
-                                alfabetoFita.inserirSimbolo(
-                                    new Simbolo(caractere, true)
-                                );
-                            } else {
-                                sb.append("\u22B3 Símbolo do 'AlfabetoAuxiliar' inválido (linha ");
-                                sb.append(String.valueOf(indiceCampoAlfabetoAuxiliar + 1));
-                                sb.append("): ");
-                                sb.append(listaSimbolos);
-                                sb.append("\n");
-                                erro = true; 
-                            }
-                            
-                        } else {
-                            sb.append("\u22B3 Símbolo do 'AlfabetoAuxiliar' inválido (linha ");
-                            sb.append(String.valueOf(indiceCampoAlfabetoAuxiliar + 1));
-                            sb.append("): ");
-                            sb.append(listaSimbolos);
-                            sb.append("\n");
-                            erro = true;
-                        }
-                        
+                    } else {
+                        sb.append("\u22B3 Símbolo do 'AlfabetoAuxiliar' inválido (linha ");
+                        sb.append(String.valueOf(indiceCampoAlfabetoEntrada + 1));
+                        sb.append("): ");
+                        sb.append(simbolo);
+                        sb.append("\n");
+                        erro = true; 
                     }
                     
                 }
                 
             } else {
                 sb.append("\u22B3 Sintaxe do campo 'AlfabetoAuxiliar' incorreta (linha ");
-                sb.append(String.valueOf(indiceCampoAlfabetoAuxiliar + 1));
+                sb.append(String.valueOf(indiceCampoAlfabetoEntrada + 1));
                 sb.append(")\n");
-                erro = true; 
+                erro = true;
             }
-            
+
         } else {
             sb.append("\u22B3 Sintaxe do campo 'AlfabetoAuxiliar' incorreta (linha ");
-            sb.append(String.valueOf(indiceCampoAlfabetoAuxiliar + 1));
+            sb.append(String.valueOf(indiceCampoAlfabetoEntrada + 1));
             sb.append(")\n");
             erro = true;
         }
@@ -842,53 +796,26 @@ public final class Compilador {
         
         linha = normalizar(linhas[indiceCampoEstados]);
         tokens = linha.split("=");
-        
+
         if (tokens.length > 1) {
             
-            String listaEstados = tokens[1];
+            String[] listaEstados = getElementosConjunto(tokens[1]);
             
-            if (listaEstados.startsWith("{") && listaEstados.endsWith("}")) {
-                
-                listaEstados = listaEstados.replace("{", "").replace("}", "");
-                
-                if (listaEstados.contains(",")) {
-                    
-                    String[] estados2 = listaEstados.split(",");
-                    
-                    for (String estado : estados2) {
-                        
-                        if (Estado.rotuloValido(estado)) {
-                            conjuntoEstados.inserirEstado(
-                                new Estado(estado, false, false)
-                            );
-                        } else {
-                            sb.append("\u22B3 Rótulo do estado inválido (linha ");
-                            sb.append(String.valueOf(indiceCampoEstados + 1));
-                            sb.append("): ");
-                            sb.append(estado);
-                            sb.append("\n");
-                            erro = true;
-                        }
-                        
+            if (listaEstados != null) {
+
+                for (String estado : listaEstados) {
+
+                    if (Estado.rotuloValido(estado)) {
+                        conjuntoEstados.inserirEstado(new Estado(estado, false, false));
+                    } else {
+                        sb.append("\u22B3 Rótulo do estado inválido (linha ");
+                        sb.append(String.valueOf(indiceCampoEstados + 1));
+                        sb.append("): ");
+                        sb.append(estado);
+                        sb.append("\n");
+                        erro = true;
                     }
-                    
-                } else {
-                    
-                    if (!listaEstados.isEmpty()) {
-                        if (Estado.rotuloValido(listaEstados)) {
-                            conjuntoEstados.inserirEstado(
-                                new Estado(listaEstados, false, false)
-                            );
-                        } else {
-                            sb.append("\u22B3 Rótulo do estado inválido (linha ");
-                            sb.append(String.valueOf(indiceCampoEstados + 1));
-                            sb.append("): ");
-                            sb.append(listaEstados);
-                            sb.append("\n");
-                            erro = true;
-                        }
-                    }
-                    
+
                 }
                 
             } else {   
@@ -941,64 +868,31 @@ public final class Compilador {
         
         if (tokens.length > 1) {
             
-            String listaEstados = tokens[1];
+            String[] listaEstados = getElementosConjunto(tokens[1]);
             
-            if (listaEstados.startsWith("{") && listaEstados.endsWith("}")) {
-                
-                listaEstados = listaEstados.replace("{", "").replace("}", "");
-                
-                if (listaEstados.contains(",")) {
-                    
-                    String[] estados2 = listaEstados.split(",");
-                    
-                    for (String rotulo : estados2) {
-                        
-                        boolean alterado = false;
-                        
-                        for (Estado estado : conjuntoEstados) {
-                            if (estado.getRotulo().equals(rotulo)) {
-                                estado.setTerminal(true);
-                                alterado = true;
-                                break;
-                            }
+            if (listaEstados != null) {
+
+                for (String rotulo : listaEstados) {
+
+                    boolean alterado = false;
+
+                    for (Estado estado : conjuntoEstados) {
+                        if (estado.getRotulo().equals(rotulo)) {
+                            estado.setTerminal(true);
+                            alterado = true;
+                            break;
                         }
-                        
-                        if (!alterado) {
-                            sb.append("\u22B3 Campo 'EstadoTerminal' incorreto (linha ");
-                            sb.append(String.valueOf(indiceCampoEstadosTerminais + 1));
-                            sb.append("): ");
-                            sb.append(rotulo);
-                            sb.append("\n");
-                            erro = true;
-                        }
-                        
                     }
-                    
-                } else {
-                    
-                    if (!listaEstados.isEmpty()) {
-                        
-                        boolean alterado = false;
-                        
-                        for (Estado estado : conjuntoEstados) {
-                            if (estado.getRotulo().equals(listaEstados)) {
-                                estado.setTerminal(true);
-                                alterado = true;
-                                break;
-                            }
-                        }
-                        
-                        if (!alterado) {
-                            sb.append("\u22B3 Campo 'EstadoTerminal' incorreto: ");
-                            sb.append(String.valueOf(indiceCampoEstadosTerminais + 1));
-                            sb.append("): ");
-                            sb.append(listaEstados);
-                            sb.append("\n");
-                            erro = true;
-                        }
-                        
+
+                    if (!alterado) {
+                        sb.append("\u22B3 Campo 'EstadoTerminal' incorreto (linha ");
+                        sb.append(String.valueOf(indiceCampoEstadosTerminais + 1));
+                        sb.append("): ");
+                        sb.append(rotulo);
+                        sb.append("\n");
+                        erro = true;
                     }
-                    
+
                 }
                 
             } else {

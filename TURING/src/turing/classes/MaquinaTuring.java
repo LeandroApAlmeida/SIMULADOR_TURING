@@ -9,8 +9,8 @@ public interface MaquinaTuring {
     
     public void executarPasso();
     
-    public void adicionarOuvinte(OuvinteMaqTuring ouvinte);
+    public void adicionarOuvinte(OuvinteEtapa ouvinte);
     
-    public boolean removerOuvinte(OuvinteMaqTuring ouvinte);
+    public boolean removerOuvinte(OuvinteEtapa ouvinte);
     
 }

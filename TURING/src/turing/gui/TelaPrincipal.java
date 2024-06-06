@@ -42,13 +42,13 @@ import turing.classes.MaquinaMultifitas;
 import turing.classes.MaquinaPadrao;
 import turing.classes.MaquinaTuring;
 import turing.classes.Modelo;
-import turing.classes.OuvinteMaqTuring;
 import turing.classes.Simbolo;
 import turing.classes.Transicao;
 import static turing.gui.ComponenteNumeroLinha.ALINHAMENTO_CENTRALIZADO;
 import static turing.gui.Constantes.formatarSimbolos;
+import turing.classes.OuvinteEtapa;
 
-public class TelaPrincipal extends javax.swing.JFrame implements OuvinteMaqTuring,
+public class TelaPrincipal extends javax.swing.JFrame implements OuvinteEtapa,
 OuvinteTemporizador {
 
     
@@ -1831,9 +1831,9 @@ OuvinteTemporizador {
     
     
     @Override
-    public void atualizarMaqTuring(Estado estadoAtual, Fita[] fitas, 
-    Map<Integer, Integer> cursores, int indiceTransicaoAtual,
-    int numeroPassos, boolean cadeiaAceita, boolean cadeiaRejeitada) {
+    public void atualizarEtapa(Estado estadoAtual, Fita[] fitas, 
+    Map<Integer, Integer> cursores, int indiceTransicaoAtual, int numeroPassos,
+    boolean cadeiaAceita, boolean finalizado) {
         
         configurarFitas(fitas, cursores);
         
@@ -1854,36 +1854,40 @@ OuvinteTemporizador {
         jtfEstadoAtual.setText(estadoAtual.toString());
         jtfNumPassos.setText(String.valueOf(numeroPassos));
         
-        if (cadeiaAceita) {
-            emExecucao = false;
-            if (timer != null) timer.cancel();
-            jtfResultado.setText("ACEITA");
-            jbExecutar.setEnabled(false);
-            jbPausar.setEnabled(false);
-            jbExecutarPasso.setEnabled(false);
-            jbVelocidade.setEnabled(false);
-            jtfPalavra.setForeground(new Color(0,128,0));
-            Font font = new Font(
-                jtfPalavra.getFont().getName(),
-                Font.BOLD,
-                jtfPalavra.getFont().getSize()
-            );
-            jtfPalavra.setFont(font);
-        } else if (cadeiaRejeitada) {
-            emExecucao = false;
-            if (timer != null) timer.cancel();
-            jtfResultado.setText("REJEITA");
-            jbExecutar.setEnabled(false);
-            jbPausar.setEnabled(false);
-            jbExecutarPasso.setEnabled(false);
-            jbVelocidade.setEnabled(false);
-            jtfPalavra.setForeground(Color.red);
-            Font font = new Font(
-                jtfPalavra.getFont().getName(),
-                Font.BOLD,
-                jtfPalavra.getFont().getSize()
-            );
-            jtfPalavra.setFont(font);
+        if (finalizado) {
+        
+            if (cadeiaAceita) {
+                emExecucao = false;
+                if (timer != null) timer.cancel();
+                jtfResultado.setText("ACEITA");
+                jbExecutar.setEnabled(false);
+                jbPausar.setEnabled(false);
+                jbExecutarPasso.setEnabled(false);
+                jbVelocidade.setEnabled(false);
+                jtfPalavra.setForeground(new Color(0,128,0));
+                Font font = new Font(
+                    jtfPalavra.getFont().getName(),
+                    Font.BOLD,
+                    jtfPalavra.getFont().getSize()
+                );
+                jtfPalavra.setFont(font);
+            } else {
+                emExecucao = false;
+                if (timer != null) timer.cancel();
+                jtfResultado.setText("REJEITA");
+                jbExecutar.setEnabled(false);
+                jbPausar.setEnabled(false);
+                jbExecutarPasso.setEnabled(false);
+                jbVelocidade.setEnabled(false);
+                jtfPalavra.setForeground(Color.red);
+                Font font = new Font(
+                    jtfPalavra.getFont().getName(),
+                    Font.BOLD,
+                    jtfPalavra.getFont().getSize()
+                );
+                jtfPalavra.setFont(font);
+            } 
+        
         } else {
             jtfResultado.setForeground(Color.BLACK);
             jtfResultado.setText("EXECUTANDO");
