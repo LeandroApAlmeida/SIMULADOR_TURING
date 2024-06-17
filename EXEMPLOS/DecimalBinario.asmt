@@ -1,0 +1,88 @@
+// Programa para conversão de número decimal em binário
+
+
+[Descricao]
+
+	Nome =  Conversor de decimal para binário
+
+
+[Parametros]
+
+	AlfabetoEntrada = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	AlfabetoAuxiliar = {}
+	Estados = {qInit, qFin, qHalve, qAddHalf, qJump, qRemoveZero, qGoBack, qRest, qRest0, qSetRest0, qRest1, qSetRest1, qContinue, qContinue2}
+	EstadoInicial = qInit
+	EstadosTerminais = {qFin}
+	NumeroFitas = 1
+
+
+[Programa]
+
+	qInit, 0 = qInit, 0, D
+	qInit, 1 = qInit, 1, D
+	qInit, 2 = qInit, 2, D
+	qInit, 3 = qInit, 3, D
+	qInit, 4 = qInit, 4, D
+	qInit, 5 = qInit, 5, D
+	qInit, 6 = qInit, 6, D
+	qInit, 7 = qInit, 7, D
+	qInit, 8 = qInit, 8, D
+	qInit, 9 = qInit, 9, D
+	qInit, _ = qHalve, 0, E
+	qHalve, 0 = qHalve, 0, E
+	qHalve, 1 = qAddHalf, 0, D
+	qHalve, 2 = qHalve, 1, E
+	qHalve, 3 = qAddHalf, 1, D
+	qHalve, 4 = qHalve, 2, E
+	qHalve, 5 = qAddHalf, 2, D
+	qHalve, 6 = qHalve, 3, E
+	qHalve, 7 = qAddHalf, 3, D
+	qHalve, 8 = qHalve, 4, E
+	qHalve, 9 = qAddHalf, 4, D
+	qAddHalf, 0 = qJump, 5, E
+	qAddHalf, 1 = qJump, 6, E
+	qAddHalf, 2 = qJump, 7, E
+	qAddHalf, 3 = qJump, 8, E
+	qAddHalf, 4 = qJump, 9, E
+	qJump, 0 = qHalve, 0, E
+	qJump, 1 = qHalve, 1, E
+	qJump, 2 = qHalve, 2, E
+	qJump, 3 = qHalve, 3, E
+	qJump, 4 = qHalve, 4, E
+	qHalve, _ = qRemoveZero, _, D
+	qRemoveZero, 0 = qRemoveZero, _, D
+	qRemoveZero, 1 = qGoBack, 1, D
+	qRemoveZero, 2 = qGoBack, 2, D
+	qRemoveZero, 3 = qGoBack, 3, D
+	qRemoveZero, 4 = qGoBack, 4, D
+	qRemoveZero, 5 = qGoBack, 5, D
+	qRemoveZero, 6 =  qGoBack, 6, D
+	qRemoveZero, 7 = qGoBack, 7, D
+	qRemoveZero, 8 = qGoBack, 8, D
+	qRemoveZero, 9 = qGoBack, 9, D
+	qRemoveZero, _ = qFin, _, D
+	qGoBack, 0 = qGoBack, 0, D
+	qGoBack, 1 = qGoBack, 1, D
+	qGoBack, 2 = qGoBack, 2, D
+	qGoBack, 3 = qGoBack, 3, D
+	qGoBack, 4 = qGoBack, 4, D
+	qGoBack, 5 = qGoBack, 5, D
+	qGoBack, 6 = qGoBack, 6, D
+	qGoBack, 7 = qGoBack, 7, D
+	qGoBack, 8 = qGoBack, 8, D
+	qGoBack, 9 = qGoBack, 9, D
+	qGoBack, _ = qRest, _, E
+	qRest, 0 = qRest0, _, D
+	qRest0, _ = qSetRest0, _, D
+	qRest, 5 = qRest1, _, D
+	qRest1, _ = qSetRest1, _, D
+	qSetRest0, 0 = qSetRest0, 0, D
+	qSetRest0, 1 = qSetRest0, 1, D
+	qSetRest1, 0 = qSetRest1, 0, D
+	qSetRest1, 1 = qSetRest1, 1, D
+	qSetRest0, _ = qContinue, 0, E
+	qSetRest1, _ = qContinue, 1, E
+	qContinue, 0 = qContinue, 0, E
+	qContinue, 1 = qContinue, 1, E
+	qContinue, _ = qContinue2, _, E
+	qContinue2, _ = qHalve, 0, E

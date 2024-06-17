@@ -9,7 +9,6 @@ import static turing.classes.Compilador.CAMPO_COMENTARIO;
 import static turing.classes.Compilador.CAMPO_ESTADOS;
 import static turing.classes.Compilador.CAMPO_ESTADOS_TERMINAIS;
 import static turing.classes.Compilador.CAMPO_ESTADO_INICIAL;
-import static turing.classes.Compilador.CAMPO_MODELO;
 import static turing.classes.Compilador.CAMPO_NOME;
 import static turing.classes.Compilador.CAMPO_NUMERO_FITAS;
 import static turing.classes.Compilador.SIMBOLO_ESPACO;

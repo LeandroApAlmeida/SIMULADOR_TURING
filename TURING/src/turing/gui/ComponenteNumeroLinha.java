@@ -17,8 +17,6 @@ import javax.swing.text.BadLocationException;
 
 public final class ComponenteNumeroLinha extends JComponent {
 
-    
-    static final long serialVersionUID = 432143214L;
 
     public static final int ALINHAMENTO_ESQUERDA = 0;
     public static final int ALINHAMENTO_DIREITA = 1;

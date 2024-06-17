@@ -7,6 +7,71 @@ import java.util.Map;
 import static turing.classes.DirecaoMovimento.DIREITA;
 import static turing.classes.DirecaoMovimento.ESQUERDA;
 
+/**
+ * Classe que implementa um modelo de Máquina de Turing com Múltiplas Fitas. O
+ * modelo com múltiplas fitas tem uma Unidade de Controle, e para cada fita,
+ * uma Cabeça de Leitura/Escrita. Cada fita do modelo é infinita à direita e
+ * à esquerda.
+ * 
+ * <br><br>
+ * 
+ * Matemáticamente, ele é representado como:
+ * 
+ * <br><br>
+ * 
+ * <BLOCKQUOTE>
+ * 
+ * M = (Σ, Q, δ, q0, F, V, β, ⊛)
+ * 
+ * </BLOCKQUOTE>
+ * 
+ * <br>
+ * 
+ * Onde:
+ * 
+ * <br><br>
+ * 
+ * 
+ * <BLOCKQUOTE>
+ * 
+ * <b>Σ</b> Alfabeto de símbolos de entrada;
+ * 
+ * <br><br>
+ * 
+ * <b>Q</b> Conjunto de estados possíveis da máquina;
+ * 
+ * <br><br>
+ * 
+ * <b>δ</b> Função de transição ou programa, tal que:
+ * 
+ * 
+ * 
+ * <br><br>
+ * 
+ * <b>q<sub>0</sub></b>: Estado inicial da máquina;
+ * 
+ * <br><br>
+ * 
+ * <b>F</b> Conjunto dos estados finais;
+ * 
+ * <br><br>
+ * 
+ * <b>V</b> Alfabeto auxiliar;
+ * 
+ * <br><br>
+ * 
+ * <b>β</b> Símbolo especial branco;
+ * 
+ * <br><br>
+ * 
+ * <b>⊛</b> Símbolo especial marcador de início da fita.
+ * 
+ * </BLOCKQUOTE>
+ * 
+ * 
+ * @author Leandro Ap. de Almeida
+ * @since 1.0
+ */
 public class MaquinaMultifitas implements MaquinaTuring {
 
     
@@ -16,7 +81,7 @@ public class MaquinaMultifitas implements MaquinaTuring {
     
     private final ConjuntoEstados conjuntoEstados;
     
-    private final List<OuvinteEtapa> ouvintes;
+    private final List<OuvinteEtapaSimulacao> ouvintes;
     
     private Fita[] fitas;
     
@@ -116,9 +181,9 @@ public class MaquinaMultifitas implements MaquinaTuring {
             emExecucao = false;
         }
 
-        for (OuvinteEtapa ouvinte : ouvintes) {
+        for (OuvinteEtapaSimulacao ouvinte : ouvintes) {
             
-            ouvinte.atualizarEtapa(
+            ouvinte.atualizarEtapaSimulacao(
                 estadoAtual,
                 fitas, 
                 getIndicesRelativos(),
@@ -204,9 +269,9 @@ public class MaquinaMultifitas implements MaquinaTuring {
         
         }
         
-        for (OuvinteEtapa ouvinte : ouvintes) {
+        for (OuvinteEtapaSimulacao ouvinte : ouvintes) {
             
-            ouvinte.atualizarEtapa(
+            ouvinte.atualizarEtapaSimulacao(
                 estadoAtual,
                 fitas,
                 getIndicesRelativos(),
@@ -219,16 +284,76 @@ public class MaquinaMultifitas implements MaquinaTuring {
         }
         
     }
+    
+    
+    @Override
+    public int getNumeroFitas() {
+        return numeroFitas;
+    }
 
     
     @Override
-    public void adicionarOuvinte(OuvinteEtapa ouvinte) {
+    public FuncaoTransicao getFuncaoTransicao() {
+        return funcaoTransicao;
+    }
+
+    
+    @Override
+    public AlfabetoFita getAlfabetoFita() {
+        return alfabetoFita;
+    }
+
+    
+    @Override
+    public ConjuntoEstados getConjuntoEstados() {
+        return conjuntoEstados;
+    }
+
+    
+    @Override
+    public Fita[] getFitas() {
+        return fitas;
+    }
+
+    
+    @Override
+    public Map<Integer, Integer> getCursores() {
+        return cabecasLeitura;
+    }
+
+    
+    @Override
+    public Estado getEstadoAtual() {
+        return estadoAtual;
+    }
+
+    
+    @Override
+    public int getNumeroPassos() {
+        return numeroPassos;
+    }
+
+    
+    @Override
+    public String getPalavra() {
+        return palavra;
+    }
+
+    
+    @Override
+    public boolean isAceita() {
+        return aceita;
+    }
+    
+
+    @Override
+    public void adicionarOuvinte(OuvinteEtapaSimulacao ouvinte) {
         ouvintes.add(ouvinte);
     }
 
     
     @Override
-    public boolean removerOuvinte(OuvinteEtapa ouvinte) {
+    public boolean removerOuvinte(OuvinteEtapaSimulacao ouvinte) {
         return ouvintes.remove(ouvinte);
     }
 

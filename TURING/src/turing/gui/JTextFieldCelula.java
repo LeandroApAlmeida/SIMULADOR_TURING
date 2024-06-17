@@ -37,7 +37,7 @@ public class JTextFieldCelula extends JTextField {
         super.paintComponent(graphics);
         if (icone != null) {
             Insets insets = borda.getBorderInsets(this);
-            icone.paintIcon(this, graphics, insets.left + 3, insets.top + 4);
+            icone.paintIcon(this, graphics, insets.left + 1, insets.top + 2);
         }
     }
 

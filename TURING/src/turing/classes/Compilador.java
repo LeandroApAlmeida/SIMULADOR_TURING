@@ -58,7 +58,7 @@ public final class Compilador {
     /**
      * Verificar se a linha inicia com o rótulo do campo pesquisado.
      * 
-     * @param linha linha
+     * @param linha linha de texto.
      * 
      * @param campo campo pesquisado.
      * 
@@ -94,7 +94,7 @@ public final class Compilador {
     /**
      * Remover todos os espaços e tabulações em uma linha.
      * 
-     * @param linha linha.
+     * @param linha linha de texto.
      * 
      * @return texto da linha, sem espaços e tabulações.
      */
@@ -103,32 +103,42 @@ public final class Compilador {
     }
     
     
-    private String[] getElementosConjunto(String token) {
-        
+    /**
+     * Obter os elementos inscritos em notação de conjunto. Um conjunto pode
+     * ser vazio, ter apenas um elemento, ou múltiplos elementos.
+     * 
+     * <br><br>
+     * 
+     * Em caso de mais de um elemento no conjunto, cada um deve estar separado
+     * por vírgula, da seguinte forma:
+     * 
+     * <br><br>
+     * 
+     * <BLOCKQUOTE>
+     * { a, b, c, d, 1, 2, 3 } 
+     * </BLOCKQUOTE>
+     * 
+     * @param linha linha de texto.
+     * 
+     * @return Elementos do conjunto. Eventualmente pode retornar um array vazio.
+     */
+    private String[] getElementosConjunto(String linha) { 
         String[] listaItens = null;
-        
-        token = normalizar(token);
-
-        if (token.startsWith("{") && token.endsWith("}")) {
-
-            token = token.substring(token.indexOf("{") + 1, token.indexOf("}"));
-
-            if (token.contains(",")) {
-                listaItens = token.split(",");
+        linha = normalizar(linha);
+        if (linha.startsWith("{") && linha.endsWith("}")) {
+            linha = linha.substring(linha.indexOf("{") + 1, linha.indexOf("}"));
+            if (linha.contains(",")) {
+                listaItens = linha.split(",");
             } else {
-                
-                if (!token.isEmpty()) {
+                if (!linha.isEmpty()) {
                     listaItens = new String[1];
-                    listaItens[0] = token;
+                    listaItens[0] = linha;
                 } else {
                     listaItens = new String[0];
                 }
             }
-
         }
-        
-        return listaItens;
-            
+        return listaItens;    
     }
     
     
@@ -148,17 +158,17 @@ public final class Compilador {
      * 
      * </ol>
      * 
-     * @param str string.
+     * @param linha linha de texto.
      * 
      * @return Caractere do símbolo do alfabeto, ou null, caso não seja um 
      * símbolo válido.
      */
-    private Character getSimbolo(String str) {
-        if (str.length() == 1) {
-            return str.charAt(0);
+    private Character getSimbolo(String linha) {
+        if (linha.length() == 1) {
+            return linha.charAt(0);
         } else {
             Character caractere = null;
-            switch (str) {
+            switch (linha) {
                 case SIMBOLO_ESPACO -> caractere = ' ';
                 case SIMBOLO_VIRGULA -> caractere = ',';
             }
@@ -193,7 +203,7 @@ public final class Compilador {
             String[] ladoDireito = tokens[1].split(",");
             
             if ((ladoEsquerdo.length == numeroFitas + 1) && 
-            (ladoDireito.length == ((2*numeroFitas) + 1))) {
+            (ladoDireito.length == ((2 * numeroFitas) + 1))) {
                 
                 Estado estadoInicial = conjuntoEstados.getEstado(ladoEsquerdo[0]);
                 Estado estadoFinal = conjuntoEstados.getEstado(ladoDireito[0]);
@@ -218,8 +228,7 @@ public final class Compilador {
                             ladoDireito[i + 1 + numeroFitas]
                         );
 
-                        if (simboloLido != null && simboloEscrito != null &&
-                        direcao != null) {
+                        if (simboloLido != null && simboloEscrito != null && direcao != null) {
                             parametrosFita.add(
                                 new ParametrosFita(
                                     simboloLido,
@@ -262,6 +271,7 @@ public final class Compilador {
     /**
      * Traduzir o código do programa em instruções para a montagem de uma máquina
      * de Turing, retornadas na instância da classe {@link ConfigMaqTuring}.
+     * 
      * <br><br>
      * 
      * Para obter as instruções, o compilador fará a validação do texto do código
@@ -663,11 +673,9 @@ public final class Compilador {
         }
         
         // A partir deste ponto, recupera os valores de cada campo de cada
-        // seção do código do programa.
-        
+        // seção do código do programa. 
         
         // 1. Seção [Descricao]
-        
         
         // [Descricao]/Nome: Obtém o nome da Máquina de Turing.
 
@@ -679,11 +687,9 @@ public final class Compilador {
         } else {
             nome = "";
         }
-        
-        
+
         // 2. Seção [Parametros].
-        
-        
+
         // [Parametros]/AlfabetoEntrada: Obtém o Alfabeto de Entrada.
         
         linha = normalizar(linhas[indiceCampoAlfabetoEntrada]);
@@ -806,7 +812,7 @@ public final class Compilador {
                 for (String estado : listaEstados) {
 
                     if (Estado.rotuloValido(estado)) {
-                        conjuntoEstados.inserirEstado(new Estado(estado, false, false));
+                        conjuntoEstados.inserirEstado(new Estado(estado));
                     } else {
                         sb.append("\u22B3 Rótulo do estado inválido (linha ");
                         sb.append(String.valueOf(indiceCampoEstados + 1));
@@ -929,11 +935,9 @@ public final class Compilador {
             sb.append(")\n");
             erro = true;
         }
-        
-        
+
         // 3. Seção [programa]
-        
-        
+
         // Recupera o programa da máquina.
         
         for (int i = indiceSecaoPrograma + 1; i < linhas.length; i++) {

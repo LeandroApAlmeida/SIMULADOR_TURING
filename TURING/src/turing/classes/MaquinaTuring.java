@@ -1,5 +1,7 @@
 package turing.classes;
 
+import java.util.Map;
+
 
 public interface MaquinaTuring {
     
@@ -9,8 +11,28 @@ public interface MaquinaTuring {
     
     public void executarPasso();
     
-    public void adicionarOuvinte(OuvinteEtapa ouvinte);
+    public int getNumeroFitas();
     
-    public boolean removerOuvinte(OuvinteEtapa ouvinte);
+    public FuncaoTransicao getFuncaoTransicao();
+
+    public AlfabetoFita getAlfabetoFita();
+
+    public ConjuntoEstados getConjuntoEstados();
+
+    public Fita[] getFitas();
+
+    public Map<Integer, Integer> getCursores();
+
+    public Estado getEstadoAtual();
+    
+    public int getNumeroPassos();
+    
+    public String getPalavra();
+    
+    public boolean isAceita();
+    
+    public void adicionarOuvinte(OuvinteEtapaSimulacao ouvinte);
+    
+    public boolean removerOuvinte(OuvinteEtapaSimulacao ouvinte);
     
 }

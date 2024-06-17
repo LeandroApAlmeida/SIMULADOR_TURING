@@ -43,7 +43,9 @@ public class Main {
      * <br><br>
      * 
      * <BLOCKQUOTE>
+     * 
      * > java.exe -jar "TURING.jar" "D:\TesteTuring.asmt"
+     * 
      * </BLOCKQUOTE>
      * 
      * <br>

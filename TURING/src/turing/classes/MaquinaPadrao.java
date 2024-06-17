@@ -1,15 +1,21 @@
 package turing.classes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import static turing.classes.DirecaoMovimento.DIREITA;
 import static turing.classes.DirecaoMovimento.ESQUERDA;
 
 
+/**
+ * | a | b | c | # | _ | _ | _ | # | _ | _ | _ |
+ * @author leand
+ */
 public class MaquinaPadrao implements MaquinaTuring {
 
     
-    private final Fita fita;
+    private Fita fita;
     
     private final AlfabetoFita alfabetoFita;
     
@@ -19,8 +25,11 @@ public class MaquinaPadrao implements MaquinaTuring {
     
     private final Map<Integer, Integer> cursorSecao;
     
+    private final List<OuvinteEtapaSimulacao> ouvintes;
     
     private int secaoAtual;
+    
+    private int numeroSecoes;
     
     private Estado estadoAtual;
     
@@ -28,13 +37,20 @@ public class MaquinaPadrao implements MaquinaTuring {
 
     
     public MaquinaPadrao(AlfabetoFita alfabetoFita, ConjuntoEstados conjuntoEstados,
-    FuncaoTransicao funcaoTransicao) {
-        this.alfabetoFita = alfabetoFita;   
-        this.conjuntoEstados = conjuntoEstados;
-        this.funcaoTransicao = funcaoTransicao;     
-        this.fita = new Fita(alfabetoFita, true, 0, 0);
-        this.cursorSecao = new HashMap<>();
-        this.secaoAtual = 0;
+    FuncaoTransicao funcaoTransicao, int numeroSecoes) throws Exception {
+        if (numeroSecoes > 0) {
+            this.alfabetoFita = alfabetoFita;   
+            this.conjuntoEstados = conjuntoEstados;
+            this.funcaoTransicao = funcaoTransicao;
+            this.numeroSecoes = numeroSecoes;
+            this.cursorSecao = new HashMap<>();
+            this.ouvintes = new ArrayList<>();
+            this.secaoAtual = 0;
+        } else {
+            throw new Exception(
+                "Número de fitas deve ser maior ou igual a 1."
+            );
+        }
     }
     
 
@@ -43,7 +59,29 @@ public class MaquinaPadrao implements MaquinaTuring {
         
         estadoAtual = conjuntoEstados.getEstadoInicial();
         
+        fita = new Fita(
+            alfabetoFita,
+            true,
+            (palavra.length() * numeroSecoes) + numeroSecoes,
+            0
+        );
+        
         fita.iniciar(palavra);
+                
+        if (numeroSecoes > 1) {
+        
+            int tamanhoSecao = palavra.length();
+            
+            for (int i = 1; i <= numeroSecoes; i++) {
+                
+                fita.escrever(
+                    i * tamanhoSecao,
+                    alfabetoFita.getSimboloDelimitador()
+                );
+                
+            }
+            
+        }
         
         if (palavra.contains(String.valueOf(AlfabetoFita.DELIMITADOR_SECAO))) {
             
@@ -91,19 +129,72 @@ public class MaquinaPadrao implements MaquinaTuring {
         }
         
     }
-
+    
+    
     
     @Override
-    public void adicionarOuvinte(OuvinteEtapa ouvinte) {
-        
+    public void adicionarOuvinte(OuvinteEtapaSimulacao ouvinte) {
+        ouvintes.add(ouvinte);
     }
 
     
     @Override
-    public boolean removerOuvinte(OuvinteEtapa ouvinte) {
-        return true;
+    public boolean removerOuvinte(OuvinteEtapaSimulacao ouvinte) {
+        return ouvintes.remove(ouvinte);
+    }
+
+    @Override
+    public FuncaoTransicao getFuncaoTransicao() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public AlfabetoFita getAlfabetoFita() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public ConjuntoEstados getConjuntoEstados() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Fita[] getFitas() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Map<Integer, Integer> getCursores() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Estado getEstadoAtual() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getPalavra() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public int getNumeroPassos() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
-
     
+    
+
+    @Override
+    public int getNumeroFitas() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean isAceita() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+
 }

@@ -2,9 +2,9 @@ package turing.classes;
 
 import java.util.Map;
 
-public interface OuvinteEtapa {
+public interface OuvinteEtapaSimulacao {
     
-    public void atualizarEtapa(Estado estadoAtual, Fita[] fitas, 
+    public void atualizarEtapaSimulacao(Estado estadoAtual, Fita[] fitas, 
     Map<Integer, Integer> cursores, int indiceTransicaoAtual, 
     int numeroPassos, boolean cadeiaAceita, boolean finalizado);
     

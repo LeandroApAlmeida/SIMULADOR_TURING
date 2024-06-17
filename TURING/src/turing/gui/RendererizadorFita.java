@@ -10,8 +10,9 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import turing.classes.AlfabetoFita;
 import turing.classes.Fita;
-import static turing.gui.Constantes.COR_CURSOR_FITA;
-import static turing.gui.Constantes.formatarSimbolos;
+import static turing.gui.Constantes.CARACTER_CEL_PIVO;
+import static turing.gui.Constantes.CARACTER_CURSOR;
+import static turing.gui.Formatacao.formatarSimbolos;
 
 /**
  *
@@ -27,14 +28,18 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
     private Fita fita;
 
     
-    public RendererizadorFita(Fita fita) {
+    public RendererizadorFita(Fita fita, boolean iconePadrao) {
         
         this.fita = fita;
         
         branco = String.valueOf(AlfabetoFita.BRANCO);
         
         try {
-            icone = new ImageIcon(getClass().getResource("/turing/icones/cursor_icon_2.png"));
+            if (iconePadrao) {
+                icone = new ImageIcon(getClass().getResource("/turing/icones/cursor_icon_2.png"));
+            } else {
+                icone = new ImageIcon(getClass().getResource("/turing/icones/cursor_icon_13.png"));
+            }
         } catch (Exception ex) {
             icone = null;
         }
@@ -53,11 +58,10 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
         textField.setFont(table.getFont());
         textField.setOpaque(true);
         String text = (String)value;
-       
-        
+
         if (text != null) {
         
-            if (text.contains("*")) {
+            if (text.contains(CARACTER_CURSOR)) {
                 
                 textField.setForeground(Color.BLACK);
                 
@@ -69,9 +73,9 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
                 
                 textField.setFont(font);
                 
-                text = formatarSimbolos(text.replace("*", ""));
+                text = formatarSimbolos(text.replace(CARACTER_CURSOR, ""));
                 
-                textField.setBackground(COR_CURSOR_FITA);
+                textField.setBackground(Color.WHITE);
                 textField.setText(text);
                 textField.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
                 
@@ -81,6 +85,19 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
                 
             } else {
                 
+                if (text.contains(CARACTER_CEL_PIVO)) {
+                    textField.setBorder(
+                        BorderFactory.createLineBorder(
+                            Color.BLUE,
+                            1,
+                            false
+                        )
+                    );
+                    text = text.replace(CARACTER_CEL_PIVO, "");
+                } else {
+                    textField.setBorder(BorderFactory.createEmptyBorder());
+                }
+                
                 if (text.contains(branco)) {
                     textField.setForeground(new Color(220, 220, 220));
                 }
@@ -88,18 +105,8 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
                 text = formatarSimbolos(text);
                 
                 textField.setBackground(Color.WHITE);
+
                 textField.setText(text);
-                
-                if (fita != null) {
-                    if (column != fita.getCelulaPivo()) {
-                        textField.setBorder(BorderFactory.createEmptyBorder());
-                    } else {
-                        //textField.setBorder(BorderFactory.createSoftBevelBorder(2));
-                        textField.setBorder(BorderFactory.createLineBorder(Color.BLUE, 1, false));
-                    }
-                } else {
-                    textField.setBorder(BorderFactory.createEmptyBorder());
-                }
                 
             }
         

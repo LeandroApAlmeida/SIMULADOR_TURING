@@ -1,0 +1,26 @@
+// Programa que verifica se há um número par de zeros.
+
+
+[Descricao]
+
+	Nome =  Número par de zeros
+
+
+[Parametros]
+
+	AlfabetoEntrada = {0, 1}
+	AlfabetoAuxiliar = {}
+	Estados = {q0, q1, qAccept}
+	EstadoInicial = q0
+	EstadosTerminais = {qAccept}
+	NumeroFitas = 1
+
+
+[Programa]
+
+	q0, 0 = q1, 0, D
+	q1, 0 = q0, 0, D
+	q0, 1 = q0, 1, D
+	q1, 1 = q1, 1, D
+	q0, _ = qAccept, _, P
+	

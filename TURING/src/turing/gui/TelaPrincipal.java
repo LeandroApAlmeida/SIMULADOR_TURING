@@ -24,10 +24,13 @@ import java.util.TimerTask;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
 import javax.swing.undo.UndoManager;
 import turing.arquivo.ArquivoTexto;
 import turing.classes.AlfabetoFita;
@@ -37,65 +40,104 @@ import turing.classes.FuncaoTransicao;
 import turing.classes.Compilador;
 import turing.classes.ConfigMaqTuring;
 import turing.classes.ConjuntoEstados;
+import turing.classes.DirecaoMovimento;
 import turing.classes.Fita;
 import turing.classes.MaquinaMultifitas;
 import turing.classes.MaquinaPadrao;
 import turing.classes.MaquinaTuring;
 import turing.classes.Modelo;
+import static turing.classes.Modelo.MULTIFITAS;
+import static turing.classes.Modelo.PADRAO;
 import turing.classes.Simbolo;
 import turing.classes.Transicao;
 import static turing.gui.ComponenteNumeroLinha.ALINHAMENTO_CENTRALIZADO;
-import static turing.gui.Constantes.formatarSimbolos;
-import turing.classes.OuvinteEtapa;
+import static turing.gui.Constantes.CARACTER_CEL_PIVO;
+import static turing.gui.Constantes.CARACTER_CURSOR;
+import static turing.gui.Formatacao.formatarSimbolos;
+import turing.classes.OuvinteEtapaSimulacao;
+import static turing.gui.Constantes.CELULAS_FITA;
 
-public class TelaPrincipal extends javax.swing.JFrame implements OuvinteEtapa,
-OuvinteTemporizador {
+
+/**
+ * Tela principal do Simulador de Máquina de Turing.
+ * 
+ * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
+ */
+
+public class TelaPrincipal extends javax.swing.JFrame implements OuvinteEtapaSimulacao,
+OuvinteConfigSimulacaoAutomatica {
 
     
+    /**Título da tela.*/
     private final String titulo = "SIMULADOR DE MÁQUINA DE TURING";
     
+    /**Filtro para arquivos do simulador.*/
     private final FileNameExtensionFilter filtroArquivo;
     
+    /**Gerenciador de desfazer/refazer alterações no texto.*/
     private final UndoManager undoManager;
     
+    /**Modelo para a lista do menu popup da seção [Programa] do arquivo.*/
+    private final DefaultListModel<String> modeloLista;
+    
+    /**Alfabeto da Fita.*/
     private AlfabetoFita alfabetoFita;
     
+    /**Conjunto dos Estados.*/
     private ConjuntoEstados conjuntoEstados;
     
+    /**Função de Transição.*/
     private FuncaoTransicao funcaoTransicao;
     
+    /**Modelo de Máquina de Turing simulado.*/
     private Modelo modelo;
     
+    /**Instância do modelo de Máquina de Turing simulado.*/
     private MaquinaTuring maquinaTuring;
     
+    /**Arquivo aberto no editor de código.*/
     private ArquivoTexto arquivo;
     
+    /**Timer para simulação automática.*/
     private Timer timer;
     
+    /**Tempo default de simulação automática.*/
     private int tempoExecucao = 2000;
     
+    /**Nome da Máquina de Turing simulada.*/
     private String nome;
     
+    /**Estatus de arquivo aberto no editor de código.*/
     private boolean arquivoAberto;
     
+    /**Estatus de simulador em execução.*/
     private boolean emExecucao;
     
-    private boolean execucaoAutomatica;
+    /**Estatus de simulação automática.*/
+    private boolean simulacaoAutomatica;
     
+    /**Estatus de simulação automática pausada.*/
     private boolean emPausa;
     
+    /**Estatus de processo de compilação.*/
     private boolean compilando;
     
+    /**Estatus de mudança do texto aberto no editor.*/
     private boolean houveMudancaTexto;
     
+    /**Estatus de compilação pendente.*/
     private boolean compilacaoPendente;
     
+    /**Comprimento do texto salvo no arquivo.*/
     private int comprimentoTextoArquivo;
     
+    /**Comprimento do texto aberto no editor.*/
     private int comprimentoTextoCompilacao;
     
-    private boolean atualizando;
-    
+    /**Controle de entrada no Thread do Timer.*/
+    private boolean atualizandoEtapaSimulacao;
     
     
     public TelaPrincipal() {
@@ -117,22 +159,27 @@ OuvinteTemporizador {
         comprimentoTextoArquivo = 0;
         comprimentoTextoCompilacao = 0;
         nome = "Máquina de Turing";
-        
+		
         filtroArquivo = new FileNameExtensionFilter(
             "Arquivo para Simulador da Máquina de Turing (*.asmt)",
             "asmt"
         );
-        
-        setTitle(titulo);
-        
-        jtFitas.getTableHeader().setUI(null);
-        
+	
         Font font = jtfSobre.getFont();
         Map attributes = font.getAttributes();
         attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
         jtfSobre.setFont(font.deriveFont(attributes));
-
-        configurarControles();
+		
+        modeloLista = new DefaultListModel<>();
+        jtFitas.getTableHeader().setUI(null);
+        jppAutocompletar.add(jpAutocompletar);
+        jlAutocompletar.setModel(modeloLista);
+		
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        
+        setTitle(titulo);
+        
+        configurarControlesSimulador();
         
         configurarEditorTexto();
 
@@ -142,7 +189,7 @@ OuvinteTemporizador {
         listarEstados();
         listarTransicoes();
         
-        gerarScript();
+        gerarCodigoPrograma();
         
         compilarArquivo();
 
@@ -151,11 +198,11 @@ OuvinteTemporizador {
     
     
     
-// Editor de texto do IDE ......................................................    
+// ------------- CONFIGURAÇÃO DO EDITOR DE CÓDIGO DO PROGRAMA --------------- //   
     
     
     /**
-     * Configura o editor de textos do IDE. As configurações aplicadas são
+     * Configura o editor de código do IDE. As configurações aplicadas são
      * visuais (número das linhas à direita) e também de ação, como teclas
      * de atalhos e opção de desfazer/refazer edição de texto.
      */
@@ -172,7 +219,6 @@ OuvinteTemporizador {
         
         jspEditor.setRowHeaderView(componenteLinha);
 
-        
         // Configura os atalhos de teclado do editor:
         //
         // CTRL + S: Salvar o arquivo.
@@ -183,6 +229,7 @@ OuvinteTemporizador {
         // cursor.
         // CTRL + Z: Desfazer edição do texto.
         // CTRL + W: Refazer edição do texto.
+        // CTRL + ESPAÇO: Exibir menu de contexto na função de transição.
         
         jtaEditor.getActionMap().put("salvar_arquivo", new AbstractAction() {
             @Override
@@ -247,7 +294,7 @@ OuvinteTemporizador {
         jtaEditor.getActionMap().put("copiar_texto", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                copiarTextoAreaTransferencia();
+                copiarTextoParaAreaTransferencia();
             }
         });
         
@@ -259,13 +306,25 @@ OuvinteTemporizador {
         jtaEditor.getActionMap().put("colar_texto", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                colarTextoAreaTranferencia();
+                colarTextoDaAreaTranferencia();
             }
         });
         
         jtaEditor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
             KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK),
             "colar_texto"
+        );
+        
+        jtaEditor.getActionMap().put("exibir_menu_transicao", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                exibirMenuTransicao();
+            }
+        });
+        
+        jtaEditor.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+            KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_DOWN_MASK),
+            "exibir_menu_transicao"
         );
         
         // Habilita as ações de desfazer e refazer a digitação no editor.
@@ -276,166 +335,14 @@ OuvinteTemporizador {
     
     
     /**
-     * Desfazer as alterações no texto do editor.
-     */
-    private void desfazerAlteracaoTexto() {
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        if (undoManager.canUndo()) {
-            try {
-                undoManager.undo();
-                verificarMudancasTexto();
-            } catch (Exception ex) {
-            }
-        }
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-    }
-    
-    
-    /**
-     * Refazer as alterações no texto do editor.
-     */
-    private void refazerAlteracaoTexto() {
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        if (undoManager.canRedo()) {
-            try {
-                undoManager.redo();
-                verificarMudancasTexto();
-            } catch (Exception ex) {   
-            }
-        }
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-    }
-    
-    
-    /**
-     * Copiar o texto selecionado no editor para a área de transferência.
-     */
-    private void copiarTextoAreaTransferencia() {
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        String myString = jtaEditor.getSelectedText();
-        StringSelection stringSelection = new StringSelection(myString);
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(stringSelection, null);
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-    }
-    
-    
-    /**
-     * Colar o texto da área de transferência para a posição do cursor. Caso
-     * algum texto esteja selecionado, apaga e cola sobre o mesmo.
-     */
-    private void colarTextoAreaTranferencia() {
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        try {
-            Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
-            Clipboard systemClipboard = defaultToolkit.getSystemClipboard();
-            DataFlavor dataFlavor = DataFlavor.stringFlavor;
-            if (systemClipboard.isDataFlavorAvailable(dataFlavor)) {
-                String text = (String) systemClipboard.getData(dataFlavor);
-                jtaEditor.replaceSelection(text);
-                verificarMudancasTexto();
-            }
-        } catch (Exception ex) {
-        }
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-    }
-    
-    
-    /**
-     * Verificar se houve mudanças no texto ainda não salvas no arquivo. Se houve,
-     * exibe o diálogo solicitando ao usuário que sejam salvas as mudanças. Em
-     * caso de o mesmo selecionar <i>Sim</i> (salvar as mudanças no arquivo) ou
-     * <i>Não</i> (não salvar as mudanças no arquivo), a ação que solicitou esta
-     * verificação deve prosseguir, o que é indicado pelo retorno <i>true</i> do
-     * método. Se o usuário selecionar <i>Cancelar</i>, a ação que solicitou a
-     * verificação não deve prosseguir.
-     * @return Se <i>true</i>, a ação que solicitou a verificação deve prosseguir.
-     * Se <i>false</i>, ele deve ser cancelada.
-     */
-    private boolean verificarMudancasTextoProsseguir() {
-        
-        boolean prosseguir = true;
-        
-        if (arquivoAberto) {
-        
-            if (houveMudancaTexto) {
-
-                int opcao = JOptionPane.showConfirmDialog(
-                    this,
-                    "Salvar as alterações no arquivo?",
-                    "Atenção!",
-                    JOptionPane.YES_NO_CANCEL_OPTION
-                );
-
-                if (opcao == JOptionPane.YES_OPTION) {
-
-                    try {
-                        arquivo.gravar(jtaEditor.getText());
-                    } catch (Exception ex) {
-                        prosseguir = false;
-                        JOptionPane.showMessageDialog(
-                            this,
-                            ex.getMessage(),
-                            "Erro",
-                            JOptionPane.OK_OPTION
-                        );
-                    }
-
-                } else if (opcao == JOptionPane.CANCEL_OPTION) {
-
-                    prosseguir = false;
-
-                } 
-
-            }
-        
-        }
-        
-        return prosseguir;
-        
-    }
-    
-    
-    /**
-     * Verificar se houve mudanças no texto deste a última vez que este foi
-     * salvo no arquivo. A verificação é baseada em alguma edição que mudou
-     * momentâneamente o tamanho do texto, seja apagando caracteres ou inserindo.
-     */
-    private void verificarMudancasTexto() {
-        
-        int comprimentoAtual = jtaEditor.getText().length();
-        
-        if (compilacaoPendente == false) {
-            if (comprimentoAtual != comprimentoTextoCompilacao) {
-                compilacaoPendente = true;
-                jbCompilar.setEnabled(true);
-                listarEstados();
-                listarSimbolos();
-                listarTransicoes();
-                configurarControlesEditor();
-                configurarControlesExecucao();
-            }
-        }
-        
-        if (houveMudancaTexto == false) {    
-            if (comprimentoAtual != comprimentoTextoArquivo) {
-                houveMudancaTexto = true;
-                jbSalvarArquivo.setEnabled(true);
-            }
-        } 
-        
-    }
-   
-    
-    /**
-     * Abrir um arquivo salvo no editor. Será exibido um diálogo para que o
+     * Abrir um arquivo no editor. Será exibido um diálogo para que o
      * usuário localize o arquivo a ser aberto.
      */
     private void abrirArquivo() {
         
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         
-        if (verificarMudancasTextoProsseguir()) {
+        if (verificarMudancasTextoParaProsseguir()) {
             
             DialogoSeletorArquivos dialogoSeletorArquivos = new DialogoSeletorArquivos(
                 "Abrir Arquivo",
@@ -457,11 +364,21 @@ OuvinteTemporizador {
     }
     
     
+    /**
+     * Abrir o arquivo no editor. É realizada a compilação após a abertura, para
+     * obter os parâmetros para a construção da Máquina de Turing.
+     * 
+     * <br><br>
+     * 
+     * O arquivo é identificado pelo caminho passado como parâmetro para o método.
+     * 
+     * @param file caminho do arquivo.
+     */
     public void abrirArquivo(File file) {
         
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         
-        if (verificarMudancasTextoProsseguir()) {
+        if (verificarMudancasTextoParaProsseguir()) {
 
             fecharArquivo();
 
@@ -588,6 +505,8 @@ OuvinteTemporizador {
         
         comprimentoTextoArquivo = jtaEditor.getText().length();
         
+        jtaEditor.requestFocus();
+        
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
     }
@@ -602,7 +521,7 @@ OuvinteTemporizador {
         
         if (arquivoAberto) {
         
-            if (verificarMudancasTextoProsseguir()) {
+            if (verificarMudancasTextoParaProsseguir()) {
 
                 arquivo = null;
                 alfabetoFita.esvaziar();
@@ -620,7 +539,7 @@ OuvinteTemporizador {
                 
                 jtaEditor.setText("");
 
-                gerarScript();
+                gerarCodigoPrograma();
                 
                 compilarArquivo();
 
@@ -652,7 +571,7 @@ OuvinteTemporizador {
                 
                 compilando = true;
                 
-                configurarControles();
+                configurarControlesSimulador();
 
                 jtaCompilacao.setText("Compilado...");
 
@@ -666,6 +585,14 @@ OuvinteTemporizador {
                     conjuntoEstados = configuracoes.getConjuntoEstados();
                     funcaoTransicao = configuracoes.getFuncaoTransicao();
                     jspNumeroFitas.setValue(configuracoes.getNumeroFitas());
+                    
+                    modeloLista.removeAllElements();
+                    
+                    for (Estado estado : conjuntoEstados) {
+                        modeloLista.addElement(estado.getRotulo());
+                    }
+                    
+                    jlAutocompletar.setModel(modeloLista);
                     
                     if (configuracoes.getNome() != null) {
                         if (!configuracoes.getNome().isEmpty() && 
@@ -700,8 +627,10 @@ OuvinteTemporizador {
                 listarSimbolos();
                 listarTransicoes();
                 
-                configurarControlesEditor();
-                configurarControlesExecucao();
+                configurarBarraFerramentasEditor();
+                configurarBarraFerramentasSimulador();
+                
+                jtaEditor.requestFocus();
                 
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 
@@ -712,7 +641,445 @@ OuvinteTemporizador {
     }
     
     
-    private void configurarControlesEditor() {
+    /**
+     * Desfazer as alterações no texto do editor.
+     */
+    private void desfazerAlteracaoTexto() {
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        if (undoManager.canUndo()) {
+            try {
+                undoManager.undo();
+                verificarMudancasTexto();
+            } catch (Exception ex) {
+            }
+        }
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+    }
+    
+    
+    /**
+     * Refazer as alterações no texto do editor.
+     */
+    private void refazerAlteracaoTexto() {
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        if (undoManager.canRedo()) {
+            try {
+                undoManager.redo();
+                verificarMudancasTexto();
+            } catch (Exception ex) {   
+            }
+        }
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+    }
+    
+    
+    /**
+     * Copiar o texto selecionado no editor para a área de transferência.
+     */
+    private void copiarTextoParaAreaTransferencia() {
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        String myString = jtaEditor.getSelectedText();
+        StringSelection stringSelection = new StringSelection(myString);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+    }
+    
+    
+    /**
+     * Colar o texto da área de transferência para a posição do cursor. Caso
+     * algum texto esteja selecionado, apaga e cola sobre o mesmo.
+     */
+    private void colarTextoDaAreaTranferencia() {
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        try {
+            Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
+            Clipboard systemClipboard = defaultToolkit.getSystemClipboard();
+            DataFlavor dataFlavor = DataFlavor.stringFlavor;
+            if (systemClipboard.isDataFlavorAvailable(dataFlavor)) {
+                String text = (String) systemClipboard.getData(dataFlavor);
+                jtaEditor.replaceSelection(text);
+                verificarMudancasTexto();
+            }
+        } catch (Exception ex) {
+        }
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+    }
+    
+    
+    /**
+     * Verificar se houve mudanças no texto ainda não salvas no arquivo. Se houve,
+     * exibe o diálogo solicitando ao usuário que sejam salvas as mudanças. Em
+     * caso de o mesmo selecionar <i>Sim</i> (salvar as mudanças no arquivo) ou
+     * <i>Não</i> (não salvar as mudanças no arquivo), a ação que solicitou esta
+     * verificação deve prosseguir, o que é indicado pelo retorno <i>true</i> do
+     * método. Se o usuário selecionar <i>Cancelar</i>, a ação que solicitou a
+     * verificação não deve prosseguir.
+     * 
+     * @return Se <i>true</i>, a ação que solicitou a verificação deve prosseguir.
+     * Se <i>false</i>, ela deve ser cancelada.
+     */
+    private boolean verificarMudancasTextoParaProsseguir() {
+        
+        boolean prosseguir = true;
+        
+        if (arquivoAberto) {
+        
+            if (houveMudancaTexto) {
+
+                int opcao = JOptionPane.showConfirmDialog(
+                    this,
+                    "Salvar as alterações no arquivo?",
+                    "Atenção!",
+                    JOptionPane.YES_NO_CANCEL_OPTION
+                );
+
+                if (opcao == JOptionPane.YES_OPTION) {
+
+                    try {
+                        arquivo.gravar(jtaEditor.getText());
+                    } catch (Exception ex) {
+                        prosseguir = false;
+                        JOptionPane.showMessageDialog(
+                            this,
+                            ex.getMessage(),
+                            "Erro",
+                            JOptionPane.OK_OPTION
+                        );
+                    }
+
+                } else if (opcao == JOptionPane.CANCEL_OPTION) {
+
+                    prosseguir = false;
+
+                } 
+
+            }
+        
+        }
+        
+        return prosseguir;
+        
+    }
+    
+    
+    /**
+     * Verificar se houve mudanças no texto desde a última vez que este foi
+     * salvo no arquivo. A verificação é baseada em alguma edição que mudou
+     * momentâneamente o tamanho do texto, seja apagando caracteres ou inserindo.
+     */
+    private void verificarMudancasTexto() {
+        
+        int comprimentoAtual = jtaEditor.getText().length();
+        
+        if (compilacaoPendente == false) {
+            if (comprimentoAtual != comprimentoTextoCompilacao) {
+                compilacaoPendente = true;
+                jbCompilar.setEnabled(true);
+                listarEstados();
+                listarSimbolos();
+                listarTransicoes();
+                configurarBarraFerramentasEditor();
+                configurarBarraFerramentasSimulador();
+            }
+        }
+        
+        if (houveMudancaTexto == false) {    
+            if (comprimentoAtual != comprimentoTextoArquivo) {
+                houveMudancaTexto = true;
+                jbSalvarArquivo.setEnabled(true);
+            }
+        }
+        
+    }
+    
+    
+    /**
+     * Contar a quantidade de vírgulas que há na string passada.
+     * 
+     * @param string string a ser analizada.
+     * 
+     * @return Quantidade de vírgulas na string.
+     */
+    private int contarVirgulasString(String string) {
+        int contagem = 0;
+        for (int i = 0; i < string.length(); i++) {
+            if (string.charAt(i) == ',') {
+                contagem++;
+            }
+        }
+        return contagem;
+    }
+    
+    
+    /**
+     * Exibir o menu suspenso quando o cursor de texto está na seção [Programa].
+     * O objetivo do menu é facilitar a digitação das transições, por exemplo,
+     * no caso de estados com rótulo com muitos caracteres, pode-se digitar na
+     * lista os caracteres iniciais que o estado é selecionado.
+     * 
+     * <br><br>
+     * 
+     * Neste método é identificado em que campo da transição o cursor se encontra
+     * e exibe o menu com os valores adequados. Por exemplo, se o cursor se encontra
+     * no campo estado atual, ele exibe a lista de estados. Se se encontra no campo
+     * símbolo lido, ele exibe a lista de símbolos do alfabeto da fita. Caso se
+     * encontre no campo direção do movimento, exibe a lista com as direções. Deste
+     * modo, o menu se torna contextual auxiliando o trabalho de digitação.
+     */
+    private void exibirMenuTransicao() {
+        
+        int posicaoCabecalho = jtaEditor.getText().indexOf(Compilador.CABECALHO_PROGRAMA);
+        
+        if (posicaoCabecalho >= 0) {
+            
+            try {
+
+                int posicaoCursor = jtaEditor.getCaretPosition();
+                int linhaCursor = jtaEditor.getLineOfOffset(posicaoCursor);
+                int linhaCabecalho = jtaEditor.getLineOfOffset(posicaoCabecalho);
+
+                if (linhaCursor > linhaCabecalho) {
+
+                    Document doc = jtaEditor.getDocument();
+                    Element root = doc.getDefaultRootElement();
+                    Element element = root.getElement(linhaCursor);
+                    
+                    int inicioLinha = element.getStartOffset();
+                    int finalLinha = element.getEndOffset();
+                    
+                    int campo;
+                    
+                    String substring = jtaEditor.getText().substring(
+                        inicioLinha,
+                        posicaoCursor
+                    );
+                    
+                    if (substring.contains("=")) {
+                        
+                        int posicaoIgual = -1;
+                        
+                        for (int i = inicioLinha; i < finalLinha; i++) {
+                            if (jtaEditor.getText().charAt(i) == '=') {
+                                posicaoIgual = i;
+                                break;
+                            }
+                        }
+                        
+                        if (posicaoCursor < posicaoIgual) {
+                            int contagem = contarVirgulasString(substring);
+                            if (contagem == 0) {
+                                campo = 1;
+                            } else {
+                                campo = 2;
+                            }
+                        } else {
+                            int numFitas = (int) jspNumeroFitas.getValue();
+                            int contagem = contarVirgulasString(
+                                jtaEditor.getText().substring(
+                                    posicaoIgual,
+                                    posicaoCursor
+                                )
+                            );
+                            if (contagem == 0) {
+                                campo = 1;
+                            } else if (contagem < numFitas + 1) {
+                                campo = 2;
+                            } else {
+                                campo = 3;
+                            }
+                        }
+                        
+                    } else {
+                        int contagem = contarVirgulasString(substring);
+                        if (contagem == 0) {
+                            campo = 1;
+                        } else {
+                            campo = 2;
+                        }
+                    }
+                    
+                    modeloLista.removeAllElements();
+                    
+                    switch (campo) {
+                        
+                        case 1 -> {
+                            for (Estado estado : conjuntoEstados) {
+                                modeloLista.addElement(estado.getRotulo());
+                            }
+                        }
+                        
+                        case 2 -> {
+                            for (Simbolo simbolo : alfabetoFita) {
+                                modeloLista.addElement(simbolo.toString());
+                            }
+                        }
+                        
+                        case 3 -> {
+                            for (DirecaoMovimento direcao : DirecaoMovimento.values()) {
+                                modeloLista.addElement(direcao.getId());
+                            }
+                        }
+                        
+                    }
+                    
+                    Rectangle caretRect = jtaEditor.modelToView(posicaoCursor);
+                    
+                    jppAutocompletar.show(
+                        jtaEditor,
+                        caretRect.x + 10,
+                        caretRect.y
+                    );
+                    
+                    jlAutocompletar.setSelectedIndex(-1);
+                    
+                    jlAutocompletar.scrollRectToVisible(
+                        new Rectangle(jlAutocompletar.getCellBounds(0, 0))
+                    );
+                    
+                    jlAutocompletar.requestFocus();
+
+                }
+
+            } catch (Exception ex) {
+            }
+            
+        }
+        
+    }
+    
+    
+    /**
+     * Inserir o item selecionado no menu suspenso na posição atual do cursor.
+     */
+    private void inserirItemSelecionadoMenuTransicao() {
+        int posicaoAtual = jtaEditor.getCaretPosition();
+        String estadoSelecionado = jlAutocompletar.getSelectedValue();
+        jtaEditor.replaceRange(
+            estadoSelecionado,
+            posicaoAtual, posicaoAtual
+        );
+        jtaEditor.requestFocus();
+        jtaEditor.setCaretPosition(posicaoAtual + estadoSelecionado.length());
+        jppAutocompletar.setVisible(false);
+    }
+    
+    
+    
+    
+// ---------- CONFIGURAÇÃO DOS CONTROLES DO EDITOR E DO SIMULADOR ----------- //
+    
+    
+    /**
+     * Listar os símbolos do alfabeto da fita, preenchendo e configurando a
+     * visualização da lista.
+     */
+    private void listarSimbolos() {
+
+        if (!compilacaoPendente) {
+        
+            List<String> listaSimbolos = new ArrayList(alfabetoFita.getComprimento());
+
+            for (Simbolo simbolo : alfabetoFita) { 
+                StringBuilder sb = new StringBuilder();
+                if (!simbolo.isReservado()) {
+                    if (simbolo.isAuxiliar()) {
+                        sb.append("* ");
+                    } else {
+                        sb.append("  ");
+                    }
+                } else {
+                    sb.append("  ");                
+                }
+                sb.append(formatarSimbolos(simbolo.toString()));
+                listaSimbolos.add(sb.toString());
+            }
+
+            jlAlfabeto.setCellRenderer(new RenderizadorAlfabeto(alfabetoFita));
+            DefaultListModel model = new DefaultListModel();
+            model.addAll(listaSimbolos);
+            jlAlfabeto.setModel(model);
+        
+        }
+        
+        configurarBotoesAlfabetoFita();
+        
+    }
+        
+    
+    /**
+     * Listar os estados do conjunto de estados, preenchendo e configurando a
+     * visualização da lista.
+     */
+    private void listarEstados() {
+
+        if (!compilacaoPendente) {
+        
+            List<String> listaEstados = new ArrayList<>(conjuntoEstados.getComprimento());
+
+            for (Estado estado : conjuntoEstados) {
+                StringBuilder sb = new StringBuilder();
+                
+                if (estado.isTerminal()) {
+                    sb.append("\u229A");
+                }
+
+                if (estado.isInicial()) {
+                    sb.append("\u22B3");
+                }
+
+                if (!estado.isInicial() && !estado.isTerminal()) {
+                    sb.append("  ");
+                } else {
+                    if (!(estado.isInicial() && estado.isTerminal())) {
+                        sb.append(" ");
+                    }
+                }
+
+                sb.append(estado.getRotulo());
+                listaEstados.add(sb.toString());
+            }
+
+            DefaultListModel model = new DefaultListModel();
+            model.addAll(listaEstados);
+            jlEstados.setModel(model);
+        
+        } 
+        
+        configurarBotoesConjuntoEstados();
+        
+    }
+    
+    
+    /**
+     * Listar as transições da função de transição, preenchendo e configurando a
+     * visualização da lista.
+     */
+    private void listarTransicoes() {
+        
+        if (!compilacaoPendente) {
+        
+            List<String> listaTransicoes = new ArrayList<>(funcaoTransicao.getComprimento());
+
+            for (Transicao transicao : funcaoTransicao) {
+                listaTransicoes.add(formatarSimbolos(transicao.toString()));
+            }
+
+            DefaultListModel model = new DefaultListModel();
+            model.addAll(listaTransicoes);
+            jlTransicoes.setModel(model);
+        
+        }
+        
+        configurarBotoesFuncaoTransicao();
+        
+    }
+        
+    
+    /**
+     * Configurar os controles da barra de ferramentas do editor de código.
+     */
+    private void configurarBarraFerramentasEditor() {
         if (compilando || emExecucao) {
             jtaEditor.setEnabled(false);
             jmiCopiar.setEnabled(false);
@@ -741,7 +1108,11 @@ OuvinteTemporizador {
     }
     
     
-    private void configurarControlesExecucao() {
+    /**
+     * Configurar os controles da barra de ferramentas de execução do simulador,
+     * na parte central da tela.
+     */
+    private void configurarBarraFerramentasSimulador() {
         if (compilando) {
             jbExecutar.setEnabled(false);
             jbPausar.setEnabled(false);
@@ -751,6 +1122,9 @@ OuvinteTemporizador {
             jbReiniciar.setEnabled(false);
             jrbPadrao.setEnabled(false);
             jrbMultifita.setEnabled(false);
+            jrbMoverCursor.setEnabled(false);
+            jrbMoverFita.setEnabled(false);
+            jbCarregarPalavra.setEnabled(false);
         } else {
             jtfPalavra.setForeground(Color.BLACK);
             Font font = new Font(
@@ -761,20 +1135,22 @@ OuvinteTemporizador {
             jtfPalavra.setFont(font);
             if (emExecucao) {
                 jtfPalavra.setFocusable(false);
-                jbExecutar.setEnabled(!execucaoAutomatica);
-                jbPausar.setEnabled(!emPausa && execucaoAutomatica);
+                jbExecutar.setEnabled(!simulacaoAutomatica);
+                jbPausar.setEnabled(!emPausa && simulacaoAutomatica);
                 jbParar.setEnabled(true);
                 jbVelocidade.setEnabled(true);
-                jbExecutarPasso.setEnabled(!execucaoAutomatica);
+                jbExecutarPasso.setEnabled(!simulacaoAutomatica);
                 jbCarregarPalavra.setEnabled(false);
                 jtfPalavra.setEditable(false);
                 jbReiniciar.setEnabled(true);
                 jrbPadrao.setEnabled(false);
                 jrbMultifita.setEnabled(false);
+                jrbMoverCursor.setEnabled(false);
+                jrbMoverFita.setEnabled(false);
             } else {
                 jtfPalavra.setFocusable(true);
                 jtfPalavra.setEditable(true);
-                jbCarregarPalavra.setEnabled(true);
+                jbCarregarPalavra.setEnabled(!compilacaoPendente);
                 jbExecutar.setEnabled(false);
                 jbPausar.setEnabled(false);
                 jbParar.setEnabled(false);
@@ -783,12 +1159,17 @@ OuvinteTemporizador {
                 jbReiniciar.setEnabled(false);
                 jrbPadrao.setEnabled(true);
                 jrbMultifita.setEnabled(true);
+                jrbMoverCursor.setEnabled(true);
+                jrbMoverFita.setEnabled(true);
             } 
         } 
     }
     
     
-    private void configurarControlesAlfabeto() {
+    /**
+     * Configurar os botões do alfabeto da fita.
+     */
+    private void configurarBotoesAlfabetoFita() {
         if (compilando || emExecucao) {
             jlAlfabeto.setEnabled(false);
             jbInserirSimbolo.setEnabled(false);
@@ -822,7 +1203,10 @@ OuvinteTemporizador {
     }
     
     
-    private void configurarControlesEstados() {
+    /**
+     * Configurar os botões do conjunto de estados.
+     */
+    private void configurarBotoesConjuntoEstados() {
         if (compilando || emExecucao) {
             jlEstados.setEnabled(false);
             jbInserirEstado.setEnabled(false);
@@ -851,7 +1235,10 @@ OuvinteTemporizador {
     }
     
     
-    private void configurarControlesFTransicao() {
+    /**
+     * Configurar os botões da função de transição.
+     */
+    private void configurarBotoesFuncaoTransicao() {
         if (compilando || emExecucao) {
             jlTransicoes.setEnabled(false);
             jbInserirTransicao.setEnabled(false);
@@ -882,23 +1269,552 @@ OuvinteTemporizador {
         }
     }
 
-    
-    private void configurarControles() {
+
+    /**
+     * Configurar todos os controles do simulador.
+     */
+    private void configurarControlesSimulador() {
         
-        configurarControlesEditor();
+        configurarBarraFerramentasEditor();
         
-        configurarControlesExecucao();
+        configurarBarraFerramentasSimulador();
         
-        configurarControlesAlfabeto();
+        configurarBotoesAlfabetoFita();
         
-        configurarControlesEstados();
+        configurarBotoesConjuntoEstados();
         
-        configurarControlesFTransicao();
+        configurarBotoesFuncaoTransicao();
         
     }
 
     
-    private void gerarScript() {
+    
+    
+// ----------- DEFINIÇÃO DOS PARÂMETROS PARA A MÁQUINA DE TURING ------------ //    
+        
+    
+    /**
+     * Inserir símbolos do alfabeto da fita.
+     */
+    private void inserirSimbolos() {
+        
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
+        if (!compilacaoPendente) {
+        
+            TelaInserirSimbolo telaInserirSimbolo = new TelaInserirSimbolo(
+                this,
+                alfabetoFita
+            );
+            
+            telaInserirSimbolo.setVisible(true);
+
+            if (!telaInserirSimbolo.isCancelado()) {
+                listarSimbolos();
+                gerarCodigoPrograma();
+            }
+        
+        } else {
+            
+            JOptionPane.showMessageDialog(
+                this,
+                "Compile o programa para prosseguir.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+            
+        }
+        
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+               
+    }
+    
+    
+    /**
+     * Remover o símbolo selecionado na lista do alfabeto da fita.
+     */
+    private void removerSimboloSelecionado() {
+        
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
+        if (!compilacaoPendente) {        
+            
+            int indice = jlAlfabeto.getSelectedIndex();
+            
+            if (indice >= 0) {
+                
+                Simbolo simbolo = alfabetoFita.getSimbolo(indice);
+                
+                if (!simbolo.isReservado()) {
+                    alfabetoFita.removerSimbolo(simbolo);
+                    listarSimbolos();
+                    gerarCodigoPrograma();
+                    jlAlfabeto.setSelectedIndex(indice-1);
+                }
+                
+            }
+            
+        } else {
+            
+            JOptionPane.showMessageDialog(
+                this,
+                "Compile o programa para prosseguir.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+            
+        }
+        
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        
+    }
+    
+    
+    /**
+     * Editar o símbolo selecionado na lista do alfabeto da fita.
+     */
+    private void editarSimboloSelecionado() {
+        
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
+        if (!compilacaoPendente) {
+        
+            int indice = jlAlfabeto.getSelectedIndex();
+
+            if (indice >= 0) {
+
+                Simbolo simbolo = alfabetoFita.getSimbolo(indice);
+
+                if (!simbolo.isReservado()) {
+
+                    TelaInserirSimbolo telaInserirSimbolo = new TelaInserirSimbolo(
+                        this,
+                        simbolo,
+                        alfabetoFita
+                    );
+                    
+                    telaInserirSimbolo.setVisible(true);
+
+                    if (!telaInserirSimbolo.isCancelado()) {
+                        listarSimbolos();
+                        gerarCodigoPrograma();
+                        jlAlfabeto.setSelectedIndex(indice);
+                    }
+
+                }
+
+            }
+        
+        } else {
+            
+            JOptionPane.showMessageDialog(
+                this,
+                "Compile o programa para prosseguir.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+            
+        }
+        
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        
+    }
+    
+    
+    /**
+     * Definir o símbolo selecionado na lista do alfabeto da fita como
+     * pertencente ou não ao alfabeto auxiliar.
+     */
+    private void definirSimboloSelecionadoComoAuxiliar() {
+        
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
+        if (!compilacaoPendente) {
+        
+            int indice = jlAlfabeto.getSelectedIndex();
+
+            if (indice >= 0) {
+
+                Simbolo simbolo = alfabetoFita.getSimbolo(indice);
+
+                if (!simbolo.isReservado()) {
+                    alfabetoFita.setSimboloAuxiliar(simbolo, !simbolo.isAuxiliar());
+                    listarSimbolos();
+                    gerarCodigoPrograma();
+                    jlAlfabeto.setSelectedIndex(indice);
+                }
+
+            }
+        
+        } else {
+            
+            JOptionPane.showMessageDialog(
+                this,
+                "Compile o programa para prosseguir.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+            
+        }
+        
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        
+    }
+    
+    
+    /**
+     * Inserir estados.
+     */
+    private void inserirEstados() {
+        
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
+        if (!compilacaoPendente) {
+        
+            TelaInserirEstado telaInserirEstado = new TelaInserirEstado(
+                this,
+                conjuntoEstados
+            );
+            
+            telaInserirEstado.setVisible(true);
+
+            if (!telaInserirEstado.isCancelado()) {
+                listarEstados();
+                gerarCodigoPrograma();
+            }
+        
+        } else {
+            
+            JOptionPane.showMessageDialog(
+                this,
+                "Compile o programa para prosseguir.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+            
+        }
+        
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        
+    }
+    
+    
+    /**
+     * Remover o estado selecionado na lista do conjunto de estados.
+     */
+    private void removerEstadoSelecionado() {
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        if (!compilacaoPendente) {
+            int indice = jlEstados.getSelectedIndex();
+            if (indice >= 0) {
+                Estado estado = conjuntoEstados.getEstado(indice);
+                conjuntoEstados.removerEstado(estado);
+                listarEstados();
+                gerarCodigoPrograma();
+                if (indice > 0) {
+                    jlEstados.setSelectedIndex(indice-1);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(
+                this,
+                "Compile o programa para prosseguir.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+    }
+    
+    
+    /**
+     * Editar o estado selecionado na lista do conjunto de estados.
+     */
+    private void editarEstadoSelecionado() {
+        
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
+        if (!compilacaoPendente) {
+        
+            int indice = jlEstados.getSelectedIndex();
+
+            if (indice >= 0) {
+
+                Estado estado = conjuntoEstados.getEstado(indice);
+
+                TelaInserirEstado telaInserirEstado = new TelaInserirEstado(
+                    this,
+                    estado,
+                    conjuntoEstados
+                );
+                
+                telaInserirEstado.setVisible(true);
+
+                if (!telaInserirEstado.isCancelado()) {
+                    listarEstados();
+                    gerarCodigoPrograma();
+                    jlEstados.setSelectedIndex(indice);
+                }
+
+            }
+        
+        } else {
+            
+            JOptionPane.showMessageDialog(
+                this,
+                "Compile o programa para prosseguir.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+            
+        }
+        
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        
+    }
+    
+    
+    /**
+     * Definir o estado selecionado na lista do conjunto de estados como estado
+     * inicial.
+     */
+    private void definirEstadoSelecionadoComoInicial() {
+        
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
+        if (!compilacaoPendente) {
+
+            int indice = jlEstados.getSelectedIndex();
+
+            if (indice >= 0) {
+
+                Estado estadoInicial = conjuntoEstados.getEstado(indice);
+                
+                conjuntoEstados.setEstadoInicial(estadoInicial);
+                
+                listarEstados();
+
+                gerarCodigoPrograma();
+
+                jlEstados.setSelectedIndex(indice);
+
+            }
+
+        } else {
+            
+            JOptionPane.showMessageDialog(
+                this,
+                "Compile o programa para prosseguir.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+            
+        }
+        
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        
+    }
+    
+    
+    /**
+     * Definir o estado selecionado na lista do conjunto de estados como
+     * estado terminal.
+     */
+    private void definirEstadoSelecionadoComoTerminal() {
+        
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
+        if (!compilacaoPendente) {
+        
+            int indice = jlEstados.getSelectedIndex();
+
+            if (indice >= 0) {
+
+                Estado estado = conjuntoEstados.getEstado(indice);
+                
+                conjuntoEstados.setEstadoTerminal(estado, !estado.isTerminal());
+
+                listarEstados();
+
+                gerarCodigoPrograma();
+
+                jlEstados.setSelectedIndex(indice);
+
+            }
+        
+        } else {
+            
+            JOptionPane.showMessageDialog(
+                this,
+                "Compile o programa para prosseguir.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+            
+        }
+        
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        
+    }
+
+    
+    /**
+     * Inserir uma transição da função de transição.
+     */
+    private void inserirTransicao() {
+     
+        TelaInserirTransicao telaInserirTransicao = new TelaInserirTransicao(
+            this,
+            alfabetoFita,
+            conjuntoEstados,
+            funcaoTransicao,
+            (int)jspNumeroFitas.getValue(),
+            modelo
+        );
+        
+        telaInserirTransicao.setVisible(true);
+        
+        if (telaInserirTransicao.isCancelado()) {
+            
+            listarTransicoes();
+            
+            gerarCodigoPrograma();
+            
+        }
+        
+    }
+    
+    
+    /**
+     * Remover a transição selecionada na lista da função de transição.
+     */
+    private void removerTransicaoSelecionada() {
+        
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
+        if (!compilacaoPendente) {
+        
+            int indice = jlTransicoes.getSelectedIndex();
+
+            if (indice >= 0) {
+                
+                Transicao transicao = funcaoTransicao.getTransicao(indice);
+                
+                if (funcaoTransicao.removerTransicao(transicao)) {
+
+                    listarTransicoes();
+
+                    gerarCodigoPrograma();
+
+                    jlTransicoes.setSelectedIndex(indice - 1);
+                
+                }
+
+            }
+        
+        } else {
+            
+            JOptionPane.showMessageDialog(
+                this,
+                "Compile o programa para prosseguir.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+            
+        }
+        
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        
+    }
+    
+    
+    /**
+     * Mover para cima a transição selecionada na lista da função de transição.
+     */
+    private void moverTransicaoSelecionadaParaCima() {
+        
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
+        if (!compilacaoPendente) {
+        
+            int indice = jlTransicoes.getSelectedIndex();
+
+            if (indice >= 0) {
+                
+                if (funcaoTransicao.moverTransicaoParaCima(indice)) {
+
+                    listarTransicoes();
+
+                    gerarCodigoPrograma();
+
+                    jlTransicoes.setSelectedIndex(indice - 1);
+                
+                }
+
+            }
+        
+        } else {
+            
+            JOptionPane.showMessageDialog(
+                this,
+                "Compile o programa para prosseguir.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+            
+        }
+        
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        
+    }
+    
+    
+    /**
+     * Mover para baixo a transição selecionada na lista da função de transição.
+     */
+    private void moverTransicaoSelecionadaParaBaixo() {
+        
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        
+        if (!compilacaoPendente) {
+        
+            int indice = jlTransicoes.getSelectedIndex();
+
+            if (indice >= 0) {
+                
+                if (funcaoTransicao.moverTransicaoParaBaixo(indice)) {
+
+                    listarTransicoes();
+
+                    gerarCodigoPrograma();
+
+                    jlTransicoes.setSelectedIndex(indice + 1);
+
+                }
+
+            }
+        
+        } else {
+            
+            JOptionPane.showMessageDialog(
+                this,
+                "Compile o programa para prosseguir.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+            
+        }
+        
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        
+    }
+    
+    
+    /**
+     * Gerar o código do programa no editor com base nos parâmetros definidos
+     * nos campos da interface gráfica de usuário.
+     */
+    private void gerarCodigoPrograma() {
         
         comprimentoTextoCompilacao = jtaEditor.getText().length();
         jbCompilar.setEnabled(false);
@@ -940,597 +1856,194 @@ OuvinteTemporizador {
     }
     
     
-    private void listarSimbolos() {
-
-        if (!compilacaoPendente) {
-        
-            List<String> listaSimbolos = new ArrayList(alfabetoFita.getComprimento());
-
-            for (Simbolo simbolo : alfabetoFita) { 
-                StringBuilder sb = new StringBuilder();
-                if (!simbolo.isReservado()) {
-                    if (simbolo.isAuxiliar()) {
-                        sb.append("* ");
-                    } else {
-                        sb.append("  ");
-                    }
-                } else {
-                    sb.append("  ");                
-                }
-                sb.append(formatarSimbolos(simbolo.toString()));
-                listaSimbolos.add(sb.toString());
-            }
-
-            jlAlfabeto.setCellRenderer(new RenderizadorAlfabeto(alfabetoFita));
-            DefaultListModel model = new DefaultListModel();
-            model.addAll(listaSimbolos);
-            jlAlfabeto.setModel(model);
-        
-        }
-        
-        configurarControlesAlfabeto();
-        
-    }
     
     
-    private void listarEstados() {
-
-        if (!compilacaoPendente) {
-        
-            List<String> listaEstados = new ArrayList<>(conjuntoEstados.getComprimento());
-
-            for (Estado estado : conjuntoEstados) {
-                StringBuilder sb = new StringBuilder();
-
-                if (estado.isTerminal()) {
-                    sb.append("\u2297");
-                }
-
-                if (estado.isInicial()) {
-                    sb.append("\u22B3");
-                }
-
-                if (!estado.isInicial() && !estado.isTerminal()) {
-                    sb.append("  ");
-                } else {
-                    if (!(estado.isInicial() && estado.isTerminal())) {
-                        sb.append(" ");
-                    }
-                }
-
-                sb.append(estado.getRotulo());
-                listaEstados.add(sb.toString());
-            }
-
-            DefaultListModel model = new DefaultListModel();
-            model.addAll(listaEstados);
-            jlEstados.setModel(model);
-        
-        } 
-        
-        configurarControlesEstados();
-        
-    }
+// ------------------ CONTROLE DE EXECUÇÃO DO SIMULADOR --------------------- //
     
     
-    private void listarTransicoes() {
+    /**
+     * Carregar a palavra de entrada na primeira fita do simulador.
+     */
+    private void carregarPalavraEntrada() {
         
-        if (!compilacaoPendente) {
-        
-            List<String> listaTransicoes = new ArrayList<>(funcaoTransicao.getComprimento());
-
-            for (Transicao transicao : funcaoTransicao) {
-                listaTransicoes.add(formatarSimbolos(transicao.toString()));
-            }
-
-            DefaultListModel model = new DefaultListModel();
-            model.addAll(listaTransicoes);
-            jlTransicoes.setModel(model);
-        
-        }
-        
-        configurarControlesFTransicao();
-        
-    }
-    
-    
-    private void inserirSimbolo() {
-        
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
-        if (!compilacaoPendente) {
-        
-            TelaInserirSimbolo telaInserirSimbolo = new TelaInserirSimbolo(
-                this,
-                alfabetoFita
-            );
-            
-            telaInserirSimbolo.setVisible(true);
-
-            if (!telaInserirSimbolo.isCancelado()) {
-                listarSimbolos();
-                gerarScript();
-            }
-        
-        } else {
-            
-            JOptionPane.showMessageDialog(
-                this,
-                "Compile o programa para prosseguir.",
-                "Erro",
-                JOptionPane.ERROR_MESSAGE
-            );
-            
-        }
-        
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-               
-    }
-    
-    
-    private void removerSimbolo() {
-        
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
-        if (!compilacaoPendente) {        
-            
-            int indice = jlAlfabeto.getSelectedIndex();
-            
-            if (indice >= 0) {
-                
-                Simbolo simbolo = alfabetoFita.getSimbolo(indice);
-                
-                if (!simbolo.isReservado()) {
-                    alfabetoFita.removerSimbolo(simbolo);
-                    listarSimbolos();
-                    gerarScript();
-                    jlAlfabeto.setSelectedIndex(indice-1);
-                }
-                
-            }
-            
-        } else {
-            
-            JOptionPane.showMessageDialog(
-                this,
-                "Compile o programa para prosseguir.",
-                "Erro",
-                JOptionPane.ERROR_MESSAGE
-            );
-            
-        }
-        
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        
-    }
-    
-    
-    private void editarSimbolo() {
-        
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
-        if (!compilacaoPendente) {
-        
-            int indice = jlAlfabeto.getSelectedIndex();
-
-            if (indice >= 0) {
-
-                Simbolo simbolo = alfabetoFita.getSimbolo(indice);
-
-                if (!simbolo.isReservado()) {
-
-                    TelaInserirSimbolo telaInserirSimbolo = new TelaInserirSimbolo(
-                        this,
-                        simbolo,
-                        alfabetoFita
-                    );
+        if (maquinaTuring == null) {
                     
-                    telaInserirSimbolo.setVisible(true);
+            modelo = jrbPadrao.isSelected() ? Modelo.PADRAO : Modelo.MULTIFITAS;
 
-                    if (!telaInserirSimbolo.isCancelado()) {
-                        listarSimbolos();
-                        gerarScript();
-                        jlAlfabeto.setSelectedIndex(indice);
-                    }
+            try {
 
-                }
+                switch (modelo) {
 
-            }
-        
-        } else {
-            
-            JOptionPane.showMessageDialog(
-                this,
-                "Compile o programa para prosseguir.",
-                "Erro",
-                JOptionPane.ERROR_MESSAGE
-            );
-            
-        }
-        
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        
-    }
-    
-    
-    private void definirAlfabetoAuxiliar() {
-        
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
-        if (!compilacaoPendente) {
-        
-            int indice = jlAlfabeto.getSelectedIndex();
-
-            if (indice >= 0) {
-
-                Simbolo simbolo = alfabetoFita.getSimbolo(indice);
-
-                if (!simbolo.isReservado()) {
-                    alfabetoFita.setSimboloAuxiliar(simbolo, !simbolo.isAuxiliar());
-                    listarSimbolos();
-                    gerarScript();
-                    jlAlfabeto.setSelectedIndex(indice);
-                }
-
-            }
-        
-        } else {
-            
-            JOptionPane.showMessageDialog(
-                this,
-                "Compile o programa para prosseguir.",
-                "Erro",
-                JOptionPane.ERROR_MESSAGE
-            );
-            
-        }
-        
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        
-    }
-    
-    
-    private void inserirEstado() {
-        
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
-        if (!compilacaoPendente) {
-        
-            TelaInserirEstado telaInserirEstado = new TelaInserirEstado(
-                this,
-                conjuntoEstados
-            );
-            
-            telaInserirEstado.setVisible(true);
-
-            if (!telaInserirEstado.isCancelado()) {
-                listarEstados();
-                gerarScript();
-            }
-        
-        } else {
-            
-            JOptionPane.showMessageDialog(
-                this,
-                "Compile o programa para prosseguir.",
-                "Erro",
-                JOptionPane.ERROR_MESSAGE
-            );
-            
-        }
-        
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        
-    }
-    
-    
-    private void removerEstado() {
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        if (!compilacaoPendente) {
-            int indice = jlEstados.getSelectedIndex();
-            if (indice >= 0) {
-                Estado estado = conjuntoEstados.getEstado(indice);
-                conjuntoEstados.removerEstado(estado);
-                listarEstados();
-                gerarScript();
-                if (indice > 0) {
-                    jlEstados.setSelectedIndex(indice-1);
-                }
-            }
-        } else {
-            JOptionPane.showMessageDialog(
-                this,
-                "Compile o programa para prosseguir.",
-                "Erro",
-                JOptionPane.ERROR_MESSAGE
-            );
-        }
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-    }
-    
-    
-    private void editarEstado() {
-        
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
-        if (!compilacaoPendente) {
-        
-            int indice = jlEstados.getSelectedIndex();
-
-            if (indice >= 0) {
-
-                Estado estado = conjuntoEstados.getEstado(indice);
-
-                TelaInserirEstado telaInserirEstado = new TelaInserirEstado(
-                    this,
-                    estado,
-                    conjuntoEstados
-                );
-                
-                telaInserirEstado.setVisible(true);
-
-                if (!telaInserirEstado.isCancelado()) {
-                    listarEstados();
-                    gerarScript();
-                    jlEstados.setSelectedIndex(indice);
-                }
-
-            }
-        
-        } else {
-            
-            JOptionPane.showMessageDialog(
-                this,
-                "Compile o programa para prosseguir.",
-                "Erro",
-                JOptionPane.ERROR_MESSAGE
-            );
-            
-        }
-        
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        
-    }
-    
-    
-    private void definirEstadoInicial() {
-        
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
-        if (!compilacaoPendente) {
-
-            int indice = jlEstados.getSelectedIndex();
-
-            if (indice >= 0) {
-
-                Estado estadoInicial = conjuntoEstados.getEstado(indice);
-                
-                conjuntoEstados.setEstadoInicial(estadoInicial);
-                
-                listarEstados();
-
-                gerarScript();
-
-                jlEstados.setSelectedIndex(indice);
-
-            }
-
-        } else {
-            
-            JOptionPane.showMessageDialog(
-                this,
-                "Compile o programa para prosseguir.",
-                "Erro",
-                JOptionPane.ERROR_MESSAGE
-            );
-            
-        }
-        
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        
-    }
-    
-    
-    private void definirEstadoTerminal() {
-        
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
-        if (!compilacaoPendente) {
-        
-            int indice = jlEstados.getSelectedIndex();
-
-            if (indice >= 0) {
-
-                Estado estado = conjuntoEstados.getEstado(indice);
-                
-                conjuntoEstados.setEstadoTerminal(estado, !estado.isTerminal());
-
-                listarEstados();
-
-                gerarScript();
-
-                jlEstados.setSelectedIndex(indice);
-
-            }
-        
-        } else {
-            
-            JOptionPane.showMessageDialog(
-                this,
-                "Compile o programa para prosseguir.",
-                "Erro",
-                JOptionPane.ERROR_MESSAGE
-            );
-            
-        }
-        
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        
-    }
-    
-    
-    private void inserirTransicao() {
-     
-        TelaInserirTransicao telaInserirTransicao = new TelaInserirTransicao(
-            this,
-            alfabetoFita,
-            conjuntoEstados,
-            funcaoTransicao,
-            (int)jspNumeroFitas.getValue(),
-            modelo
-        );
-        
-        telaInserirTransicao.setVisible(true);
-        
-        if (telaInserirTransicao.isCancelado()) {
-            
-            listarTransicoes();
-            
-            gerarScript();
-            
-        }
-        
-    }
-    
-    
-    private void removerTransicao() {
-        
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
-        if (!compilacaoPendente) {
-        
-            int indice = jlTransicoes.getSelectedIndex();
-
-            if (indice >= 0) {
-                
-                Transicao transicao = funcaoTransicao.getTransicao(indice);
-                
-                if (funcaoTransicao.removerTransicao(transicao)) {
-
-                    listarTransicoes();
-
-                    gerarScript();
-
-                    jlTransicoes.setSelectedIndex(indice - 1);
-                
-                }
-
-            }
-        
-        } else {
-            
-            JOptionPane.showMessageDialog(
-                this,
-                "Compile o programa para prosseguir.",
-                "Erro",
-                JOptionPane.ERROR_MESSAGE
-            );
-            
-        }
-        
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        
-    }
-    
-    
-    private void moverTransicaoParaCima() {
-        
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
-        if (!compilacaoPendente) {
-        
-            int indice = jlTransicoes.getSelectedIndex();
-
-            if (indice >= 0) {
-                
-                if (funcaoTransicao.moverTransicaoParaCima(indice)) {
-
-                    listarTransicoes();
-
-                    gerarScript();
-
-                    jlTransicoes.setSelectedIndex(indice - 1);
-                
-                }
-
-            }
-        
-        } else {
-            
-            JOptionPane.showMessageDialog(
-                this,
-                "Compile o programa para prosseguir.",
-                "Erro",
-                JOptionPane.ERROR_MESSAGE
-            );
-            
-        }
-        
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        
-    }
-    
-    
-    private void moverTransicaoParaBaixo() {
-        
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        
-        if (!compilacaoPendente) {
-        
-            int indice = jlTransicoes.getSelectedIndex();
-
-            if (indice >= 0) {
-                
-                if (funcaoTransicao.moverTransicaoParaBaixo(indice)) {
-
-                    listarTransicoes();
-
-                    gerarScript();
-
-                    jlTransicoes.setSelectedIndex(indice + 1);
-
-                }
-
-            }
-        
-        } else {
-            
-            JOptionPane.showMessageDialog(
-                this,
-                "Compile o programa para prosseguir.",
-                "Erro",
-                JOptionPane.ERROR_MESSAGE
-            );
-            
-        }
-        
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        
-    }
-    
-    
-    private void definirTituloTela() {
-        if (nome != null) {
-            if (jtpSimulador.getSelectedIndex() == 0) {
-                setTitle(
-                    titulo + "  [ PROGRAMA: " + 
-                    nome.toUpperCase() + " ]"
-                );
-            } else {
-                if (arquivoAberto) {
-                    setTitle(
-                        titulo + " - " + 
-                        arquivo.getArquivo().getAbsolutePath()
+                    case PADRAO -> maquinaTuring = new MaquinaPadrao(
+                        alfabetoFita,
+                        conjuntoEstados,
+                        funcaoTransicao,
+                        (int)jspNumeroFitas.getValue()
                     );
-                } else {
-                    setTitle(titulo);
+
+                    case MULTIFITAS -> maquinaTuring = new MaquinaMultifitas(
+                        alfabetoFita,
+                        conjuntoEstados,
+                        funcaoTransicao,
+                        (int)jspNumeroFitas.getValue()
+                    );
+
                 }
+
+                maquinaTuring.adicionarOuvinte(this);
+
+                maquinaTuring.carregarPalavra(jtfPalavra.getText());
+
+                emExecucao = true;
+
+                simulacaoAutomatica = false;
+
+                emPausa = false;
+
+                configurarControlesSimulador();
+
+            } catch (Exception ex) {
+
+                JOptionPane.showMessageDialog(
+                    this,
+                    ex.getMessage(),
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE
+                );
+
             }
+            
+        }
+        
+    }
+       
+    
+    /**
+     * Iniciar a simulação automática da Máquina de Turing.
+     */
+    private void iniciarSimulacaoAutomatica() {
+        
+        if (maquinaTuring != null) {
+            
+            simulacaoAutomatica = true;
+            emPausa = false;
+            atualizandoEtapaSimulacao = false;
+            
+            configurarBarraFerramentasSimulador();
+            
+            executarSimulacaoAutomatica();
+            
+        }
+        
+    }
+    
+    
+    /**
+     * Executar a simulação automática dentro do ciclo de em um componente Timer.
+     * Caso mude a velocidade de simulação, o tiver deve ser renovado com as
+     * novas configurações.
+     */
+    private synchronized void executarSimulacaoAutomatica() {
+        
+        if (emExecucao) {
+            
+            if (simulacaoAutomatica) {
+
+                if (timer != null)  {
+                    timer.cancel();
+                    timer = null;
+                }
+
+                timer = new Timer();
+
+                final TimerTask task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (maquinaTuring != null) {
+                            if (!atualizandoEtapaSimulacao) {
+                                atualizandoEtapaSimulacao = true;
+                                maquinaTuring.executarPasso();
+                                atualizandoEtapaSimulacao = false;
+                            }
+                        }
+                    }
+                };
+
+                timer.schedule(
+                    task,
+                    tempoExecucao,
+                    tempoExecucao
+                );
+            
+            }
+        
+        }
+            
+    }
+    
+    
+    /**
+     * Pausar a execução automática do simulador.
+     */
+    private void pausarSimulacaoAutomatica() {
+        if (maquinaTuring != null) {
+            emPausa = true;
+            simulacaoAutomatica = false;
+            configurarBarraFerramentasSimulador();
+            timer.cancel();
         }
     }
     
     
-    private void configurarVelocidadeExecucao() {
+    /**
+     * Executar manualmente o próximo passo do programa.
+     */
+    private void executarPassoSimulacao() {
+        if (maquinaTuring != null) {
+            maquinaTuring.executarPasso();
+        }
+    }
+    
+    
+    /**
+     * Encerrar a execução do simulador.
+     */
+    private void encerrarSimulacao() {
+        if (maquinaTuring != null) {
+            if (timer != null)  timer.cancel();
+            emExecucao = false;
+            simulacaoAutomatica = false;
+            emPausa = false;
+            maquinaTuring.removerOuvinte(this);
+            maquinaTuring = null;
+            jtfEstadoAtual.setText("");
+            jtfNumPassos.setText("");
+            jtfResultado.setText("");
+            configurarControlesSimulador();
+            configurarFitasVazias();
+        }
+    }
+    
+    
+    /**
+     * Reiniciar a simulação para a palavra de entrada.
+     */
+    private void reiniciarSimulacao() {
+        if (maquinaTuring != null) {
+            if (timer != null) timer.cancel();
+            emExecucao = true;
+            simulacaoAutomatica = false;
+            emPausa = false;
+            configurarBarraFerramentasSimulador();
+            maquinaTuring.reiniciar();
+        }
+    }
+    
+    
+    /**
+     * Configurar o tempo de execução de cada etapa da simulação. 
+     */
+    private void configurarVelocidadeSimulacaoAutomatica() {
         
         PointerInfo a = MouseInfo.getPointerInfo();
         Point b = a.getLocation();
@@ -1551,184 +2064,41 @@ OuvinteTemporizador {
     }
     
     
-    private void executar() {
-        
-        if (maquinaTuring != null) {
-            
-            execucaoAutomatica = true;
-            emPausa = false;
-            atualizando = false;
-            
-            configurarControlesExecucao();
-            
-            iniciarExecucaoAutomatica();
-            
-        }
-        
+    /**
+     * Atualizar o tempo de execução da etapa do simulador. Este método responde
+     * às alterações de tempo realizadas no diálogo {@link TelaConfigVelocidade}.
+     * 
+     * @param novoValor novo valor de tempo de execução.
+     */
+    @Override
+    public void velocidadeSimulacaoAutomaticaAtualizada(int novoValor) {
+        tempoExecucao = novoValor;
+        executarSimulacaoAutomatica();
     }
     
     
-    private void executarPasso() {
-        if (maquinaTuring != null) {
-            maquinaTuring.executarPasso();
-        }
-    }
+
+    
+// ------------------------- CONFIGURAÇÃO DAS FITAS --------------------------//    
     
     
-    private void pausarExecucao() {
-        if (maquinaTuring != null) {
-            emPausa = true;
-            execucaoAutomatica = false;
-            configurarControlesExecucao();
-            timer.cancel();
-        }
-    }
-    
-    
-    private void encerrar() {
-        if (maquinaTuring != null) {
-            if (timer != null)  timer.cancel();
-            emExecucao = false;
-            execucaoAutomatica = false;
-            emPausa = false;
-            maquinaTuring.removerOuvinte(this);
-            maquinaTuring = null;
-            jtfEstadoAtual.setText("");
-            jtfNumPassos.setText("");
-            jtfResultado.setText("");
-            configurarControles();
-            configurarFitasVazias();
-        }
-    }
-    
-    
-    private void reiniciar() {
-        if (maquinaTuring != null) {
-            if (timer != null) timer.cancel();
-            emExecucao = true;
-            execucaoAutomatica = false;
-            emPausa = false;
-            configurarControlesExecucao();
-            maquinaTuring.reiniciar();
-        }
-    }
-    
-    
-    private void carregarCadeiaEntrada() {
-        
-        if (maquinaTuring == null) {
-            
-            if (!jtfPalavra.getText().isEmpty()) {
-                    
-                modelo = jrbPadrao.isSelected() ? Modelo.PADRAO : Modelo.MULTIFITAS;
-
-                try {
-
-                    switch (modelo) {
-
-                        case PADRAO -> maquinaTuring = new MaquinaPadrao(
-                            alfabetoFita,
-                            conjuntoEstados,
-                            funcaoTransicao
-                        );
-
-                        case MULTIFITAS -> maquinaTuring = new MaquinaMultifitas(
-                            alfabetoFita,
-                            conjuntoEstados,
-                            funcaoTransicao,
-                            (int)jspNumeroFitas.getValue()
-                        );
-
-                    }
-
-                    maquinaTuring.adicionarOuvinte(this);
-
-                    maquinaTuring.carregarPalavra(jtfPalavra.getText());
-
-                    emExecucao = true;
-                    
-                    execucaoAutomatica = false;
-                    
-                    emPausa = false;
-
-                    configurarControles();
-
-                } catch (Exception ex) {
-
-                    JOptionPane.showMessageDialog(
-                        this,
-                        ex.getMessage(),
-                        "Erro",
-                        JOptionPane.ERROR_MESSAGE
-                    );
-
-                }
-            }
-            
-        }
-        
-    }
-    
-    
-    private void exibirAjuda(String titulo, String arquivo) {
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        new TelaAjuda(
-            this,
-            titulo,
-            arquivo
-        ).setVisible(true);
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-    }
-    
-    
-    private void exibirTelaSobre() {
-        new TelaSobre(this).setVisible(true);
-    }
-    
-    
-    private synchronized void iniciarExecucaoAutomatica() {
-        
-        if (emExecucao) {
-            
-            if (execucaoAutomatica) {
-
-                if (timer != null)  {
-                    timer.cancel();
-                    timer = null;
-                }
-
-                timer = new Timer();
-
-                final TimerTask task = new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (maquinaTuring != null) {
-                            if (!atualizando) {
-                                atualizando = true;
-                                maquinaTuring.executarPasso();
-                                atualizando = false;
-                            }
-                        }
-                    }
-                };
-
-                timer.schedule(
-                    task,
-                    tempoExecucao,
-                    tempoExecucao
-                );
-            
-            }
-        
-        }
-            
-    }
-    
-    
+    /**
+     * Configurar as fitas com espaços em branco, antes de carregar uma palavra
+     * de entrada. O número de fitas está de acordo com o campo da função de
+     * transição.
+     * 
+     * <br><br>
+     * 
+     * <i>
+     * <b>Obs.: </b> As fitas dependem de renderizadores especializados para 
+     * serem configuradas com a visualização adequada, de acordo com o conteúdo
+     * texto de cada célula.
+     * </i>
+     */
     private void configurarFitasVazias() {
         
         int numeroFitas = jrbPadrao.isSelected() ? 1 : (int) jspNumeroFitas.getValue();
-        int numeroCelulas = 25;
+        int numeroCelulas = CELULAS_FITA;
         
         String[][] celulas = new String[numeroFitas][numeroCelulas];
         String[] titulos = new String[numeroCelulas];
@@ -1746,7 +2116,7 @@ OuvinteTemporizador {
             }
         });
 
-        RendererizadorFita renderer = new RendererizadorFita(null);
+        RendererizadorFita renderer = new RendererizadorFita(null, jrbMoverCursor.isSelected());
 
         for (int i = 0; i < jtFitas.getColumnCount(); i++) {
             jtFitas.getColumnModel().getColumn(i).setCellRenderer(renderer);
@@ -1756,82 +2126,184 @@ OuvinteTemporizador {
             jtFitas.getColumnModel().getColumn(i).setPreferredWidth(80);
             jtFitas.getColumnModel().getColumn(i).setMaxWidth(80);
         }
-
-        jtFitas.setAutoResizeMode(
-            javax.swing.JTable.AUTO_RESIZE_OFF
-        );
+        
+        if (jrbMoverFita.isSelected()) {
+            jtFitas.setAutoResizeMode(
+                javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS
+            );
+        } else {
+            jtFitas.setAutoResizeMode(
+                javax.swing.JTable.AUTO_RESIZE_OFF
+            );
+        }
         
     }
 
 
+    /**
+     * Configurar as fitas de acordo com o estado atual de simulação. Há dois
+     * modos de visualização das fitas:
+     * 
+     * <br><br>
+     * 
+     * <b>Cursores se movendo sobre as fitas:</b> Neste modo de visualização, as 
+     * fitas permanecem fixas e os cursores se movem sobre elas. É o modo como
+     * Turing concebeu inicialmenteo modelo.
+     * 
+     * <br><br>
+     * 
+     * <b>Fitas se movendo sob os cursores: </b>  Neste modo de visualização, os
+     * cursores permanecem fixos, e são as fitas que se movem sob estes.
+     * 
+     * <br><br>
+     * 
+     * O estado das fitas é atualizada após a execução de cada etapa da simulação
+     * da Máquina de Turing para a palavra de entrada.
+     * 
+     * <br><br>
+     * 
+     * <i>
+     * <b>Obs.: </b> As fitas dependem de renderizadores especializados para 
+     * serem configuradas com a visualização adequada, de acordo com o conteúdo
+     * texto de cada célula.
+     * </i>
+     * 
+     * @param fitas fitas da Máquina de Turing.
+     * 
+     * @param cursores cursores posicionados sobre as fitas.
+     */
     private void configurarFitas(Fita[] fitas, Map<Integer, Integer> cursores) {
-
-        if (jtFitas.getColumnCount() != fitas[0].getComprimento() || 
-        ((RendererizadorFita)jtFitas.getColumnModel().getColumn(0).getCellRenderer()).getFita() == null) {
         
-            String[][] listaFitas = new String[fitas.length][fitas[0].getComprimento()];
-            String[] titulos = new String[fitas[0].getComprimento()];
-
-            jtFitas.setModel(new DefaultTableModel(listaFitas, titulos) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
+        if (jrbMoverFita.isSelected()) {
+            
+            // Cursores fixos e fitas se movem.
+            
+            int colCursor = 11;
+            
+            for (int i = 0; i < jtFitas.getRowCount(); i++) {
+                for (int j = 0; j < jtFitas.getColumnCount(); j++) {
+                    jtFitas.setValueAt(String.valueOf(AlfabetoFita.BRANCO), i, j);
                 }
-            });
-            
-            RendererizadorFita renderer = new RendererizadorFita(fitas[0]);
-        
-            for (int i = 0; i < jtFitas.getColumnCount(); i++) {
-                jtFitas.getColumnModel().getColumn(i).setCellRenderer(renderer);
-            } 
-            
-            for (int i = 0; i < jtFitas.getColumnCount(); i++) {
-                jtFitas.getColumnModel().getColumn(i).setPreferredWidth(80);
-                jtFitas.getColumnModel().getColumn(i).setMaxWidth(80);
             }
             
-            jtFitas.setAutoResizeMode(
-                javax.swing.JTable.AUTO_RESIZE_OFF
-            );
-            
-            jtFitas.scrollRectToVisible(
-                new Rectangle(
-                    jtFitas.getCellRect(0,jtFitas.getColumnCount() / 2,true)
-                )
-            );
-        
-        } 
-        
-        for (int i = 0; i < jtFitas.getRowCount(); i++) {
-            for (int j = 0; j < jtFitas.getColumnCount(); j++) {
-                jtFitas.setValueAt(String.valueOf(AlfabetoFita.BRANCO), i, j);
+            for (int i = 0; i < cursores.size(); i++) {
+                
+                int cursor = cursores.get(i);
+                
+                String s = fitas[i].getCelulas()[cursor].toString() + CARACTER_CURSOR;
+                
+                jtFitas.setValueAt(s, i, colCursor);
+                
+                for (int j = colCursor - 1, k = cursor - 1; j >= 0 && k >= 0; j--, k--) {
+                    if (k == fitas[i].getCelulaPivo()) {
+                        s = fitas[i].getCelulas()[k].toString() + CARACTER_CEL_PIVO;
+                    } else {
+                        s = fitas[i].getCelulas()[k].toString();
+                    }
+                    jtFitas.setValueAt(s, i, j);
+                }
+                
+                for (int j = colCursor + 1, k = cursor + 1; j < CELULAS_FITA &&
+                k < fitas[i].getComprimento(); j++, k++) {
+                    if (k == fitas[i].getCelulaPivo()) {
+                        s = fitas[i].getCelulas()[k].toString() + CARACTER_CEL_PIVO;
+                    } else {
+                        s = fitas[i].getCelulas()[k].toString();
+                    }
+                    jtFitas.setValueAt(s, i, j);
+                }
+                
             }
-        }
 
-        for (int i = 0; i < jtFitas.getRowCount(); i++) {
-            for (int j = 0; j < jtFitas.getColumnCount() ; j++) {
-                if (j == cursores.get(i)) {
-                    String s = fitas[i].getCelulas()[j].toString() + "*";
+        } else {
+            
+            // Fitas fixas e cursores se movem.
+
+            if (jtFitas.getColumnCount() != fitas[0].getComprimento() || 
+            ((RendererizadorFita)jtFitas.getColumnModel().getColumn(0).getCellRenderer()).getFita() == null) {
+
+                String[][] listaFitas = new String[fitas.length][fitas[0].getComprimento()];
+                String[] titulos = new String[fitas[0].getComprimento()];
+
+                jtFitas.setModel(new DefaultTableModel(listaFitas, titulos) {
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        return false;
+                    }
+                });
+
+                RendererizadorFita renderer = new RendererizadorFita(fitas[0], jrbMoverCursor.isSelected());
+
+                for (int i = 0; i < jtFitas.getColumnCount(); i++) {
+                    jtFitas.getColumnModel().getColumn(i).setCellRenderer(renderer);
+                } 
+
+                for (int i = 0; i < jtFitas.getColumnCount(); i++) {
+                    jtFitas.getColumnModel().getColumn(i).setPreferredWidth(80);
+                    jtFitas.getColumnModel().getColumn(i).setMaxWidth(80);
+                }
+
+                jtFitas.setAutoResizeMode(
+                    javax.swing.JTable.AUTO_RESIZE_OFF
+                );
+
+            } 
+
+            for (int i = 0; i < jtFitas.getRowCount(); i++) {
+                for (int j = 0; j < jtFitas.getColumnCount(); j++) {
+                    jtFitas.setValueAt(String.valueOf(AlfabetoFita.BRANCO), i, j);
+                }
+            }
+
+            for (int i = 0; i < jtFitas.getRowCount(); i++) {
+                for (int j = 0; j < jtFitas.getColumnCount() ; j++) {
+                    String s;
+                    if (j == cursores.get(i)) {
+                        s = fitas[i].getCelulas()[j].toString() + CARACTER_CURSOR;
+                    } else if (j == fitas[i].getCelulaPivo()) {
+                        s = fitas[i].getCelulas()[j].toString() + CARACTER_CEL_PIVO;
+                    } else {
+                        s = fitas[i].getCelulas()[j].toString();
+                    }
                     jtFitas.setValueAt(
                         s,
                         i,
                         j
                     );
-                } else {
-                    jtFitas.setValueAt(
-                        fitas[i].getCelulas()[j].toString(),
-                        i,
-                        j
-                    );
                 }
             }
+        
         }
 
     }
     
     
+    /**
+     * Atualizar a configuração das fitas. Este método é notificado após a execução
+     * de cada etapa da simulação da Máquina de Turing. Basicamente o que ele faz
+     * é configurar as fitas, apontar para a próxima transição a ser executada na
+     * função de transição, e se o programa finalizou, indicar se a palavra de 
+     * entrada foi aceita ou não.
+     * 
+     * @param estadoAtual estado atual da Unidade de Controle.
+     * 
+     * @param fitas fitas da Máquina de Turing gravadas com símbolos pela Cabeça
+     * de Leitura/Escrita.
+     * 
+     * @param cursores cursores indicando as posições das Cabeças de Leitura/Escrita
+     * nas células das fitas.
+     * 
+     * @param indiceTransicaoAtual índice da transição a ser executada no passo
+     * atual.
+     * 
+     * @param numeroPassos número de passos realizados pela Máquina de Turing.
+     * 
+     * @param cadeiaAceita estatus de cadeia de entrada aceita.
+     * 
+     * @param finalizado estatus de programa finalizado.
+     */
     @Override
-    public void atualizarEtapa(Estado estadoAtual, Fita[] fitas, 
+    public void atualizarEtapaSimulacao(Estado estadoAtual, Fita[] fitas, 
     Map<Integer, Integer> cursores, int indiceTransicaoAtual, int numeroPassos,
     boolean cadeiaAceita, boolean finalizado) {
         
@@ -1871,6 +2343,7 @@ OuvinteTemporizador {
                     jtfPalavra.getFont().getSize()
                 );
                 jtfPalavra.setFont(font);
+                jtfResultado.setForeground(new Color(0,128,0));
             } else {
                 emExecucao = false;
                 if (timer != null) timer.cancel();
@@ -1886,22 +2359,98 @@ OuvinteTemporizador {
                     jtfPalavra.getFont().getSize()
                 );
                 jtfPalavra.setFont(font);
+                jtfResultado.setForeground(Color.red);
             } 
         
         } else {
             jtfResultado.setForeground(Color.BLACK);
             jtfResultado.setText("EXECUTANDO");
+            jtfResultado.setForeground(Color.BLACK);
         }
         
         repaint();
         
     }
+    
+    
+    /**
+     * Exibir o diálogo Detalhes das Fitas. Se o usuário optar pela visualização 
+     * das fitas tendo como base os cursores fixos e elas se movendo sob estes,
+     * terá um número definido de células nas fitas e alguns símbolos poderão
+     * ficar ocultos. O diálogo exibe todo o conteúdo nas fitas.
+     */
+    private void exibirDetalhesFitas() {
+        new TelaDetalhesFitas(
+            this,
+            maquinaTuring,
+            (int) jspNumeroFitas.getValue()
+        ).setVisible(true);
+    }
+    
+    
+    
+    
+// --------------------------- OUTROS MÉTODOS --------------------------------//  
+        
+    
+    /**
+     * Mudar o título da tela.
+     */
+    private void definirTituloTela() {
+        if (nome != null) {
+            if (jtpSimulador.getSelectedIndex() == 0) {
+                setTitle(
+                    titulo + "  [ PROGRAMA: " + 
+                    nome.toUpperCase() + " ]"
+                );
+            } else {
+                if (arquivoAberto) {
+                    setTitle(
+                        titulo + " - " + 
+                        arquivo.getArquivo().getAbsolutePath()
+                    );
+                } else {
+                    setTitle(titulo);
+                }
+            }
+        }
+    }
 
     
-    @Override
-    public void temporizadorAtualizado(int novoValor) {
-        tempoExecucao = novoValor;
-        iniciarExecucaoAutomatica();
+    /**
+     * Exibir um arquivo de ajuda inserido como recurso no .jar do projeto.
+     * 
+     * @param titulo título do diálogo de ajuda.
+     * 
+     * @param arquivo arquivo de ajuda a ser visualizado.
+     */
+    private void exibirAjuda(String titulo, String arquivo) {
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        new TelaAjuda(
+            this,
+            titulo,
+            arquivo
+        ).setVisible(true);
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+    }
+    
+    
+    /**
+     * Exibir a tela de créditos do simulador.
+     */
+    private void exibirTelaSobre() {
+        new TelaSobre(this).setVisible(true);
+    }
+    
+    
+    /**
+     * Encerrar o programa. Antes de fechar, verifica se tem um arquivo aberto
+     * com modificações pendentes de serem salvas.
+     */
+    private void fecharTela() {
+        if (verificarMudancasTextoParaProsseguir()) {
+            System.exit(0);
+        }
     }
 
 
@@ -1914,6 +2463,13 @@ OuvinteTemporizador {
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
         jmiColar = new javax.swing.JMenuItem();
         btgModelo = new javax.swing.ButtonGroup();
+        jppFitas = new javax.swing.JPopupMenu();
+        jmiDetalhesFitas = new javax.swing.JMenuItem();
+        jpAutocompletar = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jlAutocompletar = new javax.swing.JList<>();
+        jppAutocompletar = new javax.swing.JPopupMenu();
+        btgOpcoesFita = new javax.swing.ButtonGroup();
         jtpSimulador = new javax.swing.JTabbedPane();
         jSplitPane1 = new javax.swing.JSplitPane();
         jPanel3 = new javax.swing.JPanel();
@@ -1975,6 +2531,9 @@ OuvinteTemporizador {
         jrbMultifita = new javax.swing.JRadioButton();
         jLabel9 = new javax.swing.JLabel();
         jtfSobre = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jrbMoverFita = new javax.swing.JRadioButton();
+        jrbMoverCursor = new javax.swing.JRadioButton();
         jPanel4 = new javax.swing.JPanel();
         jToolBar2 = new javax.swing.JToolBar();
         jbCompilar = new javax.swing.JButton();
@@ -2016,7 +2575,51 @@ OuvinteTemporizador {
         });
         jppEditor.add(jmiColar);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        jmiDetalhesFitas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/turing/icones/details_icon.png"))); // NOI18N
+        jmiDetalhesFitas.setText("Mostrar Detalhes");
+        jmiDetalhesFitas.setPreferredSize(new java.awt.Dimension(160, 36));
+        jmiDetalhesFitas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiDetalhesFitasActionPerformed(evt);
+            }
+        });
+        jppFitas.add(jmiDetalhesFitas);
+
+        jScrollPane3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+        jlAutocompletar.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        jlAutocompletar.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jlAutocompletar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jlAutocompletarMouseClicked(evt);
+            }
+        });
+        jlAutocompletar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jlAutocompletarKeyReleased(evt);
+            }
+        });
+        jScrollPane3.setViewportView(jlAutocompletar);
+
+        javax.swing.GroupLayout jpAutocompletarLayout = new javax.swing.GroupLayout(jpAutocompletar);
+        jpAutocompletar.setLayout(jpAutocompletarLayout);
+        jpAutocompletarLayout.setHorizontalGroup(
+            jpAutocompletarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
+        );
+        jpAutocompletarLayout.setVerticalGroup(
+            jpAutocompletarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        jppAutocompletar.setFocusable(false);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jtpSimulador.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -2258,7 +2861,7 @@ OuvinteTemporizador {
             }
         });
 
-        jbSetEstadoFinal.setIcon(new javax.swing.ImageIcon(getClass().getResource("/turing/icones/final_icon.png"))); // NOI18N
+        jbSetEstadoFinal.setIcon(new javax.swing.ImageIcon(getClass().getResource("/turing/icones/initial_icon.png"))); // NOI18N
         jbSetEstadoFinal.setPreferredSize(new java.awt.Dimension(35, 25));
         jbSetEstadoFinal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2284,14 +2887,14 @@ OuvinteTemporizador {
                     .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addComponent(jbInserirEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6)
+                        .addGap(7, 7, 7)
                         .addComponent(jbRemoverEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbEditarEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbSetEstadoInicial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbSetEstadoFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jbSetEstadoInicial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbEstadosAjuda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -2360,6 +2963,7 @@ OuvinteTemporizador {
 
             }
         ));
+        jtFitas.setComponentPopupMenu(jppFitas);
         jtFitas.setFillsViewportHeight(true);
         jtFitas.setFocusable(false);
         jtFitas.setRowHeight(40);
@@ -2502,8 +3106,8 @@ OuvinteTemporizador {
         jtfNumPassos.setEditable(false);
         jtfNumPassos.setFont(new java.awt.Font("DejaVu Sans", 1, 14)); // NOI18N
         jtfNumPassos.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jtfNumPassos.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jtfNumPassos.setDisabledTextColor(new java.awt.Color(0, 0, 0));
-        jtfNumPassos.setEnabled(false);
         jtfNumPassos.setFocusable(false);
         jtfNumPassos.setSelectionColor(new java.awt.Color(255, 255, 255));
 
@@ -2516,8 +3120,8 @@ OuvinteTemporizador {
         jtfEstadoAtual.setEditable(false);
         jtfEstadoAtual.setFont(new java.awt.Font("DejaVu Sans", 1, 14)); // NOI18N
         jtfEstadoAtual.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jtfEstadoAtual.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jtfEstadoAtual.setDisabledTextColor(new java.awt.Color(0, 0, 0));
-        jtfEstadoAtual.setEnabled(false);
         jtfEstadoAtual.setFocusable(false);
         jtfEstadoAtual.setSelectionColor(new java.awt.Color(255, 255, 255));
 
@@ -2527,8 +3131,8 @@ OuvinteTemporizador {
         jtfResultado.setBackground(new java.awt.Color(240, 240, 240));
         jtfResultado.setFont(new java.awt.Font("DejaVu Sans", 1, 14)); // NOI18N
         jtfResultado.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jtfResultado.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jtfResultado.setDisabledTextColor(new java.awt.Color(0, 0, 0));
-        jtfResultado.setEnabled(false);
         jtfResultado.setFocusable(false);
         jtfResultado.setSelectionColor(new java.awt.Color(255, 255, 255));
 
@@ -2537,7 +3141,7 @@ OuvinteTemporizador {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(22, 22, 22)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jtfNumPassos, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2545,11 +3149,11 @@ OuvinteTemporizador {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jtfEstadoAtual, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
+                .addGap(25, 25, 25)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jtfResultado, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(75, Short.MAX_VALUE))
+                .addContainerGap(66, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2604,6 +3208,25 @@ OuvinteTemporizador {
             }
         });
 
+        jLabel14.setText("Opções:");
+
+        btgOpcoesFita.add(jrbMoverFita);
+        jrbMoverFita.setText("Mover a fita");
+        jrbMoverFita.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jrbMoverFitaActionPerformed(evt);
+            }
+        });
+
+        btgOpcoesFita.add(jrbMoverCursor);
+        jrbMoverCursor.setSelected(true);
+        jrbMoverCursor.setText("Mover o cursor");
+        jrbMoverCursor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jrbMoverCursorActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -2625,6 +3248,12 @@ OuvinteTemporizador {
                         .addComponent(jrbPadrao)
                         .addGap(18, 18, 18)
                         .addComponent(jrbMultifita)
+                        .addGap(49, 49, 49)
+                        .addComponent(jLabel14)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jrbMoverCursor)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jrbMoverFita)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jtfSobre)))
                 .addContainerGap())
@@ -2646,7 +3275,10 @@ OuvinteTemporizador {
                     .addComponent(jrbPadrao)
                     .addComponent(jrbMultifita)
                     .addComponent(jLabel9)
-                    .addComponent(jtfSobre))
+                    .addComponent(jtfSobre)
+                    .addComponent(jLabel14)
+                    .addComponent(jrbMoverFita)
+                    .addComponent(jrbMoverCursor))
                 .addContainerGap())
         );
 
@@ -2802,7 +3434,7 @@ OuvinteTemporizador {
         jtaEditor.setColumns(20);
         jtaEditor.setFont(new java.awt.Font("DejaVu Sans Mono", 0, 12)); // NOI18N
         jtaEditor.setRows(5);
-        jtaEditor.setTabSize(1);
+        jtaEditor.setTabSize(4);
         jtaEditor.setComponentPopupMenu(jppEditor);
         jtaEditor.setMargin(new java.awt.Insets(2, 2, 200, 2));
         jtaEditor.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -2853,51 +3485,51 @@ OuvinteTemporizador {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbSetEstadoFinalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSetEstadoFinalActionPerformed
-        definirEstadoInicial();
+        definirEstadoSelecionadoComoInicial();
     }//GEN-LAST:event_jbSetEstadoFinalActionPerformed
 
     private void jbEditarEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEditarEstadoActionPerformed
-        editarEstado();
+        editarEstadoSelecionado();
     }//GEN-LAST:event_jbEditarEstadoActionPerformed
 
     private void jbRemoverTransicaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbRemoverTransicaoActionPerformed
-        removerTransicao();
+        removerTransicaoSelecionada();
     }//GEN-LAST:event_jbRemoverTransicaoActionPerformed
 
     private void jbInserirSimboloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbInserirSimboloActionPerformed
-        inserirSimbolo();
+        inserirSimbolos();
     }//GEN-LAST:event_jbInserirSimboloActionPerformed
 
     private void jbRemoverSimboloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbRemoverSimboloActionPerformed
-        removerSimbolo();
+        removerSimboloSelecionado();
     }//GEN-LAST:event_jbRemoverSimboloActionPerformed
 
     private void jbEditarSimboloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEditarSimboloActionPerformed
-        editarSimbolo();
+        editarSimboloSelecionado();
     }//GEN-LAST:event_jbEditarSimboloActionPerformed
 
     private void jbInserirEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbInserirEstadoActionPerformed
-        inserirEstado();
+        inserirEstados();
     }//GEN-LAST:event_jbInserirEstadoActionPerformed
 
     private void jbRemoverEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbRemoverEstadoActionPerformed
-        removerEstado();
+        removerEstadoSelecionado();
     }//GEN-LAST:event_jbRemoverEstadoActionPerformed
 
     private void jbSetEstadoInicialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSetEstadoInicialActionPerformed
-        definirEstadoTerminal();
+        definirEstadoSelecionadoComoTerminal();
     }//GEN-LAST:event_jbSetEstadoInicialActionPerformed
 
     private void jbAlfabetoAuxiliarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbAlfabetoAuxiliarActionPerformed
-        definirAlfabetoAuxiliar();
+        definirSimboloSelecionadoComoAuxiliar();
     }//GEN-LAST:event_jbAlfabetoAuxiliarActionPerformed
 
     private void jbMoverTransicaoCimaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMoverTransicaoCimaActionPerformed
-       moverTransicaoParaCima();
+       moverTransicaoSelecionadaParaCima();
     }//GEN-LAST:event_jbMoverTransicaoCimaActionPerformed
 
     private void jbMoverTransicaoBaixoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbMoverTransicaoBaixoActionPerformed
-        moverTransicaoParaBaixo();
+        moverTransicaoSelecionadaParaBaixo();
     }//GEN-LAST:event_jbMoverTransicaoBaixoActionPerformed
 
     private void jbInserirTransicaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbInserirTransicaoActionPerformed
@@ -2941,69 +3573,74 @@ OuvinteTemporizador {
     }//GEN-LAST:event_jbRefazerActionPerformed
 
     private void jbCopiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCopiarActionPerformed
-        copiarTextoAreaTransferencia();
+        copiarTextoParaAreaTransferencia();
     }//GEN-LAST:event_jbCopiarActionPerformed
 
     private void jbColarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbColarActionPerformed
-        colarTextoAreaTranferencia();
+        colarTextoDaAreaTranferencia();
     }//GEN-LAST:event_jbColarActionPerformed
 
     private void jmiCopiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiCopiarActionPerformed
-        copiarTextoAreaTransferencia();
+        copiarTextoParaAreaTransferencia();
     }//GEN-LAST:event_jmiCopiarActionPerformed
 
     private void jmiColarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiColarActionPerformed
-        colarTextoAreaTranferencia();
+        colarTextoDaAreaTranferencia();
     }//GEN-LAST:event_jmiColarActionPerformed
 
     private void jtaEditorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtaEditorKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            if (jppAutocompletar.isVisible()) {
+                jppAutocompletar.setVisible(false);
+            }
+        }
         verificarMudancasTexto();
     }//GEN-LAST:event_jtaEditorKeyReleased
 
     private void jlAlfabetoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jlAlfabetoMouseClicked
         if (evt.getClickCount() == 2) {
-            definirAlfabetoAuxiliar();
+            definirSimboloSelecionadoComoAuxiliar();
         }
     }//GEN-LAST:event_jlAlfabetoMouseClicked
 
     private void jlEstadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jlEstadosMouseClicked
         if (evt.getClickCount() == 2) {
-            definirEstadoTerminal();
+            definirEstadoSelecionadoComoTerminal();
         }
     }//GEN-LAST:event_jlEstadosMouseClicked
 
     private void jbExecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbExecutarActionPerformed
-       executar();
+       iniciarSimulacaoAutomatica();
     }//GEN-LAST:event_jbExecutarActionPerformed
 
     private void jbExecutarPassoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbExecutarPassoActionPerformed
-        executarPasso();
+        executarPassoSimulacao();
     }//GEN-LAST:event_jbExecutarPassoActionPerformed
 
     private void jbPararActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbPararActionPerformed
-        encerrar();
+        encerrarSimulacao();
     }//GEN-LAST:event_jbPararActionPerformed
 
     private void jbCarregarPalavraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCarregarPalavraActionPerformed
-        carregarCadeiaEntrada();
+        carregarPalavraEntrada();
     }//GEN-LAST:event_jbCarregarPalavraActionPerformed
 
     private void jbPausarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbPausarActionPerformed
-        pausarExecucao();
+        pausarSimulacaoAutomatica();
     }//GEN-LAST:event_jbPausarActionPerformed
 
     private void jtfPalavraKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtfPalavraKeyReleased
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            carregarCadeiaEntrada();
+            carregarPalavraEntrada();
         }
     }//GEN-LAST:event_jtfPalavraKeyReleased
 
     private void jbVelocidadeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbVelocidadeActionPerformed
-        configurarVelocidadeExecucao();
+        configurarVelocidadeSimulacaoAutomatica();
     }//GEN-LAST:event_jbVelocidadeActionPerformed
 
     private void jbReiniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbReiniciarActionPerformed
-        reiniciar();
+        reiniciarSimulacao();
     }//GEN-LAST:event_jbReiniciarActionPerformed
 
     private void jspNumeroFitasStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jspNumeroFitasStateChanged
@@ -3026,13 +3663,46 @@ OuvinteTemporizador {
         definirTituloTela();
     }//GEN-LAST:event_jtpSimuladorStateChanged
 
+    private void jmiDetalhesFitasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiDetalhesFitasActionPerformed
+        exibirDetalhesFitas();
+    }//GEN-LAST:event_jmiDetalhesFitasActionPerformed
+
+    private void jlAutocompletarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jlAutocompletarKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            inserirItemSelecionadoMenuTransicao();
+        } else if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            jppAutocompletar.setVisible(false);
+            jtaEditor.requestFocus();
+        }
+    }//GEN-LAST:event_jlAutocompletarKeyReleased
+
+    private void jlAutocompletarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jlAutocompletarMouseClicked
+        if (evt.getClickCount() == 2) {
+            inserirItemSelecionadoMenuTransicao();
+        }
+    }//GEN-LAST:event_jlAutocompletarMouseClicked
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        fecharTela();
+    }//GEN-LAST:event_formWindowClosing
+
+    private void jrbMoverCursorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbMoverCursorActionPerformed
+        configurarFitasVazias();
+    }//GEN-LAST:event_jrbMoverCursorActionPerformed
+
+    private void jrbMoverFitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbMoverFitaActionPerformed
+        configurarFitasVazias();
+    }//GEN-LAST:event_jrbMoverFitaActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup btgModelo;
+    private javax.swing.ButtonGroup btgOpcoesFita;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -3050,6 +3720,7 @@ OuvinteTemporizador {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
@@ -3093,11 +3764,18 @@ OuvinteTemporizador {
     private javax.swing.JButton jbSetEstadoInicial;
     private javax.swing.JButton jbVelocidade;
     private javax.swing.JList<String> jlAlfabeto;
+    private javax.swing.JList<String> jlAutocompletar;
     private javax.swing.JList<String> jlEstados;
     private javax.swing.JList<String> jlTransicoes;
     private javax.swing.JMenuItem jmiColar;
     private javax.swing.JMenuItem jmiCopiar;
+    private javax.swing.JMenuItem jmiDetalhesFitas;
+    private javax.swing.JPanel jpAutocompletar;
+    private javax.swing.JPopupMenu jppAutocompletar;
     private javax.swing.JPopupMenu jppEditor;
+    private javax.swing.JPopupMenu jppFitas;
+    private javax.swing.JRadioButton jrbMoverCursor;
+    private javax.swing.JRadioButton jrbMoverFita;
     private javax.swing.JRadioButton jrbMultifita;
     private javax.swing.JRadioButton jrbPadrao;
     private javax.swing.JScrollPane jspEditor;

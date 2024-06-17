@@ -21,7 +21,7 @@ public class Estado {
 
     
     /**
-     * Constructor padrão.
+     * Constructor da classe.
      * 
      * @param rotulo rótulo do estado.
      * 
@@ -39,6 +39,32 @@ public class Estado {
         } else {
             throw new Exception("Sintaxe do rótulo do estado incorreta.");
         }
+    }
+    
+    
+    /**
+     * Constructor da classe.
+     * 
+     * @param rotulo rótulo do estado.
+     * 
+     * @param terminal estatus de estado terminal.
+     * 
+     * @throws Exception erro na sintaxe do rótulo do estado.
+     */
+    public Estado(String rotulo, boolean terminal) throws Exception {
+        this(rotulo, terminal, false);
+    }
+    
+
+    /**
+     * Constructor da classe.
+     * 
+     * @param rotulo rótulo do estado.
+     * 
+     * @throws Exception erro na sintaxe do rótulo do estado.
+     */
+    public Estado(String rotulo) throws Exception {
+        this(rotulo, false, false);
     }
 
 

@@ -29,14 +29,14 @@ public class RenderizadorAlfabeto extends DefaultListCellRenderer {
         Simbolo simbolo = alfabetoFita.getSimbolo(index);   
 
         Color background = Color.WHITE;
-        Color foreground = Constantes.COR_ALFABETO_ENTRADA;
+        Color foreground = Color.BLACK;
         Font font = list.getFont();
 
         if (simbolo.isReservado()) {
-            foreground = Constantes.COR_SIMBOLOS_RESERVADOS;
+            foreground = new Color(150, 150, 150);
         } else {
             if (simbolo.isAuxiliar()) {
-                foreground = Constantes.COR_ALFABETO_AUXILIAR;
+                foreground = Color.BLUE;
             }
         }
 

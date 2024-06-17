@@ -511,7 +511,7 @@ public final class Fita {
     }
     
     
-    public boolean redimensionar(int celula, int qtdEsquerda, int qtdDireita) {
+    public boolean redimensionar(int posicao, int qtdEsquerda, int qtdDireita) {
         
         if (qtdEsquerda >= 0 && qtdDireita >= 0) {
         

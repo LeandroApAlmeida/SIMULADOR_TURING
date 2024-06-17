@@ -74,7 +74,7 @@ public class TelaInserirEstado extends javax.swing.JDialog {
 
                         for (int i = 0; i < secoes.length; i++) {
                             if (Estado.rotuloValido(secoes[i])) {
-                                listaEstados[i] = new Estado(secoes[i], terminal, false);
+                                listaEstados[i] = new Estado(secoes[i], terminal);
                             } else {
                                 erro = true;
                                 break;
@@ -85,7 +85,7 @@ public class TelaInserirEstado extends javax.swing.JDialog {
 
                         if (Estado.rotuloValido(texto)) {
                             listaEstados = new Estado[1];
-                            listaEstados[0] = new Estado(texto, terminal, false);
+                            listaEstados[0] = new Estado(texto, terminal);
                         } else {
                             erro = true;
                         }

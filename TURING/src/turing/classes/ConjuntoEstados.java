@@ -2,7 +2,7 @@ package turing.classes;
 
 /**
  * Conjunto de todos os estados da máquina de Turing (Q). Pertence ao conjunto
- * dos estados o estado inicial (q<sub>0</sub>) e o conjuntos dos estados
+ * dos estados o estado inicial (q<sub>0</sub>) e o conjunto dos estados
  * terminais (F).
  * 
  * @author Leandro Ap. de Almeida
@@ -87,7 +87,8 @@ public class ConjuntoEstados extends ListaEstados {
     public void setEstadoTerminal(Estado estado, boolean valor) {
         for (Estado estado2 : estados) {
             if (estado.equals(estado2)) {
-                estado.setTerminal(valor);
+                estado2.setTerminal(valor);
+                break;
             }
         }
     }

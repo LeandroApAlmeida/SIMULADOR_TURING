@@ -28,7 +28,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jSlider1" min="-2" pref="464" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
@@ -48,11 +48,14 @@
   <SubComponents>
     <Component class="javax.swing.JSlider" name="jSlider1">
       <Properties>
-        <Property name="maximum" type="int" value="30"/>
-        <Property name="minimum" type="int" value="1"/>
+        <Property name="maximum" type="int" value="10000"/>
+        <Property name="minimum" type="int" value="100"/>
         <Property name="paintTicks" type="boolean" value="true"/>
-        <Property name="value" type="int" value="1"/>
       </Properties>
+      <Events>
+        <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jSlider1MouseReleased"/>
+        <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jSlider1KeyReleased"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

@@ -2,8 +2,8 @@ package turing.classes;
 
 /**
  * Direção do movimento da cabeça de leitura. Esta implementação aceita os
- * movimentos à Direita, à Esquerda e também Parado, que mantém a cabeça de
- * leitura na mesma célula (técnicamente, significa Esquerda/Direita ou Direita/Esquerda).
+ * movimentos à Direita, à Esquerda e também Parado, que mantém a Cabeça de
+ * Leitura/Escrita na mesma célula.
  * 
  * @author Leandro Ap. de Almeida
  * 

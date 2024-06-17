@@ -16,8 +16,8 @@ import turing.classes.Modelo;
 import turing.classes.ParametrosFita;
 import turing.classes.Simbolo;
 import turing.classes.Transicao;
-import static turing.gui.Constantes.formatarSimbolos;
-import static turing.gui.Constantes.reverterSimbolos;
+import static turing.gui.Formatacao.formatarSimbolos;
+import static turing.gui.Formatacao.reverterSimbolos;
 
 public class TelaInserirTransicao extends javax.swing.JDialog {
     

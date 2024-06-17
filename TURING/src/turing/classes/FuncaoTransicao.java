@@ -3,7 +3,6 @@ package turing.classes;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.JOptionPane;
 
 /**
  * Função de transição para a máquina de Turing (δ). 
@@ -97,13 +96,15 @@ import javax.swing.JOptionPane;
  * 
  * <br>
  * 
- * Estas transições configuram o estado da máquina, e fazem a cabeça de
- * leitura/escrita ler/gravar símbolos e se mover para alguma direção. Em certo
+ * Estas transições configuram o estado da máquina, e fazem a Cabeça de
+ * Leitura/Escrita ler/gravar símbolos e se mover para alguma direção. Em certo
  * sentido, elas funcionam como instruções em linguagem de baixo nível em 
  * computadores reais, gravando conteúdo em memória e buscando novas instruções
  * para serem executadas até o programa ser encerrado (ou entrar em LOOP).
  * 
  * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
  */
 public class FuncaoTransicao implements Iterable<Transicao> {
     
