@@ -33,7 +33,19 @@
             <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/src/turing/Main.java</file>
         </group>
         <group name="TURING">
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/Constantes.java</file>
             <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/TelaPrincipal.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/ComponenteNumeroLinha.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/TelaDetalhesFitas.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/classes/MaquinaMultifitas.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/classes/ParametrosFita.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/DialogoSeletorArquivos.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/Formatacao.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/RendererizadorFita.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/JTextFieldCelula.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/OuvinteConfigSimulacaoAutomatica.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/TelaConfigVelocidade.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/classes/MaquinaTuring.java</file>
         </group>
     </open-files>
 </project-private>

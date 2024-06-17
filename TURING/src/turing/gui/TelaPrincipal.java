@@ -181,7 +181,7 @@ OuvinteConfigSimulacaoAutomatica {
         
         configurarControlesSimulador();
         
-        configurarEditorTexto();
+        configurarEditorCodigo();
 
         configurarFitasVazias();
 
@@ -202,11 +202,11 @@ OuvinteConfigSimulacaoAutomatica {
     
     
     /**
-     * Configura o editor de código do IDE. As configurações aplicadas são
+     * Configurar o editor de código do IDE. As configurações aplicadas são
      * visuais (número das linhas à direita) e também de ação, como teclas
      * de atalhos e opção de desfazer/refazer edição de texto.
      */
-    private void configurarEditorTexto() {
+    private void configurarEditorCodigo() {
         
         // Configura o componenteLinha de exibição de números de linhas à esquerda
         // do editor. O componenteLinha será acoplado ao JScrollPane do editor e
@@ -229,7 +229,7 @@ OuvinteConfigSimulacaoAutomatica {
         // cursor.
         // CTRL + Z: Desfazer edição do texto.
         // CTRL + W: Refazer edição do texto.
-        // CTRL + ESPAÇO: Exibir menu de contexto na função de transição.
+        // CTRL + ESPAÇO: Exibir menu de contexto na seção [Programa].
         
         jtaEditor.getActionMap().put("salvar_arquivo", new AbstractAction() {
             @Override
@@ -342,7 +342,7 @@ OuvinteConfigSimulacaoAutomatica {
         
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         
-        if (verificarMudancasTextoParaProsseguir()) {
+        if (verificarMudancasTextoEProsseguir()) {
             
             DialogoSeletorArquivos dialogoSeletorArquivos = new DialogoSeletorArquivos(
                 "Abrir Arquivo",
@@ -378,7 +378,7 @@ OuvinteConfigSimulacaoAutomatica {
         
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         
-        if (verificarMudancasTextoParaProsseguir()) {
+        if (verificarMudancasTextoEProsseguir()) {
 
             fecharArquivo();
 
@@ -521,7 +521,7 @@ OuvinteConfigSimulacaoAutomatica {
         
         if (arquivoAberto) {
         
-            if (verificarMudancasTextoParaProsseguir()) {
+            if (verificarMudancasTextoEProsseguir()) {
 
                 arquivo = null;
                 alfabetoFita.esvaziar();
@@ -719,7 +719,7 @@ OuvinteConfigSimulacaoAutomatica {
      * @return Se <i>true</i>, a ação que solicitou a verificação deve prosseguir.
      * Se <i>false</i>, ela deve ser cancelada.
      */
-    private boolean verificarMudancasTextoParaProsseguir() {
+    private boolean verificarMudancasTextoEProsseguir() {
         
         boolean prosseguir = true;
         
@@ -2448,7 +2448,7 @@ OuvinteConfigSimulacaoAutomatica {
      * com modificações pendentes de serem salvas.
      */
     private void fecharTela() {
-        if (verificarMudancasTextoParaProsseguir()) {
+        if (verificarMudancasTextoEProsseguir()) {
             System.exit(0);
         }
     }
