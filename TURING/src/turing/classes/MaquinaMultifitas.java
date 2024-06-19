@@ -18,13 +18,17 @@ import static turing.classes.Constantes.TAMANHO_FITA;
  * 
  * <p align="center">
  * 
- * <img src="https://github.com/LeandroApAlmeida/SIMULADOR_TURING/blob/5599747a83cf5f1c73eeb11aa751e19ed7d62b8c/RES/MaquinaTuringMultifitas.png?raw=true"/>
+ * <img src="https://github.com/LeandroApAlmeida/SIMULADOR_TURING/blob/master/RES/MaquinaTuringMultifitas.png?raw=true"/>
  * <br>
  * <i>Modelo de Máquina de Turing com múltiplas fitas</i>
  * 
  * </p>
  * 
  * <br><br>
+ * 
+ * <h3>Modelo Formal</h3>
+ * 
+ * <br>
  * 
  * Formalmente, ele é representado como:
  * 
@@ -57,13 +61,9 @@ import static turing.classes.Constantes.TAMANHO_FITA;
  * 
  * <br><br>
  * 
- * <BLOCKQUOTE>
- * 
  * δ : Q × Γ<sup>k</sup> → Q × Γ<sup>k</sup> × {E, D, P}<sup>k</sup>
  * 
- * </BLOCKQUOTE>
- * 
- * <br>
+ * <br><br>
  * 
  * <b>q<sub>0</sub></b> Estado inicial da máquina;
  * 
