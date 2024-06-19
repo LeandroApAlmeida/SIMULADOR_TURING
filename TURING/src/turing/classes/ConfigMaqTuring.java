@@ -11,7 +11,7 @@ package turing.classes;
 public class ConfigMaqTuring {
     
     
-    /**Nome a máquina de Turing.*/
+    /**Nome da máquina de Turing.*/
     private final String nome;
     
     /**Alfabeto da fita.*/

@@ -1,10 +1,13 @@
 package turing.classes;
 
 /**
- * Parâmetros para a movimentação da cabeça de leitura na fita. Este parâmetro
- * está relacionado com uma transição da função de transição ({@link Transicao}).
+ * Parâmetros para a movimentação da Cabeça de Leitura/Escrita na fita. Este 
+ * parâmetro está relacionado com uma transição da função de transição 
+ * ({@link Transicao}).
  * 
  * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
  */
 public class ParametrosFita {
     
@@ -38,6 +41,7 @@ public class ParametrosFita {
     
     /**
      * Obter o símbolo lido da fita.
+     * 
      * @return símbolo lido da fita.
      */
     public Simbolo getSimboloLido() {
@@ -47,6 +51,7 @@ public class ParametrosFita {
     
     /**
      * Obter o símbolo escrito na fita.
+     * 
      * @return símbolo escrito na fita.
      */
     public Simbolo getSimboloEscrito() {
@@ -56,24 +61,24 @@ public class ParametrosFita {
     
     /**
      * Obter a direção do movimento da cabeça de leitura.
+     * 
      * @return direção do movimento da cabeça de leitura.
      */
     public DirecaoMovimento getDirecaoMovimento() {
         return direcaoMovimento;
     }
     
-
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("lido: ");
+        sb.append("[");
         sb.append(simboloLido.toString());
         sb.append(", ");
-        sb.append("escr.: ");
         sb.append(simboloEscrito.toString());
         sb.append(", ");
-        sb.append("mov.: ");
         sb.append(direcaoMovimento.getId());
+        sb.append("]");
         return sb.toString();
     }
 

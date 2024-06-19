@@ -1,23 +1,24 @@
 package turing.gui;
 
-import turing.classes.AlfabetoFita;
-import static turing.gui.Constantes.CARACTER_BRANCO;
-import static turing.gui.Constantes.CARACTER_INICIO;
+import static turing.classes.Constantes.SIMBOLO_BRANCO;
+import static turing.classes.Constantes.SIMBOLO_INICIO_FITA;
+import static turing.gui.Sufixos.SUFIXO_BRANCO;
+import static turing.gui.Sufixos.SUFIXO_INICIO;
 
 public final class Formatacao {
     
     
     public static String formatarSimbolos(String string) {
-        String branco = new String(new byte[] {AlfabetoFita.BRANCO});
-        String inicio = new String(new byte[] {AlfabetoFita.INICIO_FITA});
-        return string.replace(branco, CARACTER_BRANCO).replace(inicio, CARACTER_INICIO);
+        String simboloBranco = new String(new byte[] {SIMBOLO_BRANCO});
+        String simboloInicio = new String(new byte[] {SIMBOLO_INICIO_FITA});
+        return string.replace(simboloBranco, SUFIXO_BRANCO).replace(simboloInicio, SUFIXO_INICIO);
     }
     
     
     public static String reverterSimbolos(String string) {
-        String branco = new String(new byte[] {AlfabetoFita.BRANCO});
-        String inicio = new String(new byte[] {AlfabetoFita.INICIO_FITA});
-        return string.replace(CARACTER_BRANCO, branco).replace(CARACTER_INICIO, inicio); 
+        String simboloBranco = new String(new byte[] {SIMBOLO_BRANCO});
+        String simboloInicio = new String(new byte[] {SIMBOLO_INICIO_FITA});
+        return string.replace(SUFIXO_BRANCO, simboloBranco).replace(SUFIXO_INICIO, simboloInicio); 
     }
     
     

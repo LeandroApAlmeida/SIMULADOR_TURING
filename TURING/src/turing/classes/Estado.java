@@ -1,7 +1,7 @@
 package turing.classes;
 
 /**
- * Classe que representa um estado da máquina de Turing.
+ * Classe que representa um estado da Unidade de Controle.
  * 
  * @author Leandro Ap. de Almeida
  * 
@@ -188,7 +188,6 @@ public class Estado {
         for (int i = 1; i < rotuloEstado.length(); i++) {
             
             int codigoUTF8 = (int) rotuloEstado.charAt(i);
-            
             
             numeral = (codigoUTF8 >= 48 && codigoUTF8 <= 57);
             maiuscula = (codigoUTF8 >= 65 && codigoUTF8 <= 90);

@@ -8,11 +8,11 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import turing.classes.AlfabetoFita;
 import turing.classes.Fita;
-import static turing.gui.Constantes.CARACTER_CEL_PIVO;
-import static turing.gui.Constantes.CARACTER_CURSOR;
 import static turing.gui.Formatacao.formatarSimbolos;
+import static turing.classes.Constantes.SIMBOLO_BRANCO;
+import static turing.gui.Sufixos.SUFIXO_CURSOR;
+import static turing.gui.Sufixos.SUFIXO_CEL_PIVO;
 
 /**
  *
@@ -32,7 +32,7 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
         
         this.fita = fita;
         
-        branco = String.valueOf(AlfabetoFita.BRANCO);
+        branco = String.valueOf(SIMBOLO_BRANCO);
         
         try {
             if (iconePadrao) {
@@ -61,7 +61,7 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
 
         if (text != null) {
         
-            if (text.contains(CARACTER_CURSOR)) {
+            if (text.contains(SUFIXO_CURSOR)) {
                 
                 textField.setForeground(Color.BLACK);
                 
@@ -73,19 +73,22 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
                 
                 textField.setFont(font);
                 
-                text = formatarSimbolos(text.replace(CARACTER_CURSOR, ""));
+                text = formatarSimbolos(text.replace(SUFIXO_CURSOR, ""));
                 
                 textField.setBackground(Color.WHITE);
                 textField.setText(text);
                 textField.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
                 
                 if (icone != null) {
+                    
                     textField.setIcone(icone);
+                    
                 }
                 
             } else {
                 
-                if (text.contains(CARACTER_CEL_PIVO)) {
+                if (text.contains(SUFIXO_CEL_PIVO)) {
+                    
                     textField.setBorder(
                         BorderFactory.createLineBorder(
                             Color.BLUE,
@@ -93,9 +96,13 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
                             false
                         )
                     );
-                    text = text.replace(CARACTER_CEL_PIVO, "");
+                    
+                    text = text.replace(SUFIXO_CEL_PIVO, "");
+                    
                 } else {
+                    
                     textField.setBorder(BorderFactory.createEmptyBorder());
+                    
                 }
                 
                 if (text.contains(branco)) {

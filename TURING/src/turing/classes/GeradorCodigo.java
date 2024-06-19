@@ -1,18 +1,18 @@
 package turing.classes;
 
-import static turing.classes.Compilador.CABECALHO_DESCRICAO;
-import static turing.classes.Compilador.CABECALHO_PARAMETROS;
-import static turing.classes.Compilador.CABECALHO_PROGRAMA;
-import static turing.classes.Compilador.CAMPO_ALFABETO_AUXILIAR;
-import static turing.classes.Compilador.CAMPO_ALFABETO_ENTRADA;
-import static turing.classes.Compilador.CAMPO_COMENTARIO;
-import static turing.classes.Compilador.CAMPO_ESTADOS;
-import static turing.classes.Compilador.CAMPO_ESTADOS_TERMINAIS;
-import static turing.classes.Compilador.CAMPO_ESTADO_INICIAL;
-import static turing.classes.Compilador.CAMPO_NOME;
-import static turing.classes.Compilador.CAMPO_NUMERO_FITAS;
-import static turing.classes.Compilador.SIMBOLO_ESPACO;
-import static turing.classes.Compilador.SIMBOLO_VIRGULA;
+import static turing.classes.Constantes.CABECALHO_DESCRICAO;
+import static turing.classes.Constantes.CABECALHO_PARAMETROS;
+import static turing.classes.Constantes.CABECALHO_PROGRAMA;
+import static turing.classes.Constantes.CAMPO_ALFABETO_AUXILIAR;
+import static turing.classes.Constantes.CAMPO_ALFABETO_ENTRADA;
+import static turing.classes.Constantes.CAMPO_COMENTARIO;
+import static turing.classes.Constantes.CAMPO_ESTADOS;
+import static turing.classes.Constantes.CAMPO_ESTADOS_TERMINAIS;
+import static turing.classes.Constantes.CAMPO_ESTADO_INICIAL;
+import static turing.classes.Constantes.CAMPO_NOME;
+import static turing.classes.Constantes.CAMPO_NUMERO_FITAS;
+import static turing.classes.Constantes.SIMBOLO_ESPACO;
+import static turing.classes.Constantes.SIMBOLO_VIRGULA;
 
 /**
  * Gerador do código do programa a partir dos parâmetros definidos na interface
@@ -20,7 +20,7 @@ import static turing.classes.Compilador.SIMBOLO_VIRGULA;
  * 
  * <br><br>
  * 
- * Como eu projetei o simulador para ter também a opção de configurar os parâmetros
+ * Como o simulador foi projetado para ter também a opção de configurar os parâmetros
  * da máquina de Turing através da interface gráfica de usuário, foi necessário
  * criar esta classe para obter estes parâmetros e injetar os dados no mesmo
  * código que está aberto no editor. O código aberto no editor e os parâmetros
@@ -38,6 +38,8 @@ import static turing.classes.Compilador.SIMBOLO_VIRGULA;
  * realizadas.
  * 
  * @author Leandro Ap. de Almeida.
+ * 
+ * @since 1.0
  */
 public class GeradorCodigo {
     
@@ -54,13 +56,15 @@ public class GeradorCodigo {
      * @return Se true, a linha inicia com o rótulo. Se false, a linha não
      * inicia.
      */
-    private boolean contemCampo(String linha, String campo, boolean cabecalho) {
+    private boolean contemCampo(String linha, String campo) {
+        boolean campoCabecalho = campo.equals(CABECALHO_DESCRICAO) ||
+        campo.equals(CABECALHO_PARAMETROS) || campo.equals(CABECALHO_PROGRAMA);
         if (!campo.equals(CAMPO_COMENTARIO)) {
-            String comando = (!cabecalho ? campo.substring(0, campo.indexOf("=")) : campo);
+            String comando = (!campoCabecalho ? campo.substring(0, campo.indexOf("=")) : campo);
             if (linha.contains(comando)) {
                 String nova = normalizar(linha);
                 if (!nova.startsWith(CAMPO_COMENTARIO)) {
-                    if (!cabecalho) {
+                    if (!campoCabecalho) {
                         return nova.startsWith(campo);
                     } else {
                         return nova.equals(campo);
@@ -116,7 +120,6 @@ public class GeradorCodigo {
      * <pre>
      * [Descricao]
      * 
-     *     Modelo = padrao
      *     Nome = Programa para a máquina de Turing
      * 
      * [Parametros]
@@ -134,25 +137,17 @@ public class GeradorCodigo {
      *     ...
      * </pre>
      * 
-     * 
      * Onde:
      * 
-     * 
      * <br><br>
-     *
      * 
      * <b>[Descricao]</b>: Cabeçalho da seção de Descricao. A seção Descricao
-     * serve para identificar o programa a ser executado e o modelo de máquina
-     * de Turing utilizado. Obrigatóriamente, deve ser a primeira seção do código
-     * do programa. Ela tem os seguintes campos: 
+     * serve para identificar o programa a ser executado. Obrigatóriamente, deve
+     * ser a primeira seção do código do programa. Ela tem os seguintes campos: 
      * 
      * <br><br>
      * 
-     * 
      * <ul>
-     * 
-     * <li>&nbsp;<b>Modelo = </b>: Modelo da máquina de Turing. No exemplo 
-     * acima: padrao</li><br>
      * 
      * <li>&nbsp;<b>Nome = </b>: Nome do programa. No exemplo acima: Programa 
      * para a máquina de Turing</li>
@@ -172,19 +167,19 @@ public class GeradorCodigo {
      * 
      * <li>&nbsp;<b>AlfabetoEntrada = </b>: Alfabeto de entrada. Este campo usa
      * a notação de conjunto { ... }. Cada símbolo do alfabeto deve ser separado
-     * por vírgula. No exemplo acima: { a, b, c }</li>
+     * por vírgula em caso de mais de um símbolo. No exemplo acima: { a, b, c }.</li>
      * 
      * <br>
      * 
      * <li>&nbsp;<b>AlfabetoAuxiliar = </b>: Alfabeto auxiliar. Este campo usa a 
      * notação de conjunto { ... }. Cada símbolo do alfabeto deve ser separado 
-     * por vírgula. No exemplo acima: { X, Y, Z }.</li>
+     * por vírgula em caso de mais de um símbolo. No exemplo acima: { X, Y, Z }.</li>
      * 
      * <br>
      * 
      * <li>&nbsp;<b>Estados = </b>: Conjunto dos Estados. Este campo usa a notação
-     * de conjunto { ... }. Cada estado do conjunto deve ser separado por vírgula.
-     * No exemplo acima: { q0, q1, q2, q3 }.</li>
+     * de conjunto { ... }. Cada estado do conjunto deve ser separado por vírgula
+     * em caso de mais de um estado. No exemplo acima: { q0, q1, q2, q3 }.</li>
      * 
      * <br>
      * 
@@ -195,8 +190,9 @@ public class GeradorCodigo {
      * 
      * <li>&nbsp;<b>EstadosTerminais = </b>: Conjunto dos Estados terminais. Este 
      * campo usa a notação de conjunto { ... }. Cada estado do conjunto deve ser 
-     * separado por vírgula. Cada um dos estados deste conjunto deve, obrigatóriamente,
-     * pertencer ao conjunto dos estados. No exemplo acima: { q2, q3 }</li>
+     * separado por vírgula em caso de mais de um estado. Cada um dos estados 
+     * deste conjunto deve, obrigatóriamente, pertencer ao conjunto dos estados.
+     * No exemplo acima: { q2, q3 }</li>
      * 
      * <br>
      * 
@@ -411,19 +407,19 @@ public class GeradorCodigo {
             for (int indice = 0 ; indice < linhas.length; indice++) {
                 String linha = linhas[indice];
                 if (!linha.startsWith(CAMPO_COMENTARIO)) {
-                    if (contemCampo(linha, CABECALHO_PROGRAMA, true)) {
+                    if (contemCampo(linha, CABECALHO_PROGRAMA)) {
                         indiceCabecalhoPrograma = indice;
-                    } else if (contemCampo(linha, CAMPO_ALFABETO_ENTRADA, false)) {
+                    } else if (contemCampo(linha, CAMPO_ALFABETO_ENTRADA)) {
                         indiceCampoAlfabetoEntrada = indice;
-                    } else if (contemCampo(linha, CAMPO_ALFABETO_AUXILIAR, false)) {
+                    } else if (contemCampo(linha, CAMPO_ALFABETO_AUXILIAR)) {
                         indiceCampoAlfabetoAuxiliar = indice;
-                    } else if (contemCampo(linha, CAMPO_ESTADOS, false)) {
+                    } else if (contemCampo(linha, CAMPO_ESTADOS)) {
                         indiceCampoEstados = indice;
-                    } else if (contemCampo(linha, CAMPO_ESTADO_INICIAL, false)) {
+                    } else if (contemCampo(linha, CAMPO_ESTADO_INICIAL)) {
                         indiceCampoEstadoInicial = indice;
-                    } else if (contemCampo(linha, CAMPO_ESTADOS_TERMINAIS, false)) {
+                    } else if (contemCampo(linha, CAMPO_ESTADOS_TERMINAIS)) {
                         indiceCampoEstadosTerminais = indice;
-                    } else if (contemCampo(linha, CAMPO_NUMERO_FITAS, false)) {
+                    } else if (contemCampo(linha, CAMPO_NUMERO_FITAS)) {
                         indiceCampoNumeroFitas = indice;
                     }
                 }

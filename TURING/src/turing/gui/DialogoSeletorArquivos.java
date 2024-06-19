@@ -11,6 +11,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 /**
  * Diálogo para abrir/salvar arquivos.
  * 
+ * @author Leandro Ap. de Almeida
+ * 
  * @since 1.0
  */
 public final class DialogoSeletorArquivos extends JFileChooser {
@@ -22,6 +24,9 @@ public final class DialogoSeletorArquivos extends JFileChooser {
     
     
     static {
+        
+        // Tradução dos controles do diálogo para o português.
+        
         UIManager.put("FileChooser.lookInLabelText", "Diretório");
         UIManager.put("FileChooser.saveInLabelMnemonic", "I");
         UIManager.put("FileChooser.saveInLabelText", "");
@@ -60,6 +65,7 @@ public final class DialogoSeletorArquivos extends JFileChooser {
         UIManager.put("FileChooser.helpButtonToolTipText", "H");
         UIManager.put("FileChooser.helpButtonToolTipText", "Ajuda");
         UIManager.put("FileChooser.acceptAllFileFilterText", "Todos os arquivos");
+        
     }
     
     

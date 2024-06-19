@@ -8,7 +8,7 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 
 public class JTextFieldCelula extends JTextField {
-    
+
     
     private Border borda;
     
@@ -34,16 +34,22 @@ public class JTextFieldCelula extends JTextField {
     
     @Override
     protected void paintComponent(Graphics graphics) {
+        
         super.paintComponent(graphics);
+        
         if (icone != null) {
+            
             Insets insets = borda.getBorderInsets(this);
+            
             icone.paintIcon(this, graphics, insets.left + 1, insets.top + 2);
+            
         }
+        
     }
 
     
-    public void setIcone(Icon icon) {
-        icone = icon;
+    public void setIcone(Icon icone) {
+        this.icone = icone;
     }
     
     

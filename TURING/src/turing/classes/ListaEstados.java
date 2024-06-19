@@ -8,6 +8,8 @@ import java.util.List;
  * Classe que representa uma lista de estados.
  * 
  * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
  */
 public class ListaEstados implements Iterable<Estado> {
     
@@ -126,6 +128,7 @@ public class ListaEstados implements Iterable<Estado> {
     
     /**
      * Obter o número total de estados.
+     * 
      * @return número total de estados.
      */
     public int getComprimento() {
@@ -154,6 +157,9 @@ public class ListaEstados implements Iterable<Estado> {
     }
     
     
+    /**
+     * Ordenar os estados em ordem ascendente dos rótulos.
+     */
     public void ordenar() {
         estados.sort(comparator);
     }
@@ -176,9 +182,10 @@ public class ListaEstados implements Iterable<Estado> {
      * 
      * <pre>
      * for (int i = 0; i < estados.getComprimento; i++) {
-     System.out.println(estados.getEstado(i));
- }
- </pre>
+     *     System.out.println(estados.getEstado(i));
+     * }
+     * 
+     * </pre>
      * 
      * @return instância de Iterator
      */

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import static turing.classes.DirecaoMovimento.DIREITA;
 import static turing.classes.DirecaoMovimento.ESQUERDA;
+import static turing.classes.Constantes.SIMBOLO_DELIMITADOR;
 
 
 /**
@@ -83,7 +84,7 @@ public class MaquinaPadrao implements MaquinaTuring {
             
         }
         
-        if (palavra.contains(String.valueOf(AlfabetoFita.DELIMITADOR_SECAO))) {
+        if (palavra.contains(String.valueOf(SIMBOLO_DELIMITADOR))) {
             
         } else {
             cursorSecao.put(secaoAtual, 1);

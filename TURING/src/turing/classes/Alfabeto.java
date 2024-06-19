@@ -63,7 +63,8 @@ public class Alfabeto implements Iterable<Simbolo> {
     
     
     /**
-     * Alterar o caractere de um símbolo.
+     * Alterar o caractere de um símbolo. O novo caractere não pode estar sendo
+     * usado por outro símbolo.
      * 
      * @param simbolo símbolo.
      * 
@@ -110,8 +111,8 @@ public class Alfabeto implements Iterable<Simbolo> {
      * 
      * @param caractere caractere do símbolo.
      * 
-     * @return Símbolo com o caractere especificado, ou null, caso o caractere
-     * seja inválido.
+     * @return Símbolo com o caractere especificado, ou null, caso o símbolo
+     * não seja encontrado.
      */
     public Simbolo getSimbolo(char caractere) {
         Simbolo simbolo = null;
@@ -164,7 +165,7 @@ public class Alfabeto implements Iterable<Simbolo> {
      * }
      * </pre>
      * 
-     * @return instância de Iterator
+     * @return Instância de Iterator
      */
     @Override
     public Iterator<Simbolo> iterator() {

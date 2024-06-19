@@ -2,14 +2,16 @@ package turing.classes;
 
 /**
  * Modelo de máquina de Turing utilizado. Como há muitas variações, implemento
- * dois modelos específicos.
+ * dois modelos determinísticos específicos.
  * 
  * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
  */
 public enum Modelo {
     
     
-    /**Modelo padrão, determinístico, com uma fita, finita à esquerda e infinita à direita*/
+    /**Modelo padrão, determinístico, com uma fita infinita à esquerda à direita*/
     PADRAO("padrao"),
     
     /**Modelo com k fitas, determinístico, cada fita sendo infinita à esquerda e à direita.*/
@@ -22,6 +24,7 @@ public enum Modelo {
     
     /**
      * Constructor padrão.
+     * 
      * @param codModelo código do modelo.
      */
     private Modelo(String codModelo) {
@@ -31,6 +34,7 @@ public enum Modelo {
     
     /**
      * Obter o código do modelo.
+     * 
      * @return código do modelo.
      */
     public String getCodigo() {

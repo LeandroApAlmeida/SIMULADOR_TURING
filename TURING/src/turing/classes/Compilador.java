@@ -2,28 +2,64 @@ package turing.classes;
 
 import java.util.ArrayList;
 import java.util.List;
+import static turing.classes.Constantes.CABECALHO_DESCRICAO;
+import static turing.classes.Constantes.CABECALHO_PARAMETROS;
+import static turing.classes.Constantes.CABECALHO_PROGRAMA;
+import static turing.classes.Constantes.CAMPO_ALFABETO_AUXILIAR;
+import static turing.classes.Constantes.CAMPO_ALFABETO_ENTRADA;
+import static turing.classes.Constantes.CAMPO_COMENTARIO;
+import static turing.classes.Constantes.CAMPO_ESTADOS;
+import static turing.classes.Constantes.CAMPO_ESTADOS_TERMINAIS;
+import static turing.classes.Constantes.CAMPO_ESTADO_INICIAL;
+import static turing.classes.Constantes.CAMPO_NOME;
+import static turing.classes.Constantes.CAMPO_NUMERO_FITAS;
+import static turing.classes.Constantes.SIMBOLO_ESPACO;
+import static turing.classes.Constantes.SIMBOLO_VIRGULA;
 
 /**
  * Compilador para a Máquina de Turing. A função do compilador é receber como
  * entrada o código do programa em formato de texto UTF-8 e produzir como saída
- * todas as instruções para a construção da máquina e seu funcionamento.
+ * todas as instruções para a construção da máquina e seu programa.
  * 
  * <br><br>
  * 
- * A máquina de Turing não é uma máquina em si, o que os vários modelos físicos
- * que podem ser encontrados fazendo uma busca na internet pode nos levar a pensar,
- * mas um ente teórico/matemático que simula a execução do que hoje denominamos 
- * algoritmo. Logo, as instruções obtidas com a compilação do código do programa
- * vai recuperar não somente o que seria o programa, que em termos formais é 
- * denominado de função de transição, inscrito na seção [Programa], mas também
- * todos os parâmetros para a construção da máquina em si, que inclui o alfabeto
- * da fita, o conjunto dos estados, o estado inicial, os estados terminais.
- *  
+ * Traçando um paralelo com um compilador real, esta classe realiza as etapas
+ * de análise léxica e análise sintática de um compilador para uma linguagem
+ * de programação de alto-nível. Após a análise, são extraídos os parâmetros
+ * para a construção da Máquina de Turing projetada e seu programa. Basicamente
+ * é a tarefa de transformar o texto em tokens, e extrair o contexto destes
+ * tokens para as instruções para um computador, no caso, uma máquina de Turing
+ * abstrata que será simulada pelo programa.
+ * 
  * <br><br>
  * 
- * Neste contexto, o que o compilador do código do programa faz é construir a
- * máquina de Turing e configurar o programa para o funcionamento da mesma. No
- * processo, será verificado se existem erros no código.
+ * Os parâmetros são: 
+ * 
+ * <br><br>
+ * 
+ * <ul>
+ * 
+ * <li>&nbsp;O alfabeto de entrada;</li><br>
+ * 
+ * <li>&nbsp;O alfabeto auxiliar;</li><br>
+ * 
+ * <li>&nbsp;O conjunto dos estados;</li><br>
+ * 
+ * <li>&nbsp;O estado inicial;</li><br>
+ * 
+ * <li>&nbsp;O conjunto dos estados terminais;</li><br>
+ * 
+ * <li>&nbsp;O número de fitas da máquina;</li><br>
+ * 
+ * <li>&nbsp;O programa, ou função de transição.</li>
+ * 
+ * </ul>
+ * 
+ * <br>
+ * 
+ * Vale ressaltar que a Máquina de Turing é um ente teórico, uma abstração de 
+ * algoritmo e não uma máquina em si. Turing nunca construi o dispositivo, apenas
+ * o concebeu como um método de cálculo de predicados de Lógica de Primeira Ordem.
  * 
  * @author Leandro Ap. de Almeida
  * 
@@ -31,29 +67,6 @@ import java.util.List;
  */
 public final class Compilador {
     
-    
-    // Cabeçalhos de seções
-    public static final String CABECALHO_DESCRICAO = "[Descricao]";
-    public static final String CABECALHO_PARAMETROS = "[Parametros]";
-    public static final String CABECALHO_PROGRAMA = "[Programa]";
-    
-    // Campos de seções.
-    public static final String CAMPO_NOME = "Nome=";
-    public static final String CAMPO_MODELO = "Modelo=";
-    public static final String CAMPO_ALFABETO_ENTRADA = "AlfabetoEntrada=";
-    public static final String CAMPO_ALFABETO_AUXILIAR = "AlfabetoAuxiliar=";
-    public static final String CAMPO_ESTADOS = "Estados=";
-    public static final String CAMPO_ESTADO_INICIAL = "EstadoInicial=";
-    public static final String CAMPO_ESTADOS_TERMINAIS = "EstadosTerminais=";
-    public static final String CAMPO_NUMERO_FITAS = "NumeroFitas=";
-    
-    // Comentário.
-    public static final String CAMPO_COMENTARIO = "//";
-    
-    // TAGS para caracteres.
-    public static final String SIMBOLO_ESPACO = "$e";
-    public static final String SIMBOLO_VIRGULA = "$v";
-
     
     /**
      * Verificar se a linha inicia com o rótulo do campo pesquisado.
@@ -67,13 +80,15 @@ public final class Compilador {
      * @return Se true, a linha inicia com o rótulo. Se false, a linha não
      * inicia.
      */
-    private boolean contemCampo(String linha, String campo, boolean cabecalho) {
+    private boolean contemCampo(String linha, String campo) {
+        boolean campoCabecalho = campo.equals(CABECALHO_DESCRICAO) ||
+        campo.equals(CABECALHO_PARAMETROS) || campo.equals(CABECALHO_PROGRAMA);
         if (!campo.equals(CAMPO_COMENTARIO)) {
-            String comando = (!cabecalho ? campo.substring(0, campo.indexOf("=")) : campo);
+            String comando = (!campoCabecalho ? campo.substring(0, campo.indexOf("=")) : campo);
             if (linha.contains(comando)) {
                 String nova = normalizar(linha);
                 if (!nova.startsWith(CAMPO_COMENTARIO)) {
-                    if (!cabecalho) {
+                    if (!campoCabecalho) {
                         return nova.startsWith(campo);
                     } else {
                         return nova.equals(campo);
@@ -492,11 +507,11 @@ public final class Compilador {
         
         for (int indice = 0; indice < linhas.length; indice++) {
             String linha = linhas[indice];
-            if (contemCampo(linha, CABECALHO_DESCRICAO, true)) {
+            if (contemCampo(linha, CABECALHO_DESCRICAO)) {
                 indiceSecaoDescricao = indice;
-            } else if (contemCampo(linha, CABECALHO_PARAMETROS, true)) {
+            } else if (contemCampo(linha, CABECALHO_PARAMETROS)) {
                 indiceSecaoParametros = indice;
-            } else if (contemCampo(linha, CABECALHO_PROGRAMA, true)) {
+            } else if (contemCampo(linha, CABECALHO_PROGRAMA)) {
                 indiceSecaoPrograma = indice;
             }
         }
@@ -556,7 +571,7 @@ public final class Compilador {
         
         for (int indice = 0; indice < indiceSecaoDescricao; indice++) {
             String linha = linhas[indice];
-            if (!contemCampo(linha, CAMPO_COMENTARIO, false)) {
+            if (!contemCampo(linha, CAMPO_COMENTARIO)) {
                 if (linha.trim().length() > 0) {
                     linhasErro.add(indice);
                     erro = true;
@@ -574,8 +589,8 @@ public final class Compilador {
 
         for (int indice = indiceSecaoDescricao + 1; indice < indiceSecaoParametros; indice++) {
             String linha = linhas[indice];
-            if (!contemCampo(linha, CAMPO_COMENTARIO, false)) {
-                if (contemCampo(linha, CAMPO_NOME, false)) {
+            if (!contemCampo(linha, CAMPO_COMENTARIO)) {
+                if (contemCampo(linha, CAMPO_NOME)) {
                     indiceCampoNome = indice;
                 } else  {
                     if (linha.trim().length() > 0) {
@@ -611,18 +626,18 @@ public final class Compilador {
         
         for (int indice = indiceSecaoParametros + 1; indice < indiceSecaoPrograma; indice++) {   
             String linha = linhas[indice];
-            if (!contemCampo(linha, CAMPO_COMENTARIO, false)) {
-                if (contemCampo(linha, CAMPO_ALFABETO_ENTRADA, false)) {
+            if (!contemCampo(linha, CAMPO_COMENTARIO)) {
+                if (contemCampo(linha, CAMPO_ALFABETO_ENTRADA)) {
                     indiceCampoAlfabetoEntrada = indice;
-                } else if (contemCampo(linha, CAMPO_ALFABETO_AUXILIAR, false)) {
+                } else if (contemCampo(linha, CAMPO_ALFABETO_AUXILIAR)) {
                     indiceCampoAlfabetoAuxiliar = indice;
-                } else if (contemCampo(linha, CAMPO_ESTADOS, false)) {
+                } else if (contemCampo(linha, CAMPO_ESTADOS)) {
                     indiceCampoEstados = indice;
-                } else if (contemCampo(linha, CAMPO_ESTADO_INICIAL, false)) {
+                } else if (contemCampo(linha, CAMPO_ESTADO_INICIAL)) {
                     indiceCampoEstadoInicial = indice;
-                } else if (contemCampo(linha, CAMPO_ESTADOS_TERMINAIS, false)) {
+                } else if (contemCampo(linha, CAMPO_ESTADOS_TERMINAIS)) {
                     indiceCampoEstadosTerminais = indice;
-                } else if (contemCampo(linha, CAMPO_NUMERO_FITAS, false)) {
+                } else if (contemCampo(linha, CAMPO_NUMERO_FITAS)) {
                     indiceCampoNumeroFitas = indice;
                 } else {
                     if (linha.trim().length() > 0) {

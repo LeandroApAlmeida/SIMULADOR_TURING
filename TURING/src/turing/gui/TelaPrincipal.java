@@ -40,6 +40,7 @@ import turing.classes.FuncaoTransicao;
 import turing.classes.Compilador;
 import turing.classes.ConfigMaqTuring;
 import turing.classes.ConjuntoEstados;
+import static turing.classes.Constantes.CABECALHO_PROGRAMA;
 import turing.classes.DirecaoMovimento;
 import turing.classes.Fita;
 import turing.classes.MaquinaMultifitas;
@@ -51,11 +52,12 @@ import static turing.classes.Modelo.PADRAO;
 import turing.classes.Simbolo;
 import turing.classes.Transicao;
 import static turing.gui.ComponenteNumeroLinha.ALINHAMENTO_CENTRALIZADO;
-import static turing.gui.Constantes.CARACTER_CEL_PIVO;
-import static turing.gui.Constantes.CARACTER_CURSOR;
 import static turing.gui.Formatacao.formatarSimbolos;
 import turing.classes.OuvinteEtapaSimulacao;
-import static turing.gui.Constantes.CELULAS_FITA;
+import static turing.classes.Constantes.SIMBOLO_BRANCO;
+import static turing.gui.Sufixos.SUFIXO_CURSOR;
+import static turing.gui.Sufixos.SUFIXO_CEL_PIVO;
+import static turing.classes.Constantes.TAMANHO_FITA;
 
 
 /**
@@ -185,9 +187,9 @@ OuvinteConfigSimulacaoAutomatica {
 
         configurarFitasVazias();
 
-        listarSimbolos();
-        listarEstados();
-        listarTransicoes();
+        listarAlfabetoFita();
+        listarConjuntoEstados();
+        listarFuncaoTransicao();
         
         gerarCodigoPrograma();
         
@@ -342,7 +344,7 @@ OuvinteConfigSimulacaoAutomatica {
         
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         
-        if (verificarMudancasTextoEProsseguir()) {
+        if (verificarMudancasNoTextoEProsseguir()) {
             
             DialogoSeletorArquivos dialogoSeletorArquivos = new DialogoSeletorArquivos(
                 "Abrir Arquivo",
@@ -378,7 +380,7 @@ OuvinteConfigSimulacaoAutomatica {
         
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         
-        if (verificarMudancasTextoEProsseguir()) {
+        if (verificarMudancasNoTextoEProsseguir()) {
 
             fecharArquivo();
 
@@ -521,7 +523,7 @@ OuvinteConfigSimulacaoAutomatica {
         
         if (arquivoAberto) {
         
-            if (verificarMudancasTextoEProsseguir()) {
+            if (verificarMudancasNoTextoEProsseguir()) {
 
                 arquivo = null;
                 alfabetoFita.esvaziar();
@@ -533,9 +535,9 @@ OuvinteConfigSimulacaoAutomatica {
                 
                 compilacaoPendente = false;
 
-                listarSimbolos();
-                listarEstados();
-                listarTransicoes();
+                listarAlfabetoFita();
+                listarConjuntoEstados();
+                listarFuncaoTransicao();
                 
                 jtaEditor.setText("");
 
@@ -623,9 +625,9 @@ OuvinteConfigSimulacaoAutomatica {
                 
                 compilando = false;
 
-                listarEstados();
-                listarSimbolos();
-                listarTransicoes();
+                listarConjuntoEstados();
+                listarAlfabetoFita();
+                listarFuncaoTransicao();
                 
                 configurarBarraFerramentasEditor();
                 configurarBarraFerramentasSimulador();
@@ -719,7 +721,7 @@ OuvinteConfigSimulacaoAutomatica {
      * @return Se <i>true</i>, a ação que solicitou a verificação deve prosseguir.
      * Se <i>false</i>, ela deve ser cancelada.
      */
-    private boolean verificarMudancasTextoEProsseguir() {
+    private boolean verificarMudancasNoTextoEProsseguir() {
         
         boolean prosseguir = true;
         
@@ -776,9 +778,9 @@ OuvinteConfigSimulacaoAutomatica {
             if (comprimentoAtual != comprimentoTextoCompilacao) {
                 compilacaoPendente = true;
                 jbCompilar.setEnabled(true);
-                listarEstados();
-                listarSimbolos();
-                listarTransicoes();
+                listarConjuntoEstados();
+                listarAlfabetoFita();
+                listarFuncaoTransicao();
                 configurarBarraFerramentasEditor();
                 configurarBarraFerramentasSimulador();
             }
@@ -829,7 +831,7 @@ OuvinteConfigSimulacaoAutomatica {
      */
     private void exibirMenuTransicao() {
         
-        int posicaoCabecalho = jtaEditor.getText().indexOf(Compilador.CABECALHO_PROGRAMA);
+        int posicaoCabecalho = jtaEditor.getText().indexOf(CABECALHO_PROGRAMA);
         
         if (posicaoCabecalho >= 0) {
             
@@ -974,7 +976,7 @@ OuvinteConfigSimulacaoAutomatica {
      * Listar os símbolos do alfabeto da fita, preenchendo e configurando a
      * visualização da lista.
      */
-    private void listarSimbolos() {
+    private void listarAlfabetoFita() {
 
         if (!compilacaoPendente) {
         
@@ -1011,7 +1013,7 @@ OuvinteConfigSimulacaoAutomatica {
      * Listar os estados do conjunto de estados, preenchendo e configurando a
      * visualização da lista.
      */
-    private void listarEstados() {
+    private void listarConjuntoEstados() {
 
         if (!compilacaoPendente) {
         
@@ -1055,7 +1057,7 @@ OuvinteConfigSimulacaoAutomatica {
      * Listar as transições da função de transição, preenchendo e configurando a
      * visualização da lista.
      */
-    private void listarTransicoes() {
+    private void listarFuncaoTransicao() {
         
         if (!compilacaoPendente) {
         
@@ -1310,7 +1312,7 @@ OuvinteConfigSimulacaoAutomatica {
             telaInserirSimbolo.setVisible(true);
 
             if (!telaInserirSimbolo.isCancelado()) {
-                listarSimbolos();
+                listarAlfabetoFita();
                 gerarCodigoPrograma();
             }
         
@@ -1347,7 +1349,7 @@ OuvinteConfigSimulacaoAutomatica {
                 
                 if (!simbolo.isReservado()) {
                     alfabetoFita.removerSimbolo(simbolo);
-                    listarSimbolos();
+                    listarAlfabetoFita();
                     gerarCodigoPrograma();
                     jlAlfabeto.setSelectedIndex(indice-1);
                 }
@@ -1396,7 +1398,7 @@ OuvinteConfigSimulacaoAutomatica {
                     telaInserirSimbolo.setVisible(true);
 
                     if (!telaInserirSimbolo.isCancelado()) {
-                        listarSimbolos();
+                        listarAlfabetoFita();
                         gerarCodigoPrograma();
                         jlAlfabeto.setSelectedIndex(indice);
                     }
@@ -1439,7 +1441,7 @@ OuvinteConfigSimulacaoAutomatica {
 
                 if (!simbolo.isReservado()) {
                     alfabetoFita.setSimboloAuxiliar(simbolo, !simbolo.isAuxiliar());
-                    listarSimbolos();
+                    listarAlfabetoFita();
                     gerarCodigoPrograma();
                     jlAlfabeto.setSelectedIndex(indice);
                 }
@@ -1479,7 +1481,7 @@ OuvinteConfigSimulacaoAutomatica {
             telaInserirEstado.setVisible(true);
 
             if (!telaInserirEstado.isCancelado()) {
-                listarEstados();
+                listarConjuntoEstados();
                 gerarCodigoPrograma();
             }
         
@@ -1509,7 +1511,7 @@ OuvinteConfigSimulacaoAutomatica {
             if (indice >= 0) {
                 Estado estado = conjuntoEstados.getEstado(indice);
                 conjuntoEstados.removerEstado(estado);
-                listarEstados();
+                listarConjuntoEstados();
                 gerarCodigoPrograma();
                 if (indice > 0) {
                     jlEstados.setSelectedIndex(indice-1);
@@ -1551,7 +1553,7 @@ OuvinteConfigSimulacaoAutomatica {
                 telaInserirEstado.setVisible(true);
 
                 if (!telaInserirEstado.isCancelado()) {
-                    listarEstados();
+                    listarConjuntoEstados();
                     gerarCodigoPrograma();
                     jlEstados.setSelectedIndex(indice);
                 }
@@ -1592,7 +1594,7 @@ OuvinteConfigSimulacaoAutomatica {
                 
                 conjuntoEstados.setEstadoInicial(estadoInicial);
                 
-                listarEstados();
+                listarConjuntoEstados();
 
                 gerarCodigoPrograma();
 
@@ -1634,7 +1636,7 @@ OuvinteConfigSimulacaoAutomatica {
                 
                 conjuntoEstados.setEstadoTerminal(estado, !estado.isTerminal());
 
-                listarEstados();
+                listarConjuntoEstados();
 
                 gerarCodigoPrograma();
 
@@ -1676,7 +1678,7 @@ OuvinteConfigSimulacaoAutomatica {
         
         if (telaInserirTransicao.isCancelado()) {
             
-            listarTransicoes();
+            listarFuncaoTransicao();
             
             gerarCodigoPrograma();
             
@@ -1702,7 +1704,7 @@ OuvinteConfigSimulacaoAutomatica {
                 
                 if (funcaoTransicao.removerTransicao(transicao)) {
 
-                    listarTransicoes();
+                    listarFuncaoTransicao();
 
                     gerarCodigoPrograma();
 
@@ -1743,7 +1745,7 @@ OuvinteConfigSimulacaoAutomatica {
                 
                 if (funcaoTransicao.moverTransicaoParaCima(indice)) {
 
-                    listarTransicoes();
+                    listarFuncaoTransicao();
 
                     gerarCodigoPrograma();
 
@@ -1784,7 +1786,7 @@ OuvinteConfigSimulacaoAutomatica {
                 
                 if (funcaoTransicao.moverTransicaoParaBaixo(indice)) {
 
-                    listarTransicoes();
+                    listarFuncaoTransicao();
 
                     gerarCodigoPrograma();
 
@@ -1867,50 +1869,54 @@ OuvinteConfigSimulacaoAutomatica {
     private void carregarPalavraEntrada() {
         
         if (maquinaTuring == null) {
+            
+            if (jlTransicoes.getModel().getSize() > 0) {
                     
-            modelo = jrbPadrao.isSelected() ? Modelo.PADRAO : Modelo.MULTIFITAS;
+                modelo = jrbPadrao.isSelected() ? Modelo.PADRAO : Modelo.MULTIFITAS;
 
-            try {
+                try {
 
-                switch (modelo) {
+                    switch (modelo) {
 
-                    case PADRAO -> maquinaTuring = new MaquinaPadrao(
-                        alfabetoFita,
-                        conjuntoEstados,
-                        funcaoTransicao,
-                        (int)jspNumeroFitas.getValue()
-                    );
+                        case PADRAO -> maquinaTuring = new MaquinaPadrao(
+                            alfabetoFita,
+                            conjuntoEstados,
+                            funcaoTransicao,
+                            (int)jspNumeroFitas.getValue()
+                        );
 
-                    case MULTIFITAS -> maquinaTuring = new MaquinaMultifitas(
-                        alfabetoFita,
-                        conjuntoEstados,
-                        funcaoTransicao,
-                        (int)jspNumeroFitas.getValue()
+                        case MULTIFITAS -> maquinaTuring = new MaquinaMultifitas(
+                            alfabetoFita,
+                            conjuntoEstados,
+                            funcaoTransicao,
+                            (int)jspNumeroFitas.getValue()
+                        );
+
+                    }
+
+                    maquinaTuring.adicionarOuvinte(this);
+
+                    maquinaTuring.carregarPalavra(jtfPalavra.getText());
+
+                    emExecucao = true;
+
+                    simulacaoAutomatica = false;
+
+                    emPausa = false;
+
+                    configurarControlesSimulador();
+
+                } catch (Exception ex) {
+
+                    JOptionPane.showMessageDialog(
+                        this,
+                        ex.getMessage(),
+                        "Erro",
+                        JOptionPane.ERROR_MESSAGE
                     );
 
                 }
-
-                maquinaTuring.adicionarOuvinte(this);
-
-                maquinaTuring.carregarPalavra(jtfPalavra.getText());
-
-                emExecucao = true;
-
-                simulacaoAutomatica = false;
-
-                emPausa = false;
-
-                configurarControlesSimulador();
-
-            } catch (Exception ex) {
-
-                JOptionPane.showMessageDialog(
-                    this,
-                    ex.getMessage(),
-                    "Erro",
-                    JOptionPane.ERROR_MESSAGE
-                );
-
+            
             }
             
         }
@@ -2098,14 +2104,14 @@ OuvinteConfigSimulacaoAutomatica {
     private void configurarFitasVazias() {
         
         int numeroFitas = jrbPadrao.isSelected() ? 1 : (int) jspNumeroFitas.getValue();
-        int numeroCelulas = CELULAS_FITA;
+        int numeroCelulas = TAMANHO_FITA;
         
         String[][] celulas = new String[numeroFitas][numeroCelulas];
         String[] titulos = new String[numeroCelulas];
         
         for (int i = 0; i < numeroFitas; i++) {
             for (int j = 0; j < numeroCelulas; j++) {
-                celulas[i][j] = String.valueOf(AlfabetoFita.BRANCO);
+                celulas[i][j] = String.valueOf(SIMBOLO_BRANCO);
             }
         }
         
@@ -2182,7 +2188,7 @@ OuvinteConfigSimulacaoAutomatica {
             
             for (int i = 0; i < jtFitas.getRowCount(); i++) {
                 for (int j = 0; j < jtFitas.getColumnCount(); j++) {
-                    jtFitas.setValueAt(String.valueOf(AlfabetoFita.BRANCO), i, j);
+                    jtFitas.setValueAt(String.valueOf(SIMBOLO_BRANCO), i, j);
                 }
             }
             
@@ -2190,23 +2196,23 @@ OuvinteConfigSimulacaoAutomatica {
                 
                 int cursor = cursores.get(i);
                 
-                String s = fitas[i].getCelulas()[cursor].toString() + CARACTER_CURSOR;
+                String s = fitas[i].getCelulas()[cursor].toString() + SUFIXO_CURSOR;
                 
                 jtFitas.setValueAt(s, i, colCursor);
                 
                 for (int j = colCursor - 1, k = cursor - 1; j >= 0 && k >= 0; j--, k--) {
                     if (k == fitas[i].getCelulaPivo()) {
-                        s = fitas[i].getCelulas()[k].toString() + CARACTER_CEL_PIVO;
+                        s = fitas[i].getCelulas()[k].toString() + SUFIXO_CEL_PIVO;
                     } else {
                         s = fitas[i].getCelulas()[k].toString();
                     }
                     jtFitas.setValueAt(s, i, j);
                 }
                 
-                for (int j = colCursor + 1, k = cursor + 1; j < CELULAS_FITA &&
+                for (int j = colCursor + 1, k = cursor + 1; j < TAMANHO_FITA &&
                 k < fitas[i].getComprimento(); j++, k++) {
                     if (k == fitas[i].getCelulaPivo()) {
-                        s = fitas[i].getCelulas()[k].toString() + CARACTER_CEL_PIVO;
+                        s = fitas[i].getCelulas()[k].toString() + SUFIXO_CEL_PIVO;
                     } else {
                         s = fitas[i].getCelulas()[k].toString();
                     }
@@ -2251,7 +2257,7 @@ OuvinteConfigSimulacaoAutomatica {
 
             for (int i = 0; i < jtFitas.getRowCount(); i++) {
                 for (int j = 0; j < jtFitas.getColumnCount(); j++) {
-                    jtFitas.setValueAt(String.valueOf(AlfabetoFita.BRANCO), i, j);
+                    jtFitas.setValueAt(String.valueOf(SIMBOLO_BRANCO), i, j);
                 }
             }
 
@@ -2259,9 +2265,9 @@ OuvinteConfigSimulacaoAutomatica {
                 for (int j = 0; j < jtFitas.getColumnCount() ; j++) {
                     String s;
                     if (j == cursores.get(i)) {
-                        s = fitas[i].getCelulas()[j].toString() + CARACTER_CURSOR;
+                        s = fitas[i].getCelulas()[j].toString() + SUFIXO_CURSOR;
                     } else if (j == fitas[i].getCelulaPivo()) {
-                        s = fitas[i].getCelulas()[j].toString() + CARACTER_CEL_PIVO;
+                        s = fitas[i].getCelulas()[j].toString() + SUFIXO_CEL_PIVO;
                     } else {
                         s = fitas[i].getCelulas()[j].toString();
                     }
@@ -2390,7 +2396,7 @@ OuvinteConfigSimulacaoAutomatica {
     
     
     
-// --------------------------- OUTROS MÉTODOS --------------------------------//  
+// ---------------------------- OUTROS MÉTODOS -------------------------------//  
         
     
     /**
@@ -2448,7 +2454,7 @@ OuvinteConfigSimulacaoAutomatica {
      * com modificações pendentes de serem salvas.
      */
     private void fecharTela() {
-        if (verificarMudancasTextoEProsseguir()) {
+        if (verificarMudancasNoTextoEProsseguir()) {
             System.exit(0);
         }
     }

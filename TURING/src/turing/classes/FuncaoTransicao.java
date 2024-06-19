@@ -5,12 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Função de transição para a máquina de Turing (δ). 
- * 
- * <br><br>
- * 
- * Traçando um paralelo com um computador real, a função de transição seria o 
- * programa executado, que faz o computador realizar alguma tarefa.
+ * Função de transição para a máquina de Turing (δ). Traçando um paralelo com um
+ * computador real, a função de transição seria o programa executado, que faz o
+ * computador realizar alguma tarefa.
  * 
  * <br><br>
  * 
@@ -18,21 +15,25 @@ import java.util.List;
  * 
  * <br><br>
  * 
- * considera
+ * Considera
+ * 
+ * <br><br>
  * 
  * <ul>
- * <li>estado corrente</li>
- * <li>símbolo(s) lido da(s) fita(s).</li>
+ * <li>Estado corrente</li><br>
+ * <li>Símbolo(s) lido da(s) fita(s).</li>
  * </ul>
  * 
  * <br>
  * 
  * Para determinar
  * 
+ * <br><br>
+ * 
  * <ul>
- * <li>novo estado</li>
- * <li>símbolo(s) a ser(em) gravado(s)</li>
- * <li>sentido de movimento da(s) cabeça(s) de leitura, onde esquerda é representado
+ * <li>Novo estado</li><br>
+ * <li>Símbolo(s) a ser(em) gravado(s)</li><br>
+ * <li>Sentido de movimento da(s) cabeça(s) de leitura, onde esquerda é representado
  * por <b>E</b>, direita é representado por <b>D</b> e parado por <b>P</b>.</li>
  * </ul>
  * 
@@ -56,9 +57,9 @@ import java.util.List;
  * 
  * <BLOCKQUOTE>
  * 
- * δ(E<sub>Atual</sub>, S<sub>1</sub>, S<sub>2</sub>, ... , S<sub>k</sub>) = 
- * (E<sub>Novo</sub>, G<sub>1</sub>, G<sub>2</sub>, ... , G<sub>k</sub>, 
- * M<sub>1</sub>, M<sub>2</sub>, ... , M<sub>k</sub>)
+ * δ(q<sub>a</sub>, l<sub>1</sub>, l<sub>2</sub>, ... , l<sub>k</sub>) = 
+ * (q<sub>n</sub>, g<sub>1</sub>, g<sub>2</sub>, ... , g<sub>k</sub>, 
+ * d<sub>1</sub>, d<sub>2</sub>, ... , d<sub>k</sub>)
  * 
  * </BLOCKQUOTE>
  * 
@@ -70,23 +71,26 @@ import java.util.List;
  * 
  * <BLOCKQUOTE>
  * 
- * <b>E<sub>Atual</sub></b>: Estado atual.
+ * <b>q<sub>a</sub></b>: Estado atual.
  * 
  * <br><br>
  * 
- * <b>S<sub>n</sub></b>: Símbolo lido da fita n.
+ * <b>l<sub>1</sub>, l<sub>2</sub>, ..., l<sub>k</sub></b>: Símbolos lidos das 
+ * fitas.
  * 
  * <br><br>
  * 
- * <b>E<sub>Novo</sub></b>: Novo estado.
+ * <b>q<sub>n</sub></b>: Novo estado.
  * 
  * <br><br>
  * 
- * <b>G<sub>n</sub></b>: Símbolo gravado na fita n.
+ * <b>g<sub>1</sub>, g<sub>2</sub>, ..., g<sub>k</sub></b>: Símbolos gravados nas
+ * fitas.
  * 
  * <br><br>
  * 
- * <b>M<sub>n</sub></b>: Sentido do movimento da cabeça de leitura na fita n
+ * <b>d<sub>1</sub>, d<sub>2</sub>, ..., d<sub>k</sub></b>: Sentidos dos movimentos
+ * das Cabeças de Leitura/Escrita nas fitas.
  * 
  * <br><br>
  * 
@@ -268,6 +272,16 @@ public class FuncaoTransicao implements Iterable<Transicao> {
     }
     
     
+    /**
+     * Obter o índice de uma transição, identificada pelo estado atual e os
+     * símbolos lidos da fita.
+     * 
+     * @param estado estado atual.
+     * 
+     * @param simbolos símbolos lidos da fita.
+     * 
+     * @return Índice da transição na lista. 
+     */
     public int indiceDe(Estado estado, char... simbolos) {
         int indiceTransicao = -1;
         boolean erro;

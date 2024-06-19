@@ -1,10 +1,10 @@
 package turing.gui;
 
 import javax.swing.table.DefaultTableModel;
-import turing.classes.AlfabetoFita;
 import turing.classes.Fita;
 import turing.classes.MaquinaTuring;
-import static turing.gui.Constantes.CELULAS_FITA;
+import static turing.classes.Constantes.SIMBOLO_BRANCO;
+import static turing.classes.Constantes.TAMANHO_FITA;
 
 public class TelaDetalhesFitas extends javax.swing.JDialog {
     
@@ -42,8 +42,7 @@ public class TelaDetalhesFitas extends javax.swing.JDialog {
 
             for (int i = 0; i < jtFitas.getRowCount(); i++) {
                 for (int j = 0; j < jtFitas.getColumnCount(); j++) {
-                    jtFitas.setValueAt(
-                        String.valueOf(AlfabetoFita.BRANCO),
+                    jtFitas.setValueAt(String.valueOf(SIMBOLO_BRANCO),
                         i,
                         j
                     );
@@ -66,7 +65,7 @@ public class TelaDetalhesFitas extends javax.swing.JDialog {
                 jtFitas.getColumnModel().getColumn(i).setCellRenderer(renderer);
             }
             
-            if (fitas[0].getComprimento() > CELULAS_FITA) {
+            if (fitas[0].getComprimento() > TAMANHO_FITA) {
                 jtFitas.setAutoResizeMode(
                     javax.swing.JTable.AUTO_RESIZE_OFF
                 );
@@ -95,8 +94,7 @@ public class TelaDetalhesFitas extends javax.swing.JDialog {
 
             for (int i = 0; i < jtFitas.getRowCount(); i++) {
                 for (int j = 0; j < jtFitas.getColumnCount(); j++) {
-                    jtFitas.setValueAt(
-                        String.valueOf(AlfabetoFita.BRANCO),
+                    jtFitas.setValueAt(String.valueOf(SIMBOLO_BRANCO),
                         i,
                         j
                     );

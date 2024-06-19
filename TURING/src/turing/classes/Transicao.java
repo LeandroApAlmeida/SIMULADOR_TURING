@@ -7,6 +7,8 @@ import java.util.List;
  * 
  * 
  * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
  */
 public class Transicao {
     

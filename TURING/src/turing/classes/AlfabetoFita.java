@@ -2,16 +2,16 @@ package turing.classes;
 
 import java.util.ArrayList;
 import java.util.List;
+import static turing.classes.Constantes.SIMBOLO_BRANCO;
+import static turing.classes.Constantes.SIMBOLO_INICIO_FITA;
+import static turing.classes.Constantes.SIMBOLO_DELIMITADOR;
 
 /**
- * Alfabeto da fita (Γ). 
- * 
- * <br><br>
- * 
- * O alfabeto da fita contém o alfabeto de entrada (Σ), o alfabeto auxiliar (V),
- * mais todos os símbolos reservados, como o símbolo de branco (β), o símbolo de 
- * início da fita (⊛) e o símbolo de delimitador de seções (#). É o total de
- * símbolos que podem ser inscritos na(s) fita(s) da máquina de Turing.
+ * Alfabeto da fita (Γ). O alfabeto da fita contém o alfabeto de entrada (Σ),
+ * o alfabeto auxiliar (V), mais todos os símbolos reservados, como o símbolo de
+ * branco (β), o símbolo de início da fita (⊛) e o símbolo de delimitador de 
+ * seções (#). É o total de símbolos que podem ser inscritos na(s) fita(s) da 
+ * máquina de Turing.
  * 
  * @author Leandro Ap. Almeida
  * 
@@ -19,15 +19,6 @@ import java.util.List;
  */
 public class AlfabetoFita extends Alfabeto {
     
-    
-    /**Caractere de início da fita, que a delimita à esquerda.*/
-    public static final char INICIO_FITA = '*';
-    
-    /**Caractere de branco, para marcar as células que estão vazias.*/
-    public static final char BRANCO = '_';
-    
-    /**Caractere de delimitador de seções de uma fita.*/
-    public static final char DELIMITADOR_SECAO = '#';
     
     /**Conjunto dos símbolos reservados.*/
     private final List<Simbolo> simbolosReservados;
@@ -40,9 +31,9 @@ public class AlfabetoFita extends Alfabeto {
         
         simbolosReservados = new ArrayList<>();
         
-        simbolosReservados.add(new Simbolo(INICIO_FITA, false, true));
-        simbolosReservados.add(new Simbolo(BRANCO, false, true));
-        simbolosReservados.add(new Simbolo(DELIMITADOR_SECAO, false, true));
+        simbolosReservados.add(new Simbolo(SIMBOLO_INICIO_FITA, false, true));
+        simbolosReservados.add(new Simbolo(SIMBOLO_BRANCO, false, true));
+        simbolosReservados.add(new Simbolo(SIMBOLO_DELIMITADOR, false, true));
         
         simbolos.addAll(simbolosReservados);
         
@@ -94,7 +85,7 @@ public class AlfabetoFita extends Alfabeto {
     /**
      * Obter o alfabeto de entrada.
      * 
-     * @return alfabeto de entrada.
+     * @return Alfabeto de entrada.
      */
     public Alfabeto getAlfabetoEntrada() {
         Alfabeto alfabetoEntrada = new Alfabeto();
@@ -112,7 +103,7 @@ public class AlfabetoFita extends Alfabeto {
     /**
      * Obter o alfabeto auxiliar.
      * 
-     * @return alfabeto auxiliar.
+     * @return Alfabeto auxiliar.
      */
     public Alfabeto getAlfabetoAuxiliar() {
         Alfabeto alfabetoAuxiliar = new Alfabeto();
@@ -130,23 +121,23 @@ public class AlfabetoFita extends Alfabeto {
     /**
      * Obter os símbolos reservados.
      * 
-     * @return símbolos reservados.
+     * @return Símbolos reservados.
      */
-    public List<Simbolo> getSimbolosReservados() {
-        List<Simbolo> reservados = new ArrayList<>(); 
+    public Alfabeto getSimbolosReservados() {
+        Alfabeto alfabeto = new Alfabeto();
         for (Simbolo simbolo : simbolos) {
             if (simbolo.isReservado()) {
-                reservados.add(simbolo);
+                alfabeto.inserirSimbolo(simbolo);
             }
         }
-        return reservados;
+        return alfabeto;
     }
     
     
     /**
      * Obter o símbolo de início da fita.
      * 
-     * @return símbolo de início da fita.
+     * @return Símbolo de início da fita.
      */
     public Simbolo getSimboloInicio() {
         return simbolos.get(0);
@@ -156,7 +147,7 @@ public class AlfabetoFita extends Alfabeto {
     /**
      * Obter o símbolo de branco.
      * 
-     * @return símbolo de branco.
+     * @return Símbolo de branco.
      */
     public Simbolo getSimboloBranco() {
         return simbolos.get(1);
@@ -166,7 +157,7 @@ public class AlfabetoFita extends Alfabeto {
     /**
      * Obter o símbolo de delimitador de seção na fita.
      * 
-     * @return símbolo de delimitador de seção na fita.
+     * @return Símbolo de delimitador de seção na fita.
      */
     public Simbolo getSimboloDelimitador() {
         return simbolos.get(2);

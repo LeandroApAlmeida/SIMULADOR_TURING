@@ -17,8 +17,8 @@ public class Simbolo {
     /**Estatus de símbolo reservado.*/
     private boolean reservado;
     
-    /**Indicador de cursor virtual sobre o símbolo.*/
-    private boolean cursor;
+    /**Indicador de ponto virtual sobre o símbolo.*/
+    private boolean ponto;
 
     
     /**
@@ -30,11 +30,11 @@ public class Simbolo {
      * 
      * @param reservado estatus de símbolo reservado.
      */
-    public Simbolo(char caracter, boolean auxiliar, boolean reservado) {
+    protected Simbolo(char caracter, boolean auxiliar, boolean reservado) {
         this.caractere = caracter;
         this.auxiliar = auxiliar;
         this.reservado = reservado;
-        this.cursor = false;
+        this.ponto = false;
     }
     
     
@@ -82,13 +82,13 @@ public class Simbolo {
 
     
     /**
-     * Obter a indicação de que o cursor virtual está sobre o símbolo.
+     * Obter a indicação de que o ponto virtual está sobre o símbolo.
      * 
-     * @return Se true, o cursor virtual está sobre o símbolo. Se false, o cursor
+     * @return Se true, o ponto virtual está sobre o símbolo. Se false, o ponto
      * virtual não está sobre o símbolo.
      */
-    public boolean isCursor() {
-        return cursor;
+    public boolean isPonto() {
+        return ponto;
     }
 
     
@@ -118,13 +118,13 @@ public class Simbolo {
 
     
     /**
-     * Definir que o cursor virtual está sobre o símbolo.
+     * Definir que o ponto virtual está sobre o símbolo.
      * 
-     * @param cursor Se true, o cursor virtual está sobre o símbolo. Se false,
-     * o cursor virtual não está sobre o símbolo.
+     * @param ponto Se true, o ponto virtual está sobre o símbolo. Se false,
+     * o ponto virtual não está sobre o símbolo.
      */
-    protected void setCursor(boolean cursor) {
-        this.cursor = cursor;
+    protected void setPonto(boolean ponto) {
+        this.ponto = ponto;
     }
 
 

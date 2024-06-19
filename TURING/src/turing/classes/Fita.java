@@ -7,7 +7,7 @@ import java.util.Arrays;
  * infinita à esquerda e à direita, finita à esquerda e infinita à direita,
  * ou finita à esquerda e à direita, dependendo do modelo de máquina de Turing
  * implementado. Neste simulador não será implementado nenhum modelo com fita
- * limitada à direita e à esquerda, portando, tal modelo não será codificado.
+ * limitada à direita e à esquerda, portando, tal configuração não será codificada.
  * 
  * <br><br>
  * 
@@ -210,7 +210,7 @@ import java.util.Arrays;
  * -1 e sairia dos limites do arranjo. Logo, se mover para a esquerda, é preciso
  * alocar mais uma célula nesta direção, copiar todos os elementos à direita dela,
  * fazê-la ficar com o marcador de branco e mudar a célula pivô para uma casa adiante,
- * matendo a referência de que célula iniciou-se apontando para ela. O mesmo se
+ * mantendo a referência de que célula iniciou-se apontando para ela. O mesmo se
  * a cabeça de leitura for posicionada para um endereço além da extremidade
  * posterior da fita. É preciso alocar mais uma célula, colocar um marcador branco
  * nela, mas dessa vez os símbolos não são movidos nem a célula pivô muda de posição.

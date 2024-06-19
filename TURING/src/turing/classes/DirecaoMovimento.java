@@ -1,9 +1,13 @@
 package turing.classes;
 
+import static turing.classes.Constantes.SIMBOLO_MOV_DIREITA;
+import static turing.classes.Constantes.SIMBOLO_MOV_ESQUERDA;
+import static turing.classes.Constantes.SIMBOLO_MOV_NULO;
+
 /**
- * Direção do movimento da cabeça de leitura. Esta implementação aceita os
- * movimentos à Direita, à Esquerda e também Parado, que mantém a Cabeça de
- * Leitura/Escrita na mesma célula.
+ * Direção do movimento da Cabeça de Leitura/Escrita. Esta implementação aceita
+ * os movimentos à Direita, à Esquerda e também nulo (Parado), que mantém a Cabeça
+ * de Leitura/Escrita na mesma célula.
  * 
  * @author Leandro Ap. de Almeida
  * 
@@ -12,14 +16,14 @@ package turing.classes;
 public enum DirecaoMovimento {
     
     
-    /**Movimento para a direita (D).*/
-    DIREITA("D"),
+    /**Movimento para a direita.*/
+    DIREITA(SIMBOLO_MOV_DIREITA),
     
-    /**Movimento para a esquerda (E).*/
-    ESQUERDA("E"),
+    /**Movimento para a esquerda.*/
+    ESQUERDA(SIMBOLO_MOV_ESQUERDA),
     
-    /**Nenhum movimento - parado (P).*/
-    PARADO("P");
+    /**Nenhum movimento - parado.*/
+    PARADO(SIMBOLO_MOV_NULO);
     
     
     /**Identificador string da direção.*/
@@ -31,15 +35,27 @@ public enum DirecaoMovimento {
      * 
      * @param id identificador string da direçao.
      */
-    private DirecaoMovimento(String id) {
-        this.id = id;
+    private DirecaoMovimento(char id) {
+        this.id = new String(new char[] {id});
     }
 
     
     /**
-     * Obter o identificador string da direçao.
+     * Obter o identificador do movimento. Os identificadores são:
      * 
-     * @return identificador string da direção.
+     * <br><br>
+     * 
+     * <ul>
+     * 
+     * <li>&nbsp;<b>D</b>: movimento para a direita.</li><br>
+     * 
+     * <li>&nbsp;<b>E</b>: movimento para a esquerda.</li><br>
+     * 
+     * <li>&nbsp;<b>P</b>: movimento nulo (parado).</li>
+     * 
+     * </ul>
+     * 
+     * @return identificador do movimento.
      */
     public String getId() {
         return id;
@@ -47,12 +63,24 @@ public enum DirecaoMovimento {
     
     
     /**
-     * Obter a direção com base no identificador string.
+     * Obter a direção com base no identificador do movimento. Os identificadores
+     * são:
+     * 
+     * <br><br>
+     * 
+     * <ul>
+     * 
+     * <li>&nbsp;<b>D</b>: movimento para a direita.</li><br>
+     * 
+     * <li>&nbsp;<b>E</b>: movimento para a esquerda.</li><br>
+     * 
+     * <li>&nbsp;<b>P</b>: movimento nulo (parado).</li>
+     * 
+     * </ul>
      * 
      * @param id identificador string.
      * 
-     * @return Direção do movimento, ou null, caso o identificador string
-     * seja inválido.
+     * @return Direção do movimento, ou null, caso o identificador seja inválido.
      */
     public static DirecaoMovimento getDirecao(String id) {
         DirecaoMovimento direcao = null;
