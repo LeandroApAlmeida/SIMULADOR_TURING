@@ -13,10 +13,10 @@ public class Estado {
     /**Rótulo do estado.*/
     private String rotulo;
     
-    /**Estatus de estado terminal.*/
+    /**Status de estado terminal.*/
     private boolean terminal;
     
-    /**Estatus de estado inicial.*/
+    /**Status de estado inicial.*/
     private boolean inicial;
 
     
@@ -25,9 +25,9 @@ public class Estado {
      * 
      * @param rotulo rótulo do estado.
      * 
-     * @param terminal estatus de estado terminal.
+     * @param terminal status de estado terminal.
      * 
-     * @param inicial estatus de estado inicial.
+     * @param inicial status de estado inicial.
      * 
      * @throws Exception erro na sintaxe do rótulo do estado.
      */
@@ -79,7 +79,7 @@ public class Estado {
 
     
     /**
-     * Obter o estatus de estado terminal.
+     * Obter o status de estado terminal.
      * 
      * @return Se true, o estado é terminal. Se false, o estado não é terminal.
      */
@@ -89,7 +89,7 @@ public class Estado {
 
     
     /**
-     * Obter o estatus de estado inicial.
+     * Obter o status de estado inicial.
      * 
      * @return Se true, o estado é inicial. Se false, o estado não é inicial.
      */
@@ -116,7 +116,7 @@ public class Estado {
 
     
     /**
-     * Definir o estatus de estado terminal.
+     * Definir o status de estado terminal.
      * 
      * @param terminal Se true, o estado é terminal. Se false, o estado não é
      * terminal.
@@ -127,7 +127,7 @@ public class Estado {
 
     
     /**
-     * Definir o estatus de estado inicial.
+     * Definir o status de estado inicial.
      * 
      * @param inicial Se true, o estado é inicial. Se false, o estado não é 
      * inicial.

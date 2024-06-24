@@ -106,30 +106,30 @@ OuvinteConfigSimulacaoAutomatica {
     private Timer timer;
     
     /**Tempo default de simulação automática.*/
-    private int tempoExecucao = 2000;
+    private int tempoExecucao = 1000;
     
     /**Nome da Máquina de Turing simulada.*/
     private String nome;
     
-    /**Estatus de arquivo aberto no editor de código.*/
+    /**Status de arquivo aberto no editor de código.*/
     private boolean arquivoAberto;
     
-    /**Estatus de simulador em execução.*/
+    /**Status de simulador em execução.*/
     private boolean emExecucao;
     
-    /**Estatus de simulação automática.*/
+    /**Status de simulação automática.*/
     private boolean simulacaoAutomatica;
     
-    /**Estatus de simulação automática pausada.*/
+    /**Status de simulação automática pausada.*/
     private boolean emPausa;
     
-    /**Estatus de processo de compilação.*/
+    /**Status de processo de compilação.*/
     private boolean compilando;
     
-    /**Estatus de mudança do texto aberto no editor.*/
+    /**Status de mudança do texto aberto no editor.*/
     private boolean houveMudancaTexto;
     
-    /**Estatus de compilação pendente.*/
+    /**Status de compilação pendente.*/
     private boolean compilacaoPendente;
     
     /**Comprimento do texto salvo no arquivo.*/
@@ -185,7 +185,7 @@ OuvinteConfigSimulacaoAutomatica {
         
         configurarEditorCodigo();
 
-        configurarFitasVazias();
+        configurarFitasModeloSelecionado();
 
         listarAlfabetoFita();
         listarConjuntoEstados();
@@ -200,7 +200,7 @@ OuvinteConfigSimulacaoAutomatica {
     
     
     
-// ------------- CONFIGURAÇÃO DO EDITOR DE CÓDIGO DO PROGRAMA --------------- //   
+// CONFIGURAÇÃO DO EDITOR DE CÓDIGO DO PROGRAMA ----------------------------- //   
     
     
     /**
@@ -346,16 +346,16 @@ OuvinteConfigSimulacaoAutomatica {
         
         if (verificarMudancasNoTextoEProsseguir()) {
             
-            DialogoSeletorArquivos dialogoSeletorArquivos = new DialogoSeletorArquivos(
+            DialogoArquivo dialogoArquivo = new DialogoArquivo(
                 "Abrir Arquivo",
                 filtroArquivo
             );
 
-            int opc = dialogoSeletorArquivos.showOpenDialog(this);
+            int opc = dialogoArquivo.showOpenDialog(this);
 
-            if (opc == DialogoSeletorArquivos.APPROVE_OPTION) {
+            if (opc == DialogoArquivo.APPROVE_OPTION) {
                 
-                abrirArquivo(dialogoSeletorArquivos.getSelectedFile());
+                abrirArquivo(dialogoArquivo.getSelectedFile());
 
             } 
             
@@ -450,16 +450,16 @@ OuvinteConfigSimulacaoAutomatica {
 
         if (!arquivoAberto) {
             
-            DialogoSeletorArquivos fileDialog = new DialogoSeletorArquivos(
+            DialogoArquivo dialogoArquivo = new DialogoArquivo(
                 "Salvar Arquivo",
                 filtroArquivo
             );
 
-            int opc = fileDialog.showSaveDialog(this);
+            int opc = dialogoArquivo.showSaveDialog(this);
 
-            if (opc == DialogoSeletorArquivos.APPROVE_OPTION) {
+            if (opc == DialogoArquivo.APPROVE_OPTION) {
 
-                File file = fileDialog.getSelectedFile();
+                File file = dialogoArquivo.getSelectedFile();
                 
                 arquivo = new ArquivoTexto(file);
                 
@@ -969,7 +969,7 @@ OuvinteConfigSimulacaoAutomatica {
     
     
     
-// ---------- CONFIGURAÇÃO DOS CONTROLES DO EDITOR E DO SIMULADOR ----------- //
+// CONFIGURAÇÃO DOS CONTROLES DO EDITOR E DO SIMULADOR ---------------------- //
     
     
     /**
@@ -1292,7 +1292,7 @@ OuvinteConfigSimulacaoAutomatica {
     
     
     
-// ----------- DEFINIÇÃO DOS PARÂMETROS PARA A MÁQUINA DE TURING ------------ //    
+// DEFINIÇÃO DOS PARÂMETROS PARA A MÁQUINA DE TURING ------------------------ //    
         
     
     /**
@@ -1670,8 +1670,7 @@ OuvinteConfigSimulacaoAutomatica {
             alfabetoFita,
             conjuntoEstados,
             funcaoTransicao,
-            (int)jspNumeroFitas.getValue(),
-            modelo
+            (int)jspNumeroFitas.getValue()
         );
         
         telaInserirTransicao.setVisible(true);
@@ -1860,7 +1859,7 @@ OuvinteConfigSimulacaoAutomatica {
     
     
     
-// ------------------ CONTROLE DE EXECUÇÃO DO SIMULADOR --------------------- //
+// CONTROLE DE EXECUÇÃO DO SIMULADOR ---------------------------------------- //
     
     
     /**
@@ -2026,7 +2025,7 @@ OuvinteConfigSimulacaoAutomatica {
             jtfNumPassos.setText("");
             jtfResultado.setText("");
             configurarControlesSimulador();
-            configurarFitasVazias();
+            configurarFitasModeloSelecionado();
         }
     }
     
@@ -2057,7 +2056,7 @@ OuvinteConfigSimulacaoAutomatica {
         int x = (int) b.getX() - 350;
         int y = (int) b.getY() - 45;
         
-        TelaConfigVelocidade telaConfigVelocidade = new TelaConfigVelocidade(
+        TelaConfigVelocidadeSimulacao telaConfigVelocidade = new TelaConfigVelocidadeSimulacao(
             this,
             this,
             tempoExecucao
@@ -2072,26 +2071,27 @@ OuvinteConfigSimulacaoAutomatica {
     
     /**
      * Atualizar o tempo de execução da etapa do simulador. Este método responde
-     * às alterações de tempo realizadas no diálogo {@link TelaConfigVelocidade}.
+     * às alterações de tempo realizadas no diálogo {@link TelaConfigVelocidadeSimulacao}.
      * 
      * @param novoValor novo valor de tempo de execução.
      */
     @Override
     public void velocidadeSimulacaoAutomaticaAtualizada(int novoValor) {
-        tempoExecucao = novoValor;
-        executarSimulacaoAutomatica();
+        if (novoValor != tempoExecucao) {
+            tempoExecucao = novoValor;
+            executarSimulacaoAutomatica();
+        }
     }
     
     
 
     
-// ------------------------- CONFIGURAÇÃO DAS FITAS --------------------------//    
+// CONFIGURAÇÃO DAS FITAS --------------------------------------------------- //    
     
     
     /**
-     * Configurar as fitas com espaços em branco, antes de carregar uma palavra
-     * de entrada. O número de fitas está de acordo com o campo da função de
-     * transição.
+     * Configurar as fitas com espaços em branco de acordo com o modelo de Máquina
+     * de Turing selecionado.
      * 
      * <br><br>
      * 
@@ -2101,7 +2101,9 @@ OuvinteConfigSimulacaoAutomatica {
      * texto de cada célula.
      * </i>
      */
-    private void configurarFitasVazias() {
+    private void configurarFitasModeloSelecionado() {
+        
+        modelo = jrbPadrao.isSelected() ? Modelo.PADRAO : Modelo.MULTIFITAS;
         
         int numeroFitas = jrbPadrao.isSelected() ? 1 : (int) jspNumeroFitas.getValue();
         int numeroCelulas = TAMANHO_FITA;
@@ -2122,7 +2124,7 @@ OuvinteConfigSimulacaoAutomatica {
             }
         });
 
-        RendererizadorFita renderer = new RendererizadorFita(null, jrbMoverCursor.isSelected());
+        RendererizadorFita renderer = new RendererizadorFita(jrbMoverCursor.isSelected());
 
         for (int i = 0; i < jtFitas.getColumnCount(); i++) {
             jtFitas.getColumnModel().getColumn(i).setCellRenderer(renderer);
@@ -2225,8 +2227,7 @@ OuvinteConfigSimulacaoAutomatica {
             
             // Fitas fixas e cursores se movem.
 
-            if (jtFitas.getColumnCount() != fitas[0].getComprimento() || 
-            ((RendererizadorFita)jtFitas.getColumnModel().getColumn(0).getCellRenderer()).getFita() == null) {
+            if (jtFitas.getColumnCount() != fitas[0].getComprimento()) {
 
                 String[][] listaFitas = new String[fitas.length][fitas[0].getComprimento()];
                 String[] titulos = new String[fitas[0].getComprimento()];
@@ -2238,7 +2239,7 @@ OuvinteConfigSimulacaoAutomatica {
                     }
                 });
 
-                RendererizadorFita renderer = new RendererizadorFita(fitas[0], jrbMoverCursor.isSelected());
+                RendererizadorFita renderer = new RendererizadorFita(jrbMoverCursor.isSelected());
 
                 for (int i = 0; i < jtFitas.getColumnCount(); i++) {
                     jtFitas.getColumnModel().getColumn(i).setCellRenderer(renderer);
@@ -2304,9 +2305,9 @@ OuvinteConfigSimulacaoAutomatica {
      * 
      * @param numeroPassos número de passos realizados pela Máquina de Turing.
      * 
-     * @param cadeiaAceita estatus de cadeia de entrada aceita.
+     * @param cadeiaAceita status de cadeia de entrada aceita.
      * 
-     * @param finalizado estatus de programa finalizado.
+     * @param finalizado status de programa finalizado.
      */
     @Override
     public void atualizarEtapaSimulacao(Estado estadoAtual, Fita[] fitas, 
@@ -2396,7 +2397,7 @@ OuvinteConfigSimulacaoAutomatica {
     
     
     
-// ---------------------------- OUTROS MÉTODOS -------------------------------//  
+// OUTROS MÉTODOS ----------------------------------------------------------- //  
         
     
     /**
@@ -2526,12 +2527,12 @@ OuvinteConfigSimulacaoAutomatica {
         jbParar = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        jtfNumPassos = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jtfEstadoAtual = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        jtfResultado = new javax.swing.JTextField();
+        jtfNumPassos = new javax.swing.JLabel();
+        jtfEstadoAtual = new javax.swing.JLabel();
+        jtfResultado = new javax.swing.JLabel();
         jbCarregarPalavra = new javax.swing.JButton();
         jrbPadrao = new javax.swing.JRadioButton();
         jrbMultifita = new javax.swing.JRadioButton();
@@ -2715,7 +2716,7 @@ OuvinteConfigSimulacaoAutomatica {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(6, 6, 6)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jbInserirSimbolo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2800,7 +2801,7 @@ OuvinteConfigSimulacaoAutomatica {
                         .addComponent(jbMoverTransicaoBaixo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbFuncaoTransicaoAjuda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 187, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jspNumeroFitas, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -2942,7 +2943,7 @@ OuvinteConfigSimulacaoAutomatica {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -2978,7 +2979,7 @@ OuvinteConfigSimulacaoAutomatica {
         jtFitas.getTableHeader().setReorderingAllowed(false);
         jScrollPane4.setViewportView(jtFitas);
 
-        jLabel2.setText(" Entrada:");
+        jLabel2.setText("Palavra:");
         jLabel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jLabel2.setMaximumSize(new java.awt.Dimension(50, 22));
         jLabel2.setMinimumSize(new java.awt.Dimension(50, 22));
@@ -3109,38 +3110,23 @@ OuvinteConfigSimulacaoAutomatica {
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel2.setOpaque(false);
 
-        jtfNumPassos.setEditable(false);
-        jtfNumPassos.setFont(new java.awt.Font("DejaVu Sans", 1, 14)); // NOI18N
-        jtfNumPassos.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jtfNumPassos.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jtfNumPassos.setDisabledTextColor(new java.awt.Color(0, 0, 0));
-        jtfNumPassos.setFocusable(false);
-        jtfNumPassos.setSelectionColor(new java.awt.Color(255, 255, 255));
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(0, 0, 102));
+        jLabel4.setText("PASSOS:");
 
-        jLabel4.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel4.setText("Passos:");
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 102));
+        jLabel3.setText("ESTADO ATUAL:");
 
-        jLabel3.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel3.setText("Estado Atual:");
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(0, 0, 102));
+        jLabel7.setText("RESULTADO:");
 
-        jtfEstadoAtual.setEditable(false);
-        jtfEstadoAtual.setFont(new java.awt.Font("DejaVu Sans", 1, 14)); // NOI18N
-        jtfEstadoAtual.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jtfEstadoAtual.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jtfEstadoAtual.setDisabledTextColor(new java.awt.Color(0, 0, 0));
-        jtfEstadoAtual.setFocusable(false);
-        jtfEstadoAtual.setSelectionColor(new java.awt.Color(255, 255, 255));
+        jtfNumPassos.setText(" ");
 
-        jLabel7.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel7.setText("Resultado:");
+        jtfEstadoAtual.setText(" ");
 
-        jtfResultado.setBackground(new java.awt.Color(240, 240, 240));
-        jtfResultado.setFont(new java.awt.Font("DejaVu Sans", 1, 14)); // NOI18N
-        jtfResultado.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jtfResultado.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jtfResultado.setDisabledTextColor(new java.awt.Color(0, 0, 0));
-        jtfResultado.setFocusable(false);
-        jtfResultado.setSelectionColor(new java.awt.Color(255, 255, 255));
+        jtfResultado.setText(" ");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -3149,30 +3135,30 @@ OuvinteConfigSimulacaoAutomatica {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jtfNumPassos, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25)
+                .addGap(12, 12, 12)
+                .addComponent(jtfNumPassos, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32)
                 .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jtfEstadoAtual, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25)
+                .addGap(12, 12, 12)
+                .addComponent(jtfEstadoAtual, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32)
                 .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jtfResultado, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(66, Short.MAX_VALUE))
+                .addGap(12, 12, 12)
+                .addComponent(jtfResultado, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(15, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
+                .addGap(25, 25, 25)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jtfNumPassos, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
                     .addComponent(jLabel3)
-                    .addComponent(jtfEstadoAtual, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
                     .addComponent(jLabel7)
-                    .addComponent(jtfResultado, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(20, 20, 20))
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jtfNumPassos)
+                    .addComponent(jtfEstadoAtual)
+                    .addComponent(jtfResultado))
+                .addGap(25, 25, 25))
         );
 
         jToolBar1.add(jPanel2);
@@ -3241,7 +3227,7 @@ OuvinteConfigSimulacaoAutomatica {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1314, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1310, Short.MAX_VALUE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, 0)
@@ -3270,13 +3256,12 @@ OuvinteConfigSimulacaoAutomatica {
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                        .addComponent(jtfPalavra, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE))
+                    .addComponent(jtfPalavra, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbCarregarPalavra, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
-                .addGap(10, 10, 10)
+                .addGap(6, 6, 6)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
+                .addGap(7, 7, 7)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jrbPadrao)
                     .addComponent(jrbMultifita)
@@ -3456,7 +3441,7 @@ OuvinteConfigSimulacaoAutomatica {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 1340, Short.MAX_VALUE)
+            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 1336, Short.MAX_VALUE)
             .addComponent(jSplitPane2)
         );
         jPanel4Layout.setVerticalGroup(
@@ -3650,15 +3635,15 @@ OuvinteConfigSimulacaoAutomatica {
     }//GEN-LAST:event_jbReiniciarActionPerformed
 
     private void jspNumeroFitasStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jspNumeroFitasStateChanged
-        configurarFitasVazias();
+        configurarFitasModeloSelecionado();
     }//GEN-LAST:event_jspNumeroFitasStateChanged
 
     private void jrbMultifitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbMultifitaActionPerformed
-        configurarFitasVazias();
+        configurarFitasModeloSelecionado();
     }//GEN-LAST:event_jrbMultifitaActionPerformed
 
     private void jrbPadraoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbPadraoActionPerformed
-        configurarFitasVazias();
+        configurarFitasModeloSelecionado();
     }//GEN-LAST:event_jrbPadraoActionPerformed
 
     private void jtfSobreMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtfSobreMouseReleased
@@ -3693,11 +3678,11 @@ OuvinteConfigSimulacaoAutomatica {
     }//GEN-LAST:event_formWindowClosing
 
     private void jrbMoverCursorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbMoverCursorActionPerformed
-        configurarFitasVazias();
+        configurarFitasModeloSelecionado();
     }//GEN-LAST:event_jrbMoverCursorActionPerformed
 
     private void jrbMoverFitaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrbMoverFitaActionPerformed
-        configurarFitasVazias();
+        configurarFitasModeloSelecionado();
     }//GEN-LAST:event_jrbMoverFitaActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -3789,10 +3774,10 @@ OuvinteConfigSimulacaoAutomatica {
     private javax.swing.JTable jtFitas;
     private javax.swing.JTextArea jtaCompilacao;
     private javax.swing.JTextArea jtaEditor;
-    private javax.swing.JTextField jtfEstadoAtual;
-    private javax.swing.JTextField jtfNumPassos;
+    private javax.swing.JLabel jtfEstadoAtual;
+    private javax.swing.JLabel jtfNumPassos;
     private javax.swing.JTextField jtfPalavra;
-    private javax.swing.JTextField jtfResultado;
+    private javax.swing.JLabel jtfResultado;
     private javax.swing.JLabel jtfSobre;
     private javax.swing.JTabbedPane jtpSimulador;
     // End of variables declaration//GEN-END:variables

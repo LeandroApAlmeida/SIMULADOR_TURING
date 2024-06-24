@@ -12,34 +12,110 @@ import turing.classes.ConjuntoEstados;
 import turing.classes.DirecaoMovimento;
 import turing.classes.Estado;
 import turing.classes.FuncaoTransicao;
-import turing.classes.Modelo;
 import turing.classes.ParametrosFita;
 import turing.classes.Simbolo;
 import turing.classes.Transicao;
 import static turing.gui.Formatacao.formatarSimbolos;
 import static turing.gui.Formatacao.reverterSimbolos;
+import static turing.gui.RenderizadorTransicao.CELULA_VAZIA;
 
+/**
+ * Tela para a inserção de uma transição da função de transição. Uma transição
+ * tem o seguinte formato:
+ * 
+ * <br><br>
+ * 
+ * <BLOCKQUOTE>
+ * 
+ * δ(q<sub>a</sub>, s<sub>1</sub>, s<sub>2</sub>, ... , s<sub>k</sub>) = 
+ * (q<sub>n</sub>, g<sub>1</sub>, g<sub>2</sub>, ... , g<sub>k</sub>, 
+ * d<sub>1</sub>, d<sub>2</sub>, ... , d<sub>k</sub>)
+ * 
+ * </BLOCKQUOTE>
+ * 
+ * <br>
+ * 
+ * Onde:
+ * 
+ * <br><br>
+ * 
+ * <BLOCKQUOTE>
+ * 
+ * <b>q<sub>a</sub></b>: Estado atual.
+ * 
+ * <br><br>
+ * 
+ * <b>s<sub>1</sub>, s<sub>2</sub>, ..., s<sub>k</sub></b>: Símbolos lidos das 
+ * fitas.
+ * 
+ * <br><br>
+ * 
+ * <b>q<sub>n</sub></b>: Novo estado.
+ * 
+ * <br><br>
+ * 
+ * <b>g<sub>1</sub>, g<sub>2</sub>, ..., g<sub>k</sub></b>: Símbolos gravados nas
+ * fitas.
+ * 
+ * <br><br>
+ * 
+ * <b>d<sub>1</sub>, d<sub>2</sub>, ..., d<sub>k</sub></b>: Sentidos dos movimentos
+ * das Cabeças de Leitura/Escrita nas fitas.
+ * 
+ * <br><br>
+ * 
+ * <b>k</b>: Número de fitas da máquina de Turing.
+ * 
+ * </BLOCKQUOTE>
+ * 
+ * <br>
+ * 
+ * Basicamente, um transição considera o estado atual da Unidade de Controle e
+ * os símbolos lidos das fitas para determinar o novo estado e os símbolos a
+ * serem gravados nas fitas, nas mesmas células que foram realizadas as leituras,
+ * e também a direção do movimento das Cabeças de Leitura/Escrita.
+ * 
+ * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
+ */
 public class TelaInserirTransicao extends javax.swing.JDialog {
     
     
+    /**Alfabeto da fita.*/
     private final AlfabetoFita alfabetoFita;
     
+    /**Conjunto dos estados.*/
     private final ConjuntoEstados conjuntoEstados;
     
+    /**Função de transição.*/
     private final FuncaoTransicao funcaoTransicao;
     
+    /**Número de fitas.*/
     private final int numeroFitas;
     
-    private final Modelo modelo;
-    
+    /**Status de edição cancelada.*/
     private boolean cancelado;
     
+    /**Status de modo de edição.*/
     private boolean modoEdicao;
     
 
+    /**
+     * Instanciar a tela no modo de inserção de novas transições.
+     * 
+     * @param parent tela proprietária.
+     * 
+     * @param alfabetoFita alfabeto da fita.
+     * 
+     * @param conjuntoEstados conjunto dos estados.
+     * 
+     * @param funcaoTransicao função de transição.
+     *  
+     * @param numeroFitas número de fitas da Máquina de Turing.
+     */
     public TelaInserirTransicao(java.awt.Frame parent, AlfabetoFita alfabetoFita,
-    ConjuntoEstados conjuntoEstados, FuncaoTransicao funcaoTransicao, int numeroFitas,
-    Modelo modelo) {
+    ConjuntoEstados conjuntoEstados, FuncaoTransicao funcaoTransicao, int numeroFitas) {
         
         super(parent, true);
         
@@ -47,7 +123,6 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
         this.conjuntoEstados = conjuntoEstados;
         this.funcaoTransicao = funcaoTransicao;
         this.numeroFitas = numeroFitas;
-        this.modelo = modelo;
         cancelado = true;
         modoEdicao = false;
         
@@ -55,21 +130,18 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
         
         setLocationRelativeTo(parent);
         
-        configurarControles();
+        configurarControlesEstados();
         
         configurarJTable();
         
     }
     
     
-    private void configurarControles() {
-        
-        if (modelo == Modelo.MULTIFITAS) {
-            jspNumeroLinhas.setEnabled(false);
-            jlSecoes.setText("Fitas:");
-        } else {
-            jlSecoes.setText("Seções:");
-        }
+    /**
+     * Configurar os controles de lista de estados para determinar o estado
+     * atual e o novo estado da transição.
+     */
+    private void configurarControlesEstados() {
         
         String[] estados = new String[conjuntoEstados.getComprimento()];
 
@@ -88,25 +160,28 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
                 estados
             )
         );
-        
-        jspNumeroLinhas.setValue(numeroFitas);
 
     }
     
     
+    /**
+     * Configurar a JTable para a definição dos símbolos lidos das fitas, os
+     * símbolos a serem escritos e a direção do movimento das Cabeças de
+     * Leitura/Escrita.
+     */
     private void configurarJTable() {
         
         String[] titulosColunas = new String [] {
-            modelo == Modelo.MULTIFITAS ? "Fita" : "Seção",
+            "Fita",
             "Ler",
             "Gravar",
             "Mover para"
         };
         
         String[] alfabeto = new String[alfabetoFita.getComprimento() + 1];
-        alfabeto[0] = RenderizadorTransicao.CELULA_VAZIA;
+        alfabeto[0] = CELULA_VAZIA;
         
-        Object[][] dadosTabela = new Object[(int)jspNumeroLinhas.getValue()][titulosColunas.length];
+        Object[][] dadosTabela = new Object[numeroFitas][titulosColunas.length];
         
         for (int i = 1; i < alfabetoFita.getComprimento() + 1; i++) {
             alfabeto[i] = formatarSimbolos(alfabetoFita.getSimbolo(i-1).toString());
@@ -114,7 +189,7 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
         
         for (int i = 0; i < numeroFitas; i++) {
             for (int j = 0; j < titulosColunas.length; j++) {
-                dadosTabela[i][j] = RenderizadorTransicao.CELULA_VAZIA;
+                dadosTabela[i][j] = CELULA_VAZIA;
             }
         }
         
@@ -131,20 +206,24 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
         TableCellRenderer renderer = new RenderizadorTransicao();
         
         class JComboboxAlfabeto extends JComboBox<String> {
+            
             public JComboboxAlfabeto() {
                 setModel(new DefaultComboBoxModel(alfabeto));
-            } 
+            }
+            
         }
         
         class JComboboxMovimento extends JComboBox<String> {
+            
             public JComboboxMovimento() {
                 String[] valores = new String[DirecaoMovimento.values().length + 1];
-                valores[0] = RenderizadorTransicao.CELULA_VAZIA;
+                valores[0] = CELULA_VAZIA;
                 for (int i = 0; i < DirecaoMovimento.values().length; i++) {
                     valores[i + 1] = DirecaoMovimento.values()[i].getId();
                 }
                 setModel(new DefaultComboBoxModel(valores));
-            } 
+            }
+            
         }
         
         for (int i = 0; i < titulosColunas.length; i++) {
@@ -178,18 +257,23 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
     }
     
     
+    /**
+     * Inserir a transição na Função de Transição. Para inserir, todos os valores
+     * na Jtable devem estar definidos, pois eles são requeridos para a escrita
+     * da transição.
+     */
     private void inserir() {
         
         Estado estadoInicial = conjuntoEstados.getEstado(jcbEstadoAtual.getSelectedIndex());
         Estado estadoFinal = conjuntoEstados.getEstado(jcbEstadoFinal.getSelectedIndex());
-        List<ParametrosFita> parametrosFitas = new ArrayList<>();
+        List<ParametrosFita> paramsFita = new ArrayList<>();
         
         boolean erro = (estadoInicial == null || estadoFinal == null);
         
         if (!erro) {
             for (int i = 0; i < jtMovimento.getRowCount(); i++) {
                 for (int j = 1; j < jtMovimento.getColumnCount(); j++) {
-                    if (jtMovimento.getValueAt(i, j).equals(RenderizadorTransicao.CELULA_VAZIA)) {
+                    if (jtMovimento.getValueAt(i, j).equals(CELULA_VAZIA)) {
                         erro = true;
                         break;
                     }
@@ -216,7 +300,8 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
                     ((String)jtMovimento.getValueAt(i, 3))
                 );
 
-                parametrosFitas.add(new ParametrosFita(
+                paramsFita.add(
+                    new ParametrosFita(
                         simboloLido,
                         simboloEscrito,
                         direcao
@@ -228,9 +313,11 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
             funcaoTransicao.adicionarTransicao(new Transicao(
                     estadoInicial,
                     estadoFinal,
-                    parametrosFitas
+                    paramsFita
                 )
             );
+            
+            cancelado = false;
             
             setVisible(false);
         
@@ -247,11 +334,20 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
     }
     
     
+    /**
+     * Cancelar a edição.
+     */
     private void cancelar() {
         setVisible(false);
     }
 
     
+     /**
+     * Status de edição cancelada.
+     * 
+     * @return Se true, a edição foi cancelada. Se false, a edição não foi
+     * cancelada.
+     */
     public boolean isCancelado() {
         return cancelado;
     }
@@ -271,12 +367,10 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jtMovimento = new javax.swing.JTable();
-        jlSecoes = new javax.swing.JLabel();
-        jspNumeroLinhas = new javax.swing.JSpinner();
         jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("INSERIR FUNÇÃO DE TRANSIÇÃO");
+        setTitle("INSERIR TRANSIÇÃO");
         setResizable(false);
 
         jbCancelar.setText("Cancelar");
@@ -356,15 +450,6 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
         jtMovimento.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jtMovimento);
 
-        jlSecoes.setText("Seções:");
-
-        jspNumeroLinhas.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
-        jspNumeroLinhas.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jspNumeroLinhasStateChanged(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -374,9 +459,6 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jlSecoes)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jspNumeroLinhas, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jbInserir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -397,18 +479,12 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbCancelar)
-                    .addComponent(jbInserir)
-                    .addComponent(jspNumeroLinhas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlSecoes))
+                    .addComponent(jbInserir))
                 .addContainerGap(16, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jspNumeroLinhasStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jspNumeroLinhasStateChanged
-        configurarJTable();
-    }//GEN-LAST:event_jspNumeroLinhasStateChanged
 
     private void jbCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCancelarActionPerformed
         cancelar();
@@ -430,8 +506,6 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
     private javax.swing.JButton jbInserir;
     private javax.swing.JComboBox<String> jcbEstadoAtual;
     private javax.swing.JComboBox<String> jcbEstadoFinal;
-    private javax.swing.JLabel jlSecoes;
-    private javax.swing.JSpinner jspNumeroLinhas;
     private javax.swing.JTable jtMovimento;
     // End of variables declaration//GEN-END:variables
 }

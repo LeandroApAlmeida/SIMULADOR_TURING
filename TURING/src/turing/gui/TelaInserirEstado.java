@@ -5,18 +5,36 @@ import javax.swing.JOptionPane;
 import turing.classes.Estado;
 import turing.classes.ConjuntoEstados;
 
+/**
+ * Tela para inserçao dos estados da Unidade de Controle.
+ * 
+ * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
+ */
 public class TelaInserirEstado extends javax.swing.JDialog {
 
     
+    /**Conjunto dos estados da Unidade de Controle.*/
     private ConjuntoEstados conjuntoEstados;
     
+    /**Estado em alteração.*/
     private Estado estado;
     
+    /**Status de edição cancelada.*/
     private boolean cancelado;
     
+    /**Status de modo de edição.*/
     private boolean modoEdicao;
 
 
+    /**
+     * Instanciar a tela no modo de inserção de novos estados.
+     * 
+     * @param parent tela proprietária.
+     * 
+     * @param conjuntoEstados conjunto dos estados da Unidade de Controle.
+     */
     public TelaInserirEstado(java.awt.Frame parent, ConjuntoEstados conjuntoEstados) {
         
         super(parent, true);
@@ -31,6 +49,15 @@ public class TelaInserirEstado extends javax.swing.JDialog {
     }
     
     
+    /**
+     * Instanciar a tela no modo de alteração de um estado.
+     * 
+     * @param parent tela proprietária.
+     * 
+     * @param estado estado a ser alterado.
+     * 
+     * @param conjuntoEstados conjunto dos estados da Unidade de Controle.
+     */
     public TelaInserirEstado(java.awt.Frame parent, Estado estado,
     ConjuntoEstados conjuntoEstados) {
         
@@ -49,6 +76,31 @@ public class TelaInserirEstado extends javax.swing.JDialog {
     }
     
     
+    /**
+     * Inserir um estado. Antes de inserir, será feita as seguintes validações:
+     * 
+     * <br><br>
+     * 
+     * <ul>
+     * 
+     * <li>O rótulo do estado deve começar com a letra 'q', seguida de qualquer
+     * sequência de letras maiúsculas e minúsculas e números.</li>
+     * 
+     * </ul>
+     * 
+     * <br>
+     * 
+     * Para inserir mais de um estado de uma vez, cada rótulo de estado deve estar
+     * separado do outro por uma vírgula. Exemplo:
+     * 
+     * <br><br>
+     * 
+     * <blockquote>
+     * 
+     * q0, q1, q2, q3, qFin
+     * 
+     * </blockquote>
+     */
     private void inserir() {
         
         String texto = jtaEstado.getText();
@@ -157,11 +209,20 @@ public class TelaInserirEstado extends javax.swing.JDialog {
     }
     
     
+    /**
+     * Cancelar a edição.
+     */
     private void cancelar() {
         setVisible(false);
     }
 
     
+    /**
+     * Status de edição cancelada.
+     * 
+     * @return Se true, a edição foi cancelada. Se false, a edição não foi
+     * cancelada.
+     */
     public boolean isCancelado() {
         return cancelado;
     }

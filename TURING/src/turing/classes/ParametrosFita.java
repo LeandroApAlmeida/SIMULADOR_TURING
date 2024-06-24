@@ -1,9 +1,7 @@
 package turing.classes;
 
 /**
- * Parâmetros para a movimentação da Cabeça de Leitura/Escrita na fita. Este 
- * parâmetro está relacionado com uma transição da função de transição 
- * ({@link Transicao}).
+ * Parâmetros para o cursor da Cabeça de Leitura/Escrita na fita em uma transição.
  * 
  * @author Leandro Ap. de Almeida
  * 

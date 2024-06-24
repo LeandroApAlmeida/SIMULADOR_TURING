@@ -6,9 +6,25 @@ import turing.classes.MaquinaTuring;
 import static turing.classes.Constantes.SIMBOLO_BRANCO;
 import static turing.classes.Constantes.TAMANHO_FITA;
 
+/**
+ * Tela para exibição do conteúdo das fitas da Máquina de Turing.
+ * 
+ * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
+ */
 public class TelaDetalhesFitas extends javax.swing.JDialog {
     
 
+    /**
+     * Constructor padrão.
+     * 
+     * @param parent tela proprietária.
+     * 
+     * @param maquinaTuring Máquina de Turing em simulação.
+     * 
+     * @param numeroFitas número de fitas da Máquina de Turing.
+     */
     public TelaDetalhesFitas(java.awt.Frame parent, MaquinaTuring maquinaTuring,
     int numeroFitas) {
         super(parent, true);
@@ -19,6 +35,13 @@ public class TelaDetalhesFitas extends javax.swing.JDialog {
     }
     
     
+    /**
+     * Imprimir o conteúdo das fitas da Máquina de Turing.
+     * 
+     * @param maquinaTuring Máquina de Turing em simulação.
+     * 
+     * @param numeroFitas número de fitas da Máquina de Turing.
+     */
     private void imprimirFitas(MaquinaTuring maquinaTuring, int numeroFitas) {
         
         if (maquinaTuring != null) {
@@ -59,7 +82,7 @@ public class TelaDetalhesFitas extends javax.swing.JDialog {
                 }
             }
             
-            RendererizadorFita renderer = new RendererizadorFita(null, false);
+            RendererizadorFita renderer = new RendererizadorFita(false);
 
             for (int i = 0; i < jtFitas.getColumnCount(); i++) {
                 jtFitas.getColumnModel().getColumn(i).setCellRenderer(renderer);
@@ -77,8 +100,8 @@ public class TelaDetalhesFitas extends javax.swing.JDialog {
             
         } else {
             
-            String[][] listaFitas = new String[numeroFitas][25];
-            String[] titulos = new String[25];
+            String[][] listaFitas = new String[numeroFitas][TAMANHO_FITA];
+            String[] titulos = new String[TAMANHO_FITA];
 
             jtFitas.setModel(new DefaultTableModel(listaFitas, titulos) {
                 @Override
@@ -101,7 +124,7 @@ public class TelaDetalhesFitas extends javax.swing.JDialog {
                 }
             }
             
-            RendererizadorFita renderer = new RendererizadorFita(null, false);
+            RendererizadorFita renderer = new RendererizadorFita(false);
 
             for (int i = 0; i < jtFitas.getColumnCount(); i++) {
                 jtFitas.getColumnModel().getColumn(i).setCellRenderer(renderer);
@@ -167,4 +190,5 @@ public class TelaDetalhesFitas extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jtFitas;
     // End of variables declaration//GEN-END:variables
+
 }

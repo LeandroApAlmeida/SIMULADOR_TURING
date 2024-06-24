@@ -5,18 +5,36 @@ import javax.swing.JOptionPane;
 import turing.classes.AlfabetoFita;
 import turing.classes.Simbolo;
 
+/**
+ * Tela para a inserção de símbolos do alfabeto de entrada e do alfabeto auxiliar.
+ * 
+ * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
+ */
 public class TelaInserirSimbolo extends javax.swing.JDialog {
     
 
+    /**Alfabeto da fita.*/
     private AlfabetoFita alfabetoFita;
     
+    /**Símbolo a ser alterado.*/
     private Simbolo simbolo;
     
+    /**Status de edição cancelada.*/
     private boolean cancelado;
     
+    /**Status de modo de edição.*/
     private boolean modoEdicao;
 
     
+    /**
+     * Instanciar a tela no modo de inserção de novos símbolos.
+     * 
+     * @param parent tela proprietária.
+     * 
+     * @param alfabetoFita alfabeto da fita.
+     */
     public TelaInserirSimbolo(java.awt.Frame parent, AlfabetoFita alfabetoFita) {
         
         super(parent, true);
@@ -31,6 +49,15 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
     }
     
     
+    /**
+     * Instanciar a tela no modo de edição de um símbolo.
+     * 
+     * @param parent tela proprietária.
+     * 
+     * @param simbolo símbolo a ser alterado.
+     * 
+     * @param alfabetoFita alfabeto da fita.
+     */
     public TelaInserirSimbolo(java.awt.Frame parent, Simbolo simbolo, 
     AlfabetoFita alfabetoFita) {
         
@@ -49,6 +76,51 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
     }
     
     
+    /**
+     * Inserir um símbolo do alfabeto de entrada ou do alfabeto auxiliar. Antes
+     * de inserir será feita as seguintes validações:
+     * 
+     * <br><br>
+     * 
+     * <ul>
+     * 
+     * <li>Cada símbolo deve ter um único caractere;</li><br>
+     * 
+     * <li>Para inserir o caractere vírgula, deve usar a sequência ',,,';</li><br>
+     * 
+     * <li>Para inserir o caractere espaço, deve usar a sequência ',,';</li><br>
+     * 
+     * <li>Para inserir os símbolos vírgula e espaço, deve usar a sequência
+     * ',,,,,'.</li>
+     * 
+     * </ul>
+     * 
+     * <br>
+     * 
+     * As sequências para vírgula e espaço podem aparecer em qualquer lugar da
+     * String. Exemplo:
+     * 
+     * <br><br>
+     * 
+     * <blockquote>
+     * 
+     * <u>,,</u> a, b, c (insere um espaço) <br>
+     * 
+     * a<u>,,</u> b, c (insere um espaço) <br>
+     * 
+     * a, b<u>,,,</u> c (insere uma vírgula) <br>
+     * 
+     * a<u>,,,,,</u> b, c (insere uma vírgula e um espaço) <br>
+     * 
+     * a, c, c <u>,,,,,</u> (insere uma vírgula e um espaço).
+     * 
+     * </blockquote>
+     * 
+     * <br>
+     * 
+     * Para inserir mais do que um símbolo de uma vez, cada caractere do símbolo
+     * deve estar separado do outro por vírgula.
+     */
     private void inserir() {
         
         String texto = jtaSimbolo.getText();
@@ -237,11 +309,20 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
     }
     
     
+    /**
+     * Cancelar a edição.
+     */
     private void cancelar() {
         setVisible(false);
     }
 
     
+    /**
+     * Status de edição cancelada.
+     * 
+     * @return Se true, a edição foi cancelada. Se false, a edição não foi
+     * cancelada.
+     */
     public boolean isCancelado() {
         return cancelado;
     }

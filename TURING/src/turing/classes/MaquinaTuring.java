@@ -14,12 +14,6 @@ public interface MaquinaTuring {
     
     
     /**
-     * Reiniciar a simulação com base na palavra de entrada.
-     */
-    public void reiniciar();
-    
-    
-    /**
      * Carregar a palavra de entrada na primeira fita.
      * 
      * @param palavra palavra de entrada.
@@ -33,6 +27,12 @@ public interface MaquinaTuring {
     public void executarPasso();
     
     
+    /**
+     * Reiniciar a simulação com base na palavra de entrada.
+     */
+    public void reiniciar();
+    
+
     /**
      * Obter o número de fitas da máquina.
      * 

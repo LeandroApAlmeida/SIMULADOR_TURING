@@ -1,13 +1,28 @@
 package turing.gui;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import javax.swing.JOptionPane;
+import turing.arquivo.ArquivoAjuda;
 
+/**
+ * Tela para exibição do texto de ajuda ao usuário, inserido como recurso no
+ * .jar do projeto.
+ * 
+ * @author Leandro Ap. de Almeida
+ * 
+ * @since 1.0
+ */
 public class TelaAjuda extends javax.swing.JDialog {
 
-    
+
+    /**
+     * Constructor padrão.
+     * 
+     * @param parent tela proprietária.
+     * 
+     * @param titulo título do conteúdo de ajuda.
+     * 
+     * @param arquivo caminho do arquivo de recurso. 
+     */
     public TelaAjuda(java.awt.Frame parent, String titulo, String arquivo) {
         
         super(parent, true);
@@ -19,7 +34,7 @@ public class TelaAjuda extends javax.swing.JDialog {
         jlTitle.setText(" " + titulo);
         
         try {
-            String html = lerArquivo(arquivo);
+            String html = new ArquivoAjuda(arquivo).ler();
             jtAjuda.setText(html);
             jtAjuda.setCaretPosition(0);
         } catch (Exception ex) {
@@ -30,23 +45,6 @@ public class TelaAjuda extends javax.swing.JDialog {
                 JOptionPane.OK_OPTION
             );
         }
-        
-    }
-    
-    
-    private String lerArquivo(String arquivo) throws IOException {
-        
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        
-        try (InputStream inputStream = this.getClass().getResourceAsStream(arquivo)) {
-            byte[] buffer = new byte[4096];
-            int length;
-            while((length = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, length);
-            }
-        }
-        
-        return new String(outputStream.toByteArray());
         
     }
 

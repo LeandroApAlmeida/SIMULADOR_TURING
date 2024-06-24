@@ -33,7 +33,7 @@ import static turing.classes.Constantes.SIMBOLO_VIRGULA;
  * 
  * <br><br>
  * 
- * Os parâmetros são: 
+ * Os dados obtidos com a compilação são: 
  * 
  * <br><br>
  * 
@@ -58,7 +58,7 @@ import static turing.classes.Constantes.SIMBOLO_VIRGULA;
  * <br>
  * 
  * Vale ressaltar que a Máquina de Turing é um ente teórico, uma abstração de 
- * algoritmo e não uma máquina em si. Turing nunca construi o dispositivo, apenas
+ * algoritmo e não uma máquina em si. Turing nunca construiu o dispositivo, apenas
  * o concebeu como um método de cálculo de predicados de Lógica de Primeira Ordem.
  * 
  * @author Leandro Ap. de Almeida
@@ -225,7 +225,7 @@ public final class Compilador {
 
                 if (estadoInicial != null && estadoFinal != null) {
                     
-                    List<ParametrosFita> parametrosFita = new ArrayList<>();
+                    List<ParametrosFita> paramsFita = new ArrayList<>();
                     
                     boolean erro = false;
                 
@@ -244,7 +244,7 @@ public final class Compilador {
                         );
 
                         if (simboloLido != null && simboloEscrito != null && direcao != null) {
-                            parametrosFita.add(
+                            paramsFita.add(
                                 new ParametrosFita(
                                     simboloLido,
                                     simboloEscrito,
@@ -262,7 +262,7 @@ public final class Compilador {
                         return new Transicao(
                             estadoInicial,
                             estadoFinal,
-                            parametrosFita
+                            paramsFita
                         );
                     } else {
                         return null;

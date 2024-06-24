@@ -30,7 +30,7 @@ import static turing.classes.Constantes.TAMANHO_FITA;
  * 
  * <br>
  * 
- * Formalmente, ele é representado como:
+ * Uma Máquina de Turing Multifitas é uma 8-upla:
  * 
  * <br><br>
  * 
@@ -87,10 +87,63 @@ import static turing.classes.Constantes.TAMANHO_FITA;
  * 
  * <br>
  * 
- * A Máquina de Turing com múltiplas fitas é equivalenta à Máquina de Turing 
- * padrão, com exceção que na função de transição a máquina fará a leitura de
- * todas as k fitas simultâneamente, sendo k maior ou igual a 1, para realizar
- * a transição com base no estado atual.
+ * Ela é representada da mesma forma que uma Máquina de Turing Padrão, com exceção
+ * da função de transição, que agora depende do estado corrente da Unidade de
+ * Controle e dos símbolos lidos de todas as fitas para determinar o novo estado
+ * e que símbolos gravar em cada fita e a direção do movimento da cabeça de leitura
+ * em cada fita.
+ * 
+ * <br><br>
+ * 
+ * Desta forma, a função de transição para uma Máquina de Turing com múltiplas 
+ * fitas pode ser expressa também como:
+ * 
+ * <br><br>
+ * 
+ * <BLOCKQUOTE>
+ * 
+ * δ(q<sub>a</sub>, l<sub>1</sub>, l<sub>2</sub>, ... , l<sub>k</sub>) = 
+ * (q<sub>n</sub>, g<sub>1</sub>, g<sub>2</sub>, ... , g<sub>k</sub>, 
+ * d<sub>1</sub>, d<sub>2</sub>, ... , d<sub>k</sub>)
+ * 
+ * </BLOCKQUOTE>
+ * 
+ * <br>
+ * 
+ * Onde:
+ * 
+ * <br><br>
+ * 
+ * <BLOCKQUOTE>
+ * 
+ * <b>q<sub>a</sub></b>: Estado atual.
+ * 
+ * <br><br>
+ * 
+ * <b>l<sub>1</sub>, l<sub>2</sub>, ..., l<sub>k</sub></b>: Símbolos lidos das 
+ * fitas.
+ * 
+ * <br><br>
+ * 
+ * <b>q<sub>n</sub></b>: Novo estado.
+ * 
+ * <br><br>
+ * 
+ * <b>g<sub>1</sub>, g<sub>2</sub>, ..., g<sub>k</sub></b>: Símbolos gravados nas
+ * fitas.
+ * 
+ * <br><br>
+ * 
+ * <b>d<sub>1</sub>, d<sub>2</sub>, ..., d<sub>k</sub></b>: Sentidos dos movimentos
+ * das Cabeças de Leitura/Escrita nas fitas.
+ * 
+ * <br><br>
+ * 
+ * <b>k</b>: Número de fitas da máquina de Turing (k >= 1).
+ * 
+ * </BLOCKQUOTE>
+ * 
+ * <br>
  * 
  * @author Leandro Ap. de Almeida
  * 
@@ -115,7 +168,7 @@ public class MaquinaMultifitas implements MaquinaTuring {
     private Fita[] fitas;
     
     /**Cursores das Cabeças de Leitura/Escrita, uma para cada fita.*/
-    private Map<Integer, Integer> cursoresFitas;
+    private Map<Integer, Integer> cursores;
     
     /**Estado atual apontado pela Unidade de Controle.*/
     private Estado estadoAtual;
@@ -123,10 +176,10 @@ public class MaquinaMultifitas implements MaquinaTuring {
     /**Palavra de entrada a ser processada.*/
     private String palavra;
     
-    /**Estatus de excução da simulação.*/
+    /**Status de excução da simulação.*/
     private boolean emExecucao;
     
-    /**Estatus de palavra aceita/rejeitada pela máquina*/
+    /**Status de palavra aceita/rejeitada pela máquina*/
     private boolean aceita;
     
     /**Número de passos executados na simulação.*/
@@ -160,7 +213,7 @@ public class MaquinaMultifitas implements MaquinaTuring {
             this.alfabetoFita = alfabetoFita;
             this.conjuntoEstados = conjuntoEstados;
             this.numeroFitas = numeroFitas;
-            this.cursoresFitas = new HashMap<>();
+            this.cursores = new HashMap<>();
             this.fitas = new Fita[numeroFitas];
             this.emExecucao = false;
         } else {
@@ -179,7 +232,7 @@ public class MaquinaMultifitas implements MaquinaTuring {
     private char[] lerSimbolosFitas() {
         char[] simbolosFitas = new char[fitas.length];
         for (int i = 0; i < fitas.length; i++) {
-            simbolosFitas[i] = fitas[i].ler(cursoresFitas.get(i)).getCaracter();
+            simbolosFitas[i] = fitas[i].ler(cursores.get(i)).getCaracter();
         }
         return simbolosFitas;
     }
@@ -188,17 +241,29 @@ public class MaquinaMultifitas implements MaquinaTuring {
     /**
      * Obter os índices absolutos dos cursores apontando para os arranjos reais
      * das fitas na memória. Para ler e gravar nas fitas é necessário ser feito
-     * por meio de índices virtais. Mas para imprimir o arranjo que está na memória,
-     * é necessário informar os índices absolutos.
+     * por meio de índices virtuais. Mas para imprimir o arranjo que está na
+     * memória, é necessário informar os índices absolutos.
      * 
      * @return índices absolutos dos cursores para os arranjos em memória.
      */
     private Map<Integer, Integer> getIndicesAbsolutos() {
         Map<Integer, Integer> map = new HashMap<>();
-        for (int i = 0; i < cursoresFitas.size(); i++) {
-            map.put(i, fitas[i].getEnderecoAbsoluto(cursoresFitas.get(i)));
+        for (int i = 0; i < cursores.size(); i++) {
+            map.put(i, fitas[i].getEnderecoAbsoluto(cursores.get(i)));
         }
         return map;
+    }
+    
+    
+    /**
+     * Carregar a palavra de entrada na primeira fita.
+     * 
+     * @param palavra palavra de entrada.
+     */
+    @Override
+    public void carregarPalavra(String palavra) {
+        this.palavra = palavra;
+        reiniciar();
     }
 
     
@@ -236,7 +301,7 @@ public class MaquinaMultifitas implements MaquinaTuring {
                 palavra.length() + celulasAdicionais,
                 1
             );
-            cursoresFitas.put(i, fitas[i].getCelulaInicial());
+            cursores.put(i, fitas[i].getCelulaInicial());
         }
 
         fitas[0].iniciar(palavra);
@@ -265,18 +330,6 @@ public class MaquinaMultifitas implements MaquinaTuring {
             
         }
         
-    }
-
-    
-    /**
-     * Carregar a palavra de entrada na primeira fita.
-     * 
-     * @param palavra palavra de entrada.
-     */
-    @Override
-    public void carregarPalavra(String palavra) {
-        this.palavra = palavra;
-        reiniciar();
     }
 
     
@@ -345,17 +398,17 @@ public class MaquinaMultifitas implements MaquinaTuring {
                 // de acordo com a transição definida para o estado corrente e os
                 // símbolos lidos das fitas.
 
-                List<ParametrosFita> paramsFita = transicao.getParametrosFitas();
+                List<ParametrosFita> paramsFita = transicao.getParametrosFita();
 
                 for (int i = 0; i < paramsFita.size(); i++) {
                     
                     ParametrosFita params = paramsFita.get(i);
                     
-                    fitas[i].escrever(cursoresFitas.get(i), params.getSimboloEscrito());
+                    fitas[i].escrever(cursores.get(i), params.getSimboloEscrito());
                     
                     switch (params.getDirecaoMovimento()) {
-                        case DIREITA -> cursoresFitas.put(i, cursoresFitas.get(i) + 1);
-                        case ESQUERDA -> cursoresFitas.put(i, cursoresFitas.get(i) - 1);
+                        case DIREITA -> cursores.put(i, cursores.get(i) + 1);
+                        case ESQUERDA -> cursores.put(i, cursores.get(i) - 1);
                     }
                     
                 }
@@ -489,7 +542,7 @@ public class MaquinaMultifitas implements MaquinaTuring {
      */
     @Override
     public Map<Integer, Integer> getCursores() {
-        return cursoresFitas;
+        return cursores;
     }
 
     
@@ -527,7 +580,7 @@ public class MaquinaMultifitas implements MaquinaTuring {
 
     
     /**
-     * Estatus de palavra de entrada aceita.
+     * Status de palavra de entrada aceita.
      * 
      * @return Se true, a palavra foi aceita. Se false, a palavra foi rejeitada.
      */

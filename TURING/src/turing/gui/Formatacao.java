@@ -11,7 +11,8 @@ public final class Formatacao {
     public static String formatarSimbolos(String string) {
         String simboloBranco = new String(new byte[] {SIMBOLO_BRANCO});
         String simboloInicio = new String(new byte[] {SIMBOLO_INICIO_FITA});
-        return string.replace(simboloBranco, SUFIXO_BRANCO).replace(simboloInicio, SUFIXO_INICIO);
+        return string.replace(simboloBranco, SUFIXO_BRANCO).replace(simboloInicio, SUFIXO_INICIO)
+        .replace(Sufixos.SUFIXO_CURSOR, "").replace(Sufixos.SUFIXO_CEL_PIVO, "");
     }
     
     

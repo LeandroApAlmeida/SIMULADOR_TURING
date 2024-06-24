@@ -1,0 +1,1 @@
+tagSearchIndex = [{"l":"Constant Field Values","h":"","u":"constant-values.html"},{"l":"Modelo Formal","h":"class turing.classes.MaquinaMultifitas","d":"Section","u":"turing/classes/MaquinaMultifitas.html#modelo-formal-heading"},{"l":"Serialized Form","h":"","u":"serialized-form.html"}];updateSearchResults();

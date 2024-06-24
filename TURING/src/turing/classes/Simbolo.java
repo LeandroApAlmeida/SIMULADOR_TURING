@@ -11,10 +11,10 @@ public class Simbolo {
     /**Caractere do símbolo.*/
     private char caractere;
     
-    /**Estatus de símbolo do alfabeto auxiliar.*/
+    /**Status de símbolo do alfabeto auxiliar.*/
     private boolean auxiliar;
     
-    /**Estatus de símbolo reservado.*/
+    /**Status de símbolo reservado.*/
     private boolean reservado;
     
     /**Indicador de ponto virtual sobre o símbolo.*/
@@ -26,9 +26,9 @@ public class Simbolo {
      * 
      * @param caracter caractere do símbolo.
      * 
-     * @param auxiliar estatus de símbolo do alfabeto auxiliar.
+     * @param auxiliar status de símbolo do alfabeto auxiliar.
      * 
-     * @param reservado estatus de símbolo reservado.
+     * @param reservado status de símbolo reservado.
      */
     protected Simbolo(char caracter, boolean auxiliar, boolean reservado) {
         this.caractere = caracter;
@@ -43,7 +43,7 @@ public class Simbolo {
      * 
      * @param caracter caractere do símbolo.
      * 
-     * @param auxiliar estatus de símbolo do alfabeto auxiliar.
+     * @param auxiliar status de símbolo do alfabeto auxiliar.
      */
     public Simbolo(char caracter, boolean auxiliar) {
         this(caracter, auxiliar, false);
@@ -61,7 +61,7 @@ public class Simbolo {
 
     
     /**
-     * Obter o estatus de símbolo do alfabeto auxiliar.
+     * Obter o status de símbolo do alfabeto auxiliar.
      * 
      * @return Se true, é símbolo do alfabeto auxiliar. Se false, não é
      * símbolo do alfabeto auxiliar.
@@ -72,7 +72,7 @@ public class Simbolo {
 
     
     /**
-     * Obter o estatus de símbolo reservado.
+     * Obter o status de símbolo reservado.
      * 
      * @return Se true, é símbolo reservado. Se false, não é símbolo reservado.
      */
@@ -105,7 +105,7 @@ public class Simbolo {
 
     
     /**
-     * Definir o estatus de símbolo do alfabeto auxiliar.
+     * Definir o status de símbolo do alfabeto auxiliar.
      * 
      * @param auxiliar Se true, é símbolo do alfabeto auxiliar. Se false, não é
      * símbolo do alfabeto auxiliar.

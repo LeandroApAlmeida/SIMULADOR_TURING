@@ -17,7 +17,7 @@ import javax.swing.text.BadLocationException;
 
 /**
  * Componente para exibição dos números das linhas no editor de código do
- * programa. O componente é acoplado ao JScroller do editor passando a ser
+ * programa. O componente é acoplado ao JScrollPane do editor passando a ser
  * renderizado por este, no lado esquerdo do editor.
  * 
  * @author Leandro Ap. de Almeida

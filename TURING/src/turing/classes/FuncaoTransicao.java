@@ -57,7 +57,7 @@ import java.util.List;
  * 
  * <BLOCKQUOTE>
  * 
- * δ(q<sub>a</sub>, l<sub>1</sub>, l<sub>2</sub>, ... , l<sub>k</sub>) = 
+ * δ(q<sub>a</sub>, s<sub>1</sub>, s<sub>2</sub>, ... , s<sub>k</sub>) = 
  * (q<sub>n</sub>, g<sub>1</sub>, g<sub>2</sub>, ... , g<sub>k</sub>, 
  * d<sub>1</sub>, d<sub>2</sub>, ... , d<sub>k</sub>)
  * 
@@ -75,7 +75,7 @@ import java.util.List;
  * 
  * <br><br>
  * 
- * <b>l<sub>1</sub>, l<sub>2</sub>, ..., l<sub>k</sub></b>: Símbolos lidos das 
+ * <b>s<sub>1</sub>, s<sub>2</sub>, ..., s<sub>k</sub></b>: Símbolos lidos das 
  * fitas.
  * 
  * <br><br>
@@ -208,31 +208,11 @@ public class FuncaoTransicao implements Iterable<Transicao> {
      * não exista uma transição com esta identificação.
      */
     public Transicao getTransicao(Estado estadoInicial, char... simbolosLidos) {
-        
         Transicao transicao = null;
-        
-        StringBuilder sb = new StringBuilder();
-        sb.append(estadoInicial.getRotulo());
-        sb.append(simbolosLidos);
-        
-        for (int i = 0; i < transicoes.size(); i++) {
-            
-            Transicao transicao2 = transicoes.get(i);
-            
-            StringBuilder sb2 = new StringBuilder();
-            sb2.append(transicao2.getEstadoInicial().getRotulo());
-            
-            for (ParametrosFita paramsFita : transicao2.getParametrosFitas()) {
-                sb2.append(paramsFita.getSimboloLido());
-            }
-
-            if (sb2.toString().equals(sb.toString())) {
-                transicao = transicao2;
-                break;
-            }
-            
-        }        
-
+        int indice = indiceDe(estadoInicial, simbolosLidos);
+        if (indice >= 0) {
+            transicao = transicoes.get(indice);
+        }
         return transicao;
         
     }
@@ -288,10 +268,10 @@ public class FuncaoTransicao implements Iterable<Transicao> {
         for (int i = 0; i < transicoes.size(); i++) {
             Transicao transicao2 = transicoes.get(i);
             if (transicao2.getEstadoInicial().equals(estado)) {
-                if (simbolos.length == transicao2.getParametrosFitas().size()) {
+                if (simbolos.length == transicao2.getParametrosFita().size()) {
                     erro = false;
                     for (int j = 0; j < simbolos.length; j++) {
-                        if (simbolos[j] != transicao2.getParametrosFitas()
+                        if (simbolos[j] != transicao2.getParametrosFita()
                         .get(j).getSimboloLido().getCaracter()) {
                             erro = true;
                             break;
