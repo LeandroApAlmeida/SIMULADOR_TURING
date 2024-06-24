@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"turing"},{"l":"turing.arquivo"},{"l":"turing.classes"},{"l":"turing.gui"}];updateSearchResults();
