@@ -1,3 +1,7 @@
+<h3>Simulador de Máquina de Turing</h3>
+
+<br>
+
 Este programa, escrito em linguagem Java, implementa um simulador de máquina de Turing com múltiplas fitas.
 
 Uma máquina de Turing M é uma 8-upla:
