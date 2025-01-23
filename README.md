@@ -6,7 +6,7 @@ Este programa, escrito em linguagem Java, implementa um simulador de máquina de
 
 Uma máquina de Turing M é uma 8-upla:
 
-<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; M = (Σ, Q, δ, q0, F, V, β, ) ⊛</b>
+<p style="margin-left: 40px;"><b>M = (Σ, Q, δ, q0, F, V, β, ) ⊛</b></p>
 
 Onde:
 
