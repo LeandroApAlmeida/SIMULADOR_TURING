@@ -6,23 +6,23 @@ Uma máquina de Turing M é uma 8-upla:
 
 Onde:
 
-&nbsp;&nbsp;&nbsp;&nbsp; Σ Alfabeto de símbolos de entrada;
+&nbsp;&nbsp;&nbsp;&nbsp; <b>Σ:</b> Alfabeto de símbolos de entrada;
 
-&nbsp;&nbsp;&nbsp;&nbsp; Q Conjunto de estados possíveis da máquina;
+&nbsp;&nbsp;&nbsp;&nbsp; <b>Q:</b> Conjunto de estados possíveis da máquina;
   
-&nbsp;&nbsp;&nbsp;&nbsp; δ Função de transição ou programa, tal que:
+&nbsp;&nbsp;&nbsp;&nbsp; <b>δ:</b> Função de transição ou programa, tal que:
   
-&nbsp;&nbsp;&nbsp;&nbsp; δ : Q × (Σ ∪ V ∪ {β , ⊛}) → Q × (Σ ∪ V ∪ {β , ⊛}) × {E, D}
+&nbsp;&nbsp;&nbsp;&nbsp; <b>δ : Q × (Σ ∪ V ∪ {β , ⊛}) → Q × (Σ ∪ V ∪ {β , ⊛}) × {E, D}</b>
   
-&nbsp;&nbsp;&nbsp;&nbsp; q0 Estado inicial da máquina (q0 ∈ Q);
+&nbsp;&nbsp;&nbsp;&nbsp; <b>q0:</b> Estado inicial da máquina (q0 ∈ Q);
   
-&nbsp;&nbsp;&nbsp;&nbsp; F Conjunto dos estados finais (F ⊂ Q);
+&nbsp;&nbsp;&nbsp;&nbsp; <b>F:</b> Conjunto dos estados finais (F ⊂ Q);
   
-&nbsp;&nbsp;&nbsp;&nbsp; V Alfabeto auxiliar;
+&nbsp;&nbsp;&nbsp;&nbsp; <b>V:</b> Alfabeto auxiliar;
   
-&nbsp;&nbsp;&nbsp;&nbsp; β Símbolo especial branco;
+&nbsp;&nbsp;&nbsp;&nbsp; <b>β: </b> Símbolo especial branco;
   
-&nbsp;&nbsp;&nbsp;&nbsp; ⊛ Símbolo especial marcador de início da fita.
+&nbsp;&nbsp;&nbsp;&nbsp; <b>⊛:</b> Símbolo especial marcador de início da fita.
 
 Execute os programas no diretório EXEMPLOS para testar, ou tente escrever seu próprio programa.
 
