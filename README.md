@@ -2,27 +2,27 @@ Este programa, escrito em linguagem Java, implementa um simulador de máquina de
 
 Uma máquina de Turing M é uma 8-upla:
 
-&nbsp;&nbsp;&nbsp;&nbsp; M = (Σ, Q, δ, q0, F, V, β, ) ⊛
+<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; M = (Σ, Q, δ, q0, F, V, β, ) ⊛</b>
 
 Onde:
 
-&nbsp;&nbsp;&nbsp;&nbsp; <b>Σ:</b> Alfabeto de símbolos de entrada;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Σ:</b> Alfabeto de símbolos de entrada;
 
-&nbsp;&nbsp;&nbsp;&nbsp; <b>Q:</b> Conjunto de estados possíveis da máquina;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Q:</b> Conjunto de estados possíveis da máquina;
   
-&nbsp;&nbsp;&nbsp;&nbsp; <b>δ:</b> Função de transição ou programa, tal que:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>δ:</b> Função de transição ou programa, tal que:
   
-&nbsp;&nbsp;&nbsp;&nbsp; <b>δ : Q × (Σ ∪ V ∪ {β , ⊛}) → Q × (Σ ∪ V ∪ {β , ⊛}) × {E, D}</b>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>δ : Q × (Σ ∪ V ∪ {β , ⊛}) → Q × (Σ ∪ V ∪ {β , ⊛}) × {E, D}</b>
   
-&nbsp;&nbsp;&nbsp;&nbsp; <b>q0:</b> Estado inicial da máquina (q0 ∈ Q);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>q0:</b> Estado inicial da máquina (q0 ∈ Q);
   
-&nbsp;&nbsp;&nbsp;&nbsp; <b>F:</b> Conjunto dos estados finais (F ⊂ Q);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>F:</b> Conjunto dos estados finais (F ⊂ Q);
   
-&nbsp;&nbsp;&nbsp;&nbsp; <b>V:</b> Alfabeto auxiliar;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>V:</b> Alfabeto auxiliar;
   
-&nbsp;&nbsp;&nbsp;&nbsp; <b>β: </b> Símbolo especial branco;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>β: </b> Símbolo especial branco;
   
-&nbsp;&nbsp;&nbsp;&nbsp; <b>⊛:</b> Símbolo especial marcador de início da fita.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>⊛:</b> Símbolo especial marcador de início da fita.
 
 Execute os programas no diretório EXEMPLOS para testar, ou tente escrever seu próprio programa.
 
