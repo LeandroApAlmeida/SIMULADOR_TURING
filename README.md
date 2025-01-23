@@ -5,4 +5,4 @@ Em futuras atualizações, serão feitas as validações necessárias e será im
 Execute os programas no diretório EXEMPLOS para testar, ou tente escrever seu próprio programa.
 
 
-https://github.com/LeandroApAlmeida/SIMULADOR_TURING/assets/158072587/0d3ca947-ba2b-449a-a56d-82cead338e84
+https://github.com/user-attachments/assets/b1e1fa06-7567-4a97-820a-20cd18f648f6
