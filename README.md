@@ -28,8 +28,6 @@ Onde:
   
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>⊛:</b> Símbolo especial marcador de início da fita.
 
-Execute os programas no diretório EXEMPLOS para testar, ou tente escrever seu próprio programa.
-
-<br><br>
+<br>
 
 https://github.com/user-attachments/assets/b1e1fa06-7567-4a97-820a-20cd18f648f6
