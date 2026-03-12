@@ -1,8 +1,33 @@
-Este programa escrito em linguagem Java implementa um simulador de máquina de Turing. Esta versão ainda é preliminar e faltam muitas validações, porém, o simulador funciona corretamente, e se as entradas forem digitadas com cuidado, o programa está totalmente funcional, por enquando implementando apenas um modelo de máquina de Turing com múltiplas fitas. 
+<h3>Simulador de Máquina de Turing</h3>
 
-Em futuras atualizações, serão feitas as validações necessárias e será implementado um modelo de máquina de Turing padrão, que terá a capacidade de rodar qualquer outro modelo de máquina de Turing.
+<br>
 
-Execute os programas no diretório EXEMPLOS para testar, ou tente escrever seu próprio programa.
+Este programa, escrito em linguagem Java, implementa um simulador de máquina de Turing com múltiplas fitas.
 
+Uma máquina de Turing M é uma 8-upla:
 
-https://github.com/LeandroApAlmeida/SIMULADOR_TURING/assets/158072587/0d3ca947-ba2b-449a-a56d-82cead338e84
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>M = (Σ, Q, δ, q0, F, V, β, ⊛)</b>
+
+Onde:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Σ:</b> Alfabeto de símbolos de entrada;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Q:</b> Conjunto de estados possíveis da máquina;
+  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>δ:</b> Função de transição ou programa, tal que:
+  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>δ : Q × (Σ ∪ V ∪ {β , ⊛}) → Q × (Σ ∪ V ∪ {β , ⊛}) × {E, D}</b>
+  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>q0:</b> Estado inicial da máquina (q0 ∈ Q);
+  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>F:</b> Conjunto dos estados finais (F ⊂ Q);
+  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>V:</b> Alfabeto auxiliar;
+  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>β: </b> Símbolo especial branco;
+  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>⊛:</b> Símbolo especial marcador de início da fita.
+
+<br>
+
+https://github.com/user-attachments/assets/b1e1fa06-7567-4a97-820a-20cd18f648f6
