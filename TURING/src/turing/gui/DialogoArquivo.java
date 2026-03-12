@@ -103,10 +103,13 @@ public final class DialogoArquivo extends JFileChooser {
      */
     @Override
     public void approveSelection() {
+        
         //Não vai ignorar o tratador de eventos.
         ignorarAcao = false;
+        
         //Aciona o tratador de eventos.
-        fireActionPerformed(APPROVE_SELECTION);        
+        fireActionPerformed(APPROVE_SELECTION);
+        
     }
 
     
@@ -160,15 +163,20 @@ public final class DialogoArquivo extends JFileChooser {
                     }
                     
                     if (!terminaCom) {
+                        
                         String nomeArquivo = arquivoSelecionado.getAbsolutePath() +
                         "." + extensoes[0];
+                        
                         //Completa com a extensão do arquivo.
                         arquivoSelecionado = new File(nomeArquivo);
+                        
                         setSelectedFile(arquivoSelecionado);
+                        
                     }
                     
                     //Verifica se há um arquivo com o mesmo nome.
                     if (arquivoSelecionado.exists()) {
+                        
                         //Pede a confirmação do usuário para sobrescrevê-lo.
                         int opt = javax.swing.JOptionPane.showConfirmDialog(this.getParent(),
                             arquivoSelecionado.getAbsolutePath() +
@@ -177,14 +185,17 @@ public final class DialogoArquivo extends JFileChooser {
                             javax.swing.JOptionPane.YES_NO_OPTION,
                             javax.swing.JOptionPane.QUESTION_MESSAGE
                         );
+                        
                         if (opt == javax.swing.JOptionPane.NO_OPTION) {
                             selecaoAprovada = false;
                         }
+                        
                     }
                     
                 } else {
                     
                    File arquivoSelecionado = getSelectedFile();
+                   
                    if (!arquivoSelecionado.exists()) {
                        selecaoAprovada = false;
                    }

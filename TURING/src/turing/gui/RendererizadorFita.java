@@ -8,10 +8,9 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import static turing.gui.Formatacao.formatarSimbolos;
-import static turing.classes.Constantes.SIMBOLO_BRANCO;
+import static turing.programa.Tokens.SIMBOLO_BRANCO;
 import static turing.gui.Sufixos.SUFIXO_CURSOR;
 import static turing.gui.Sufixos.SUFIXO_CEL_PIVO;
-import static turing.gui.Sufixos.SUFIXO_PONTO;
 
 /**
  * Renderizador da JTable que representa as fitas da Máquina de Turing. 
@@ -25,9 +24,6 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
     
     /**Ícone de seta.*/
     private Icon iconeSeta;
-    
-    /**Ícone de ponto.*/
-    private Icon iconePonto;
     
     /**Símbolo de branco.*/
     private String branco;
@@ -44,12 +40,13 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
         branco = String.valueOf(SIMBOLO_BRANCO);
         
         try {
+            
             if (iconePadrao) {
                 iconeSeta = new ImageIcon(getClass().getResource("/turing/icones/cursor_icon_2.png"));
             } else {
                 iconeSeta = new ImageIcon(getClass().getResource("/turing/icones/cursor_icon_13.png"));
             }
-            iconePonto = new ImageIcon(getClass().getResource("/turing/icones/dot_icon.png"));
+
         } catch (Exception ex) {
             iconeSeta = null;
         }
@@ -108,7 +105,7 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
 
         if (text != null) {
         
-            if (text.endsWith(SUFIXO_CURSOR) || text.endsWith(SUFIXO_PONTO)) {
+            if (text.endsWith(SUFIXO_CURSOR)) {
                 
                 Font font = new Font(
                     table.getFont().getFontName(),
@@ -124,12 +121,8 @@ public class RendererizadorFita implements javax.swing.table.TableCellRenderer {
                     if (iconeSeta != null) {
                         textField.setIcone(iconeSeta);
                     }
-                } else {
-                    if (iconePonto != null) {
-                        textField.setIcone(iconePonto);
-                    }
                 }
-                
+                                
             } else {
                 
                 if (text.endsWith(SUFIXO_CEL_PIVO)) {

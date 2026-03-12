@@ -15,8 +15,8 @@ import javax.swing.event.ChangeListener;
 public final class TelaConfigVelocidadeSimulacao extends javax.swing.JDialog implements ChangeListener {
 
     
-    /**Instância de {@link OuvinteConfigSimulacaoAutomatica} que será notificado das mudanças.*/
-    private final OuvinteConfigSimulacaoAutomatica ouvinte;
+    /** * Instância de {@link OuvinteSimulacaoAutomatica} que será notificado das mudanças.*/
+    private final OuvinteSimulacaoAutomatica ouvinte;
     
     /**Título da tela.*/
     private final String titulo = "VELOCIDADE DE EXECUÇÃO: ";
@@ -32,14 +32,22 @@ public final class TelaConfigVelocidadeSimulacao extends javax.swing.JDialog imp
      * @param tempoAtual tempo atual de simulação automática.
      */
     public TelaConfigVelocidadeSimulacao(java.awt.Frame parent, 
-    OuvinteConfigSimulacaoAutomatica ouvinte, int tempoAtual) {
+    OuvinteSimulacaoAutomatica ouvinte, int tempoAtual) {
+        
         super(parent, false);
+        
         initComponents();
+        
         this.ouvinte = ouvinte;
+    
         jSlider1.setValue(tempoAtual);
+        
         float tempo = ((float)tempoAtual / 1000);
+        
         setTitle(titulo + String.format("%.2f", tempo) + " seg.");
+        
         jSlider1.addChangeListener(this);
+    
     }
     
     
@@ -49,10 +57,15 @@ public final class TelaConfigVelocidadeSimulacao extends javax.swing.JDialog imp
      * do componente, ou solta a tecla de seta para direita ou seta para a esquerda.
      */
     private void notificarOuvinte() {
+        
         int tempoExecucao = jSlider1.getValue();
+        
         float tempo = ((float)tempoExecucao / 1000);
+        
         setTitle(titulo + String.format("%.2f", tempo) + " seg.");
+        
         ouvinte.velocidadeSimulacaoAutomaticaAtualizada(tempoExecucao);
+    
     }
     
     
@@ -64,9 +77,13 @@ public final class TelaConfigVelocidadeSimulacao extends javax.swing.JDialog imp
      */
     @Override
     public void stateChanged(ChangeEvent e) {
+        
         int tempoExecucao = jSlider1.getValue();
+        
         float tempo = ((float)tempoExecucao / 1000);
+        
         setTitle(titulo + String.format("%.2f", tempo) + " seg.");
+    
     }
 
 

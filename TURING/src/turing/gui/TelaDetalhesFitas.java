@@ -1,10 +1,10 @@
 package turing.gui;
 
 import javax.swing.table.DefaultTableModel;
-import turing.classes.Fita;
-import turing.classes.MaquinaTuring;
-import static turing.classes.Constantes.SIMBOLO_BRANCO;
-import static turing.classes.Constantes.TAMANHO_FITA;
+import turing.modelo.Fita;
+import static turing.programa.Tokens.SIMBOLO_BRANCO;
+import static turing.modelo.Constantes.TAMANHO_FITA;
+import turing.modelo.MaquinaMultifitas;
 
 /**
  * Tela para exibição do conteúdo das fitas da Máquina de Turing.
@@ -25,13 +25,19 @@ public class TelaDetalhesFitas extends javax.swing.JDialog {
      * 
      * @param numeroFitas número de fitas da Máquina de Turing.
      */
-    public TelaDetalhesFitas(java.awt.Frame parent, MaquinaTuring maquinaTuring,
+    public TelaDetalhesFitas(java.awt.Frame parent, MaquinaMultifitas maquinaTuring,
     int numeroFitas) {
+        
         super(parent, true);
+        
         initComponents();
+        
         jtFitas.getTableHeader().setUI(null);
+        
         setLocationRelativeTo(parent);
+        
         imprimirFitas(maquinaTuring, numeroFitas);
+    
     }
     
     
@@ -42,7 +48,7 @@ public class TelaDetalhesFitas extends javax.swing.JDialog {
      * 
      * @param numeroFitas número de fitas da Máquina de Turing.
      */
-    private void imprimirFitas(MaquinaTuring maquinaTuring, int numeroFitas) {
+    private void imprimirFitas(MaquinaMultifitas maquinaTuring, int numeroFitas) {
         
         if (maquinaTuring != null) {
             

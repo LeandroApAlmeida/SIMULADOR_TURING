@@ -34,9 +34,13 @@ public class TelaAjuda extends javax.swing.JDialog {
         jlTitle.setText(" " + titulo);
         
         try {
+            
             String html = new ArquivoAjuda(arquivo).ler();
+            
             jtAjuda.setText(html);
+            
             jtAjuda.setCaretPosition(0);
+            
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                 this,

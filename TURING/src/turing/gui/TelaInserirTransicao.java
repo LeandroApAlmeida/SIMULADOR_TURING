@@ -7,14 +7,14 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableCellRenderer;
-import turing.classes.AlfabetoFita;
-import turing.classes.ConjuntoEstados;
-import turing.classes.DirecaoMovimento;
-import turing.classes.Estado;
-import turing.classes.FuncaoTransicao;
-import turing.classes.ParametrosFita;
-import turing.classes.Simbolo;
-import turing.classes.Transicao;
+import turing.modelo.AlfabetoFita;
+import turing.modelo.ConjuntoEstados;
+import turing.modelo.DirecaoMovimento;
+import turing.modelo.Estado;
+import turing.modelo.FuncaoTransicao;
+import turing.modelo.ParametrosCabeca;
+import turing.modelo.Simbolo;
+import turing.modelo.Transicao;
 import static turing.gui.Formatacao.formatarSimbolos;
 import static turing.gui.Formatacao.reverterSimbolos;
 import static turing.gui.RenderizadorTransicao.CELULA_VAZIA;
@@ -27,7 +27,7 @@ import static turing.gui.RenderizadorTransicao.CELULA_VAZIA;
  * 
  * <BLOCKQUOTE>
  * 
- * δ(q<sub>a</sub>, s<sub>1</sub>, s<sub>2</sub>, ... , s<sub>k</sub>) = 
+ * (q<sub>a</sub>, s<sub>1</sub>, s<sub>2</sub>, ... , s<sub>k</sub>) = 
  * (q<sub>n</sub>, g<sub>1</sub>, g<sub>2</sub>, ... , g<sub>k</sub>, 
  * d<sub>1</sub>, d<sub>2</sub>, ... , d<sub>k</sub>)
  * 
@@ -216,12 +216,17 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
         class JComboboxMovimento extends JComboBox<String> {
             
             public JComboboxMovimento() {
+                
                 String[] valores = new String[DirecaoMovimento.values().length + 1];
+                
                 valores[0] = CELULA_VAZIA;
+                
                 for (int i = 0; i < DirecaoMovimento.values().length; i++) {
                     valores[i + 1] = DirecaoMovimento.values()[i].getId();
                 }
+                
                 setModel(new DefaultComboBoxModel(valores));
+            
             }
             
         }
@@ -266,22 +271,27 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
         
         Estado estadoInicial = conjuntoEstados.getEstado(jcbEstadoAtual.getSelectedIndex());
         Estado estadoFinal = conjuntoEstados.getEstado(jcbEstadoFinal.getSelectedIndex());
-        List<ParametrosFita> paramsFita = new ArrayList<>();
+        List<ParametrosCabeca> paramsFita = new ArrayList<>();
         
         boolean erro = (estadoInicial == null || estadoFinal == null);
         
         if (!erro) {
+            
             for (int i = 0; i < jtMovimento.getRowCount(); i++) {
+                
                 for (int j = 1; j < jtMovimento.getColumnCount(); j++) {
                     if (jtMovimento.getValueAt(i, j).equals(CELULA_VAZIA)) {
                         erro = true;
                         break;
                     }
                 }
+                
                 if (erro) {
                     break;
                 }
+                
             }
+            
         }
 
         if (!erro) {
@@ -300,8 +310,7 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
                     ((String)jtMovimento.getValueAt(i, 3))
                 );
 
-                paramsFita.add(
-                    new ParametrosFita(
+                paramsFita.add(new ParametrosCabeca(
                         simboloLido,
                         simboloEscrito,
                         direcao
@@ -364,7 +373,6 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
         jcbEstadoAtual = new javax.swing.JComboBox<>();
         jcbEstadoFinal = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jtMovimento = new javax.swing.JTable();
         jSeparator1 = new javax.swing.JSeparator();
@@ -397,40 +405,31 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
 
         jLabel2.setText("Estado Final:");
 
-        jLabel3.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
-        jLabel3.setText("-->");
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jcbEstadoAtual, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel3)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jcbEstadoFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(206, Short.MAX_VALUE))
+                .addGap(26, 26, 26)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jcbEstadoAtual, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jcbEstadoFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(19, 19, 19)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jcbEstadoAtual, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
                     .addComponent(jcbEstadoFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jcbEstadoAtual, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         jtMovimento.setModel(new javax.swing.table.DefaultTableModel(
@@ -459,7 +458,6 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jbInserir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -480,7 +478,7 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbCancelar)
                     .addComponent(jbInserir))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(7, Short.MAX_VALUE))
         );
 
         pack();
@@ -497,7 +495,6 @@ public class TelaInserirTransicao extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

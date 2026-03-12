@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Arquivo para leitura e escrita de conteúdo em formato texto.
+ * Classe que representa o arquivo para leitura e escrita de conteúdo em formato
+ * texto.
  * 
  * @author Leandro Ap. de Almeida
  * 
@@ -42,9 +43,11 @@ public class ArquivoTexto {
      * falta de espaço em disco, etc).
      */
     public void gravar(String texto) throws UnsupportedEncodingException, IOException {
+        
         try (FileWriter writer = new FileWriter(arquivo)) {
-            writer.write(texto);
+            writer.write(texto);   
         }
+    
     }
     
     
@@ -57,19 +60,27 @@ public class ArquivoTexto {
      * falta de espaço em disco, etc).
      */
     public String ler() throws IOException {
+        
         StringBuilder sb = new StringBuilder();
+        
         try (FileReader reader = new FileReader(arquivo);
-            BufferedReader bufferedReader = new BufferedReader(reader)) {
+        BufferedReader bufferedReader = new BufferedReader(reader)) {
+        
             String line = bufferedReader.readLine();
+            
             if (line != null) {
                 sb.append(line);
             }
+            
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append("\n");
                 sb.append(line);
             }
+        
         }
+        
         return sb.toString();
+    
     }
 
     

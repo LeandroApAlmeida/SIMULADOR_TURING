@@ -49,16 +49,21 @@ public class RenderizadorTransicao implements javax.swing.table.TableCellRendere
         switch (column) {
             
             case 0 -> {
+                
                 textField.setText(String.valueOf(row + 1));
+                
                 textField.setBackground(new Color(240,240,240));
+                
             }
 
             default -> {
+                
                 if (value != null) {
                     textField.setText(String.valueOf(value));
                 } else {
                     textField.setText(CELULA_VAZIA);
                 }
+                
             }
 
  

@@ -29,13 +29,18 @@ public final class JTextFieldIcone extends JTextField {
      * Constructor padrão.
      */
     public JTextFieldIcone() {
+        
         icone = null;
+        
         setHorizontalAlignment(JTextField.CENTER);
         setBorder(BorderFactory.createEmptyBorder());
+        
         setText("");
         setForeground(Color.BLACK);
         setBackground(Color.WHITE);
+    
         setOpaque(true);
+    
     }
     
     
@@ -56,8 +61,11 @@ public final class JTextFieldIcone extends JTextField {
      */
     @Override
     public void setBorder(Border border) {
+        
         this.borda = border;
+        
         super.setBorder(border);
+    
     }
 
     
@@ -69,11 +77,17 @@ public final class JTextFieldIcone extends JTextField {
      */
     @Override
     protected void paintComponent(Graphics graphics) {  
+    
         super.paintComponent(graphics);
+        
         if (icone != null) {
+            
             Insets insets = borda.getBorderInsets(this);
+            
             icone.paintIcon(this, graphics, insets.left + 1, insets.top + 2);
+            
         }
+        
     }
     
     

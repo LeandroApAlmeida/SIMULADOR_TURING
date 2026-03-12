@@ -2,8 +2,8 @@ package turing.gui;
 
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
-import turing.classes.Estado;
-import turing.classes.ConjuntoEstados;
+import turing.modelo.Estado;
+import turing.modelo.ConjuntoEstados;
 
 /**
  * Tela para inserçao dos estados da Unidade de Controle.
@@ -40,10 +40,12 @@ public class TelaInserirEstado extends javax.swing.JDialog {
         super(parent, true);
         
         this.conjuntoEstados = conjuntoEstados;
+        
         cancelado = true;
         modoEdicao = false;
         
         initComponents();
+        
         setLocationRelativeTo(parent);
         
     }
@@ -70,6 +72,7 @@ public class TelaInserirEstado extends javax.swing.JDialog {
         jcbEstadoTerminal.setSelected(estado.isTerminal());
         
         setTitle("ALTERAR ESTADO");
+        
         jbInserir.setText("Alterar");
         jlFrase.setText("Estado:");
         

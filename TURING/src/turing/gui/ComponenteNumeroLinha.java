@@ -29,13 +29,16 @@ public final class ComponenteNumeroLinha extends JComponent {
 
     /**Alinha os números das linhas à esquerda.*/
     public static final int ALINHAMENTO_ESQUERDA = 0;
+    
     /**Alinha os números das linhas à direita.*/
     public static final int ALINHAMENTO_DIREITA = 1;
+    
     /**Alinha os números das linhas ao centro.*/
     public static final int ALINHAMENTO_CENTRALIZADO = 2;
     
     /**Preenchimento horizontal do componente.*/
     private static final int PREENCHIMENTO_HORIZONTAL = 6;
+    
     /**Preenchimento vertical do componente.*/
     private static final int PREENCHIMENTO_VERTICAL = 3;
 
@@ -115,22 +118,29 @@ public final class ComponenteNumeroLinha extends JComponent {
         Dimension dimensao = componente.getPreferredSize();
 
         if (componente instanceof JViewport janela) {
+            
             Component proprietario = janela.getParent();
+            
             if (proprietario != null && proprietario instanceof JScrollPane){
                 JScrollPane scroller = (JScrollPane)janela.getParent();
                 dimensao = scroller.getViewport().getView().getPreferredSize();
             }
+            
         }
 
         if (comprimento > getPreferredSize().width || comprimento < getPreferredSize().width){
+            
             setPreferredSize(
                 new Dimension(
                     comprimento + 2 * PREENCHIMENTO_HORIZONTAL,
                     dimensao.height
                 )
             );
+            
             revalidate();
+            
             repaint();
+        
         }
 
     }

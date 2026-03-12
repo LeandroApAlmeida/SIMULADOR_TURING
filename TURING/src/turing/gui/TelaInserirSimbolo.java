@@ -2,8 +2,8 @@ package turing.gui;
 
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
-import turing.classes.AlfabetoFita;
-import turing.classes.Simbolo;
+import turing.modelo.AlfabetoFita;
+import turing.modelo.Simbolo;
 
 /**
  * Tela para a inserção de símbolos do alfabeto de entrada e do alfabeto auxiliar.
@@ -40,10 +40,12 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
         super(parent, true);
         
         this.alfabetoFita = alfabetoFita;
+        
         cancelado = true;
         modoEdicao = false;
         
         initComponents();
+        
         setLocationRelativeTo(parent);
         
     }
@@ -64,12 +66,14 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
         this(parent, alfabetoFita);
         
         this.simbolo = simbolo;
+        
         modoEdicao = true;
         
         jtaSimbolo.setText(new String(new char[] {this.simbolo.getCaracter()}));
         jcbAlfabetoAuxiliar.setSelected(simbolo.isAuxiliar());
         
         setTitle("ALTERAR SÍMBOLO");
+        
         jbInserir.setText("Alterar");
         jlFrase.setText("Simbolo:");
         
@@ -146,13 +150,18 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
                     // Tratamento de vírgula no começo da string.
                     
                     if (texto.startsWith(",")) {
+                        
                         if (texto.charAt(1) != ',') {
+                            
                             // Corrigindo vírgula no início, seguida de símbolo.
                             // Exemplo: ,a,b
                             texto = texto.substring(1, texto.length());
+                            
                         } else {
+                            
                             // Inserção de vírgula e espaço na gramática.
                             int contVirg = 0;
+                            
                             for (int i = 0; i < texto.length(); i++) {
                                 if (texto.charAt(i) == ',') {
                                     contVirg++;
@@ -160,16 +169,24 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
                                     break;
                                 }
                             }
+                            
                             switch (contVirg) {
+                                
                                 case 2 -> contemEspaco = true;
+                                
                                 case 3, 4 -> contemVirgula = true;
+                                
                                 default -> {
                                     contemVirgula = true;
                                     contemEspaco = true;
                                 }
+                            
                             }
+                            
                             texto = texto.substring(contVirg, texto.length());
+                            
                         }
+                        
                     }
                     
                     // Tratamento de vírgula no meio da string.
@@ -198,20 +215,27 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
                     if (contemVirgula || contemEspaco) {
 
                         if (contemVirgula && contemEspaco) {
+                            
                             simbolos = new Simbolo[secoes.length + 2];
                             simbolos[indice++] = new Simbolo(',', auxiliar);
                             simbolos[indice++] = new Simbolo(' ', auxiliar);
+                            
                         } else {
+                            
                             simbolos = new Simbolo[secoes.length + 1];
+                            
                             if (contemVirgula) {
                                 simbolos[indice++] = new Simbolo(',', auxiliar);
                             } else {
                                 simbolos[indice++] = new Simbolo(' ', auxiliar);
                             }
+                        
                         }
 
                     } else {
+                        
                         simbolos = new Simbolo[secoes.length];
+                        
                     }
 
                     for (String secao : secoes) {
@@ -338,6 +362,7 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         jtaSimbolo = new javax.swing.JTextArea();
         jcbAlfabetoAuxiliar = new javax.swing.JCheckBox();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("INSERIR SÍMBOLOS");
@@ -373,6 +398,9 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
 
         jcbAlfabetoAuxiliar.setText("Alfabeto Auxiliar");
 
+        jLabel1.setForeground(new java.awt.Color(153, 153, 153));
+        jLabel1.setText("* Use ,,, para inserir a vírgula e ,, para inserir espaço. Para inserir vírgula e espaço, use ,,,,,.");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -382,14 +410,16 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jlFrase)
-                        .addGap(0, 139, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jcbAlfabetoAuxiliar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jbInserir, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jbCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jlFrase)
+                            .addComponent(jLabel1))
+                        .addGap(0, 112, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -398,7 +428,9 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(jlFrase)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbCancelar)
@@ -433,6 +465,7 @@ public class TelaInserirSimbolo extends javax.swing.JDialog {
     }//GEN-LAST:event_jtaSimboloKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton jbCancelar;
     private javax.swing.JButton jbInserir;

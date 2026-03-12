@@ -65,7 +65,7 @@ public class TelaSobre extends javax.swing.JDialog {
         jLabel5.setText("Versão:");
 
         jLabel6.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
-        jLabel6.setText("1.0 (02 de junho de 2024)");
+        jLabel6.setText("2.0 (11 de Outubro de 2025)");
 
         jLabel8.setFont(new java.awt.Font("DejaVu Sans", 1, 14)); // NOI18N
         jLabel8.setText("Disponível em: ");

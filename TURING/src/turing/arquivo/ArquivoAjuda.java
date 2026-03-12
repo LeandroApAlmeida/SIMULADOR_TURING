@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Arquivo de ajuda em formato HTML incorporado ao .jar do projeto.
+ * Classe que representa o arquivo de ajuda em formato HTML incorporado ao .jar
+ * do projeto.
  * 
  * @author Leandro Ap. de Almeida
  * 
@@ -21,7 +22,7 @@ public class ArquivoAjuda {
     /**
      * Constructor padrão.
      * 
-     * @param arquivo caminho do arquivo.
+     * @param arquivo caminho do arquivo no jar.
      */
     public ArquivoAjuda(String arquivo) {
         this.arquivo = arquivo;
@@ -41,11 +42,15 @@ public class ArquivoAjuda {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         
         try (InputStream inputStream = this.getClass().getResourceAsStream(arquivo)) {
+           
             byte[] buffer = new byte[4096];
+            
             int length;
+            
             while((length = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, length);
             }
+            
         }
         
         return new String(outputStream.toByteArray());

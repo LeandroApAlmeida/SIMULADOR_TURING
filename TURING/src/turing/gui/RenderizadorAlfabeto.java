@@ -5,8 +5,8 @@ import java.awt.Component;
 import java.awt.Font;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
-import turing.classes.AlfabetoFita;
-import turing.classes.Simbolo;
+import turing.modelo.AlfabetoFita;
+import turing.modelo.Simbolo;
 
 /**
  * Renderizador da lista de símbolos do Alfabeto da Fita.
@@ -73,13 +73,17 @@ public class RenderizadorAlfabeto extends DefaultListCellRenderer {
         Color background = Color.WHITE;
         Color foreground = Color.BLACK;
         Font font = list.getFont();
+        
+        if (simbolo != null) {
 
-        if (simbolo.isReservado()) {
-            foreground = new Color(150, 150, 150);
-        } else {
-            if (simbolo.isAuxiliar()) {
-                foreground = Color.BLUE;
+            if (simbolo.isReservado()) {
+                foreground = new Color(150, 150, 150);
+            } else {
+                if (simbolo.isAuxiliar()) {
+                    foreground = Color.BLUE;
+                }
             }
+        
         }
 
         if (isSelected) {
