@@ -278,6 +278,7 @@ public class MaquinaMultifitas extends MaquinaTuring {
     public void carregarPalavra(String palavra) throws Exception {
         
         Alfabeto alfabetoEntrada = alfabetoFita.getAlfabetoEntrada();
+        Alfabeto simbolosReservados = alfabetoFita.getSimbolosReservados();
         
         for (int i = 0; i < palavra.length(); i++) {
             
@@ -285,7 +286,13 @@ public class MaquinaMultifitas extends MaquinaTuring {
             
             if (simbolo == null) {
                 
-                throw new Exception("Símbolo inválido na palavra de entrada.");
+                simbolo = simbolosReservados.getSimbolo(palavra.charAt(i));
+                
+                if (simbolo == null) {
+                    
+                    throw new Exception("Símbolo inválido na palavra de entrada.");
+                    
+                }
                 
             }
             

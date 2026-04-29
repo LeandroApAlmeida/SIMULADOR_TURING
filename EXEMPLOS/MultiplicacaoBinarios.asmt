@@ -10,7 +10,7 @@
 
 	AlfabetoEntrada = {0, 1}
 	AlfabetoAuxiliar = {}
-	Estados = {q0, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10}
+	Estados = {q0, q1, q10, q2, q3, q4, q5, q6, q7, q8, q9}
 	EstadoInicial = q0
 	EstadosTerminais = {q10}
 	NumeroFitas = 3
@@ -82,7 +82,6 @@
 	q9, 1, 1, _ = q9, _, _, _, E, E, P
 	q9, 0, _, 0 = q9, 0, _, _, E, E, E
 	q9, 1, _, 0 = q9, 0, _, _, E, E, E
-	q9, 0, _, 0 = q9, 0, _, _, E, E, E
 	q9, 0, _, 1 = q9, 1, _, _, E, E, E
 	q9, 1, _, 1 = q9, 1, _, _, E, E, E
 	q9, _, 0, 0 = q9, 0, _, _, E, E, E

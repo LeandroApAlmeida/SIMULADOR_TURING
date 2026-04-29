@@ -13,7 +13,7 @@
 
 [Parametros]
 
-	AlfabetoEntrada = {$, 0, 1}
+	AlfabetoEntrada = {0, 1}
 	AlfabetoAuxiliar = {}
 	Estados = {q0, q1, q2, q3, q4, q5}
 	EstadoInicial = q0
@@ -25,7 +25,7 @@
 
 	q0, 0, _, _ = q0, 0, _, _, D, P, P
 	q0, 1, _, _ = q0, 1, _, _, D, P, P
-	q0, $, _, _ = q1, _, _, _, D, P, P
+	q0, #, _, _ = q1, _, _, _, D, P, P
 	q1, 0, _, _ = q1, _, 0, _, D, D, P
 	q1, 1, _, _ = q1, _, 1, _, D, D, P
 	q1, _, _, _ = q2, _, _, _, E, E, P
