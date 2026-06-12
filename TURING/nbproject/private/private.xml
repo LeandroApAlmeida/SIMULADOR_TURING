@@ -30,14 +30,19 @@
             <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/classes/Simbolo.java</file>
             <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/RendererizadorFita.java</file>
         </group>
-        <group>
-            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/classes/MaquinaPadrao.java</file>
-            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/classes/Modelo.java</file>
-            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/classes/MaquinaTuring.java</file>
-        </group>
         <group name="Turing">
             <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/programa/Compilador.java</file>
             <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/programa/Decompilador.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/TelaPrincipal.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/Sufixos.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/TelaSobre.java</file>
+        </group>
+        <group>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/programa/Compilador.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/programa/Decompilador.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/TelaPrincipal.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/Sufixos.java</file>
+            <file>file:/D:/2.%20SOFTWARE/3.%20PROJETOS%20LEGADOS/GERAL/TURING/TURING/src/turing/gui/TelaSobre.java</file>
         </group>
     </open-files>
 </project-private>

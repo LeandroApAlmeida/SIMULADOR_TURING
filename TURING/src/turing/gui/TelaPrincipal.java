@@ -2285,7 +2285,7 @@ OuvinteSimulacaoAutomatica {
             jtfResultado.setText("");
             
             configurarControlesSimulador();
-            configurarFitasModeloSelecionado();
+            //configurarFitasModeloSelecionado();
             
         }
         
