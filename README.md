@@ -76,7 +76,7 @@ O programa para a máquina de Turing deve ter a seguinte estrutura:
 	q2, 1 = q2, 1, D
 	q0, _ = qAccept, _, P
 
-```text
+```
 
 
 
