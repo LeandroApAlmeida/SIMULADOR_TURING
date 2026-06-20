@@ -6,9 +6,15 @@ Este programa, escrito em linguagem Java usando como interface gráfica de usuá
 
 Uma máquina de Turing M é uma 8-upla:
 
+<br>
+
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>M = (Σ, Q, δ, q0, F, V, β, ⊛)</b>
 
+<br>
+
 Onde:
+
+<br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Σ:</b> Alfabeto de símbolos de entrada;
 
