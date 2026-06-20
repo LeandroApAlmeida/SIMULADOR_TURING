@@ -38,7 +38,7 @@ Onde:
 
 O simulador implementa um IDE para a programação da máquina multifitas, com editor de código e "debug" integrados.
 
-O programa para a máquina de Turing deve ter a seguinte estrutura:
+O programa para a máquina de Turing deve ter a seguinte sintaxe:
 
 <br>
 
@@ -78,6 +78,14 @@ O programa para a máquina de Turing deve ter a seguinte estrutura:
 
 ```
 
+<br>
+
+Onde:
+
+> Dupla barra (//) indica que o conteúdo adiante é um comentário.
+
+> Seção [Descricao] contém a descrição do programa. Ela contém os campos:
+	> Nome: Nome do programa a ser exibido no IDE. 
 
 
 <br>
