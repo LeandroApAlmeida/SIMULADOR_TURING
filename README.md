@@ -80,9 +80,11 @@ O programa para a máquina de Turing deve ter a seguinte sintaxe:
 
 <br>
 
-Dupla barra (//): Indica que o conteúdo adiante é um comentário.
+Dupla barra (//): Indica que o texto adiante é um comentário.
 
 <br>
+
+<ln>
 
 Seção <b>[Descricao]</b>: Descrição do programa. Contém os campos: 
 
