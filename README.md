@@ -22,7 +22,7 @@ Onde:
   
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>δ:</b> Função de transição ou programa, tal que:
   
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>δ : Q × (Σ ∪ V ∪ {β , ⊛}) → Q × (Σ ∪ V ∪ {β , ⊛}) × {E, D}</b>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>δ : Q × (Σ ∪ V ∪ {β , ⊛})^k → Q × (Σ ∪ V ∪ {β , ⊛})^k × {E, D}</b>
   
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>q0:</b> Estado inicial da máquina (q0 ∈ Q);
   
@@ -88,14 +88,13 @@ Dupla barra (//): Indica que o texto adiante é um comentário.
 
 <br>
 
-Seção <b>[Descricao]</b>: Descrição do programa. Contém os campos:<br>
+Seção <b>[Descricao]</b>: Descrição do programa. Contém os campos:
 
   * <b>Nome:</b> Nome do programa a ser exibido no IDE.
 
 <br>
 
 Seção <b>[Parametros]</b>: Parâmetros para a máquina de Turing multifitas. Contém os campos:
-<br>
 
   * <b>AlfabetoEntrada:</b> Alfabeto de símbolos de entrada (<b>Σ:</b>);
     
@@ -111,7 +110,7 @@ Seção <b>[Parametros]</b>: Parâmetros para a máquina de Turing multifitas. C
 
 <br>
 
-Seção <b>[Programa]</b>: Programa da máquina de Turing (Função de Transição: <b>δ</b>).
+Seção <b>[Programa]</b>: Função de Transição: δ : Q × (Σ ∪ V ∪ {β , ⊛}) → Q × (Σ ∪ V ∪ {β , ⊛}) × {E, D}
 
 <br>
 
