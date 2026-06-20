@@ -88,17 +88,13 @@ Dupla barra (//): Indica que o texto adiante é um comentário.
 
 <br>
 
-Seção <b>[Descricao]</b>: Descrição do programa. Contém os campos:
-
-<br>
+Seção <b>[Descricao]</b>: Descrição do programa. Contém os campos:<br>
 
   * <b>Nome:</b> Nome do programa a ser exibido no IDE.
 
 <br>
 
-Seção <b>[Parametros]</b>: Parâmetros para a máquina de Turing multifitas. Contém os campos:
-
-<br>
+Seção <b>[Parametros]</b>: Parâmetros para a máquina de Turing multifitas. Contém os campos: <br>
 
   * <b>AlfabetoEntrada:</b> Alfabeto de símbolos de entrada (<b>Σ:</b>);
     
