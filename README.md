@@ -2,7 +2,7 @@
 
 <br>
 
-Este programa, escrito em linguagem Java, implementa um simulador de máquina de Turing com múltiplas fitas.
+Este programa, escrito em linguagem Java usando como interface gráfica de usuário (GUI) a biblioteca java.swing, implementa um simulador de máquina de Turing com múltiplas fitas.
 
 Uma máquina de Turing M é uma 8-upla:
 
