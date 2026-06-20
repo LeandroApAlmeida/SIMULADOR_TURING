@@ -82,10 +82,11 @@ O programa para a máquina de Turing deve ter a seguinte sintaxe:
 
 Onde:
 
-> Dupla barra (//) indica que o conteúdo adiante é um comentário.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Dupla barra (//) indica que o conteúdo adiante é um comentário.
 
-> Seção [Descricao] contém a descrição do programa. Ela contém os campos:
-	> Nome: Nome do programa a ser exibido no IDE. 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Seção [Descricao] contém a descrição do programa. Ela contém os campos:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; > Nome: Nome do programa a ser exibido no IDE. 
 
 
 <br>
