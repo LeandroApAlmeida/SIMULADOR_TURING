@@ -84,8 +84,6 @@ Dupla barra (//): Indica que o texto adiante é um comentário.
 
 <br>
 
-<ln>
-
 Seção <b>[Descricao]</b>: Descrição do programa. Contém os campos: 
 
   * <b>Nome:</b> Nome do programa a ser exibido no IDE.
@@ -97,6 +95,14 @@ Seção <b>[Parametros]</b>: Parâmetros para a máquina de Turing multifitas. C
   * <b>AlfabetoEntrada:</b> Alfabeto de símbolos de entrada (<b>Σ:</b>);
     
   * <b>AlfabetoAuxiliar:</b> Alfabeto auxiliar (<b>V:</b>);
+
+  * <b>Estados:</b> Conjunto de estados possíveis da máquina (<b>Q:</b>);
+  
+  * <b>EstadoInicial:</b>  Estado inicial da máquina (<b>q0:</b>);
+
+  * <b>EstadosTerminais:</b> Conjunto dos estados finais (<b>F:</b>);
+
+  * <b>NumeroFitas:</b> Número de fitas da máquina;
 
 <br>
 
