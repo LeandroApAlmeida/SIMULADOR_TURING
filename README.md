@@ -80,23 +80,21 @@ O programa para a máquina de Turing deve ter a seguinte sintaxe:
 
 <br>
 
-Dupla barra (//) indica que o conteúdo adiante é um comentário.
+Dupla barra (//): Indica que o conteúdo adiante é um comentário.
 
 <br>
 
-Seção <b>[Descricao]</b>: Contém a descrição do programa. 
-
-Ela contém os campos: 
+Seção <b>[Descricao]</b>: Descrição do programa. Contém os campos: 
 
   * <b>Nome:</b> Nome do programa a ser exibido no IDE.
 
 <br>
 
-Seção <b>[Parametros]</b>: Contém os parâmetros para a máquina de Turing multifitas.
-
-Ela contém os campos:
+Seção <b>[Parametros]</b>: Parâmetros para a máquina de Turing multifitas. Contém os campos:
 
   * <b>AlfabetoEntrada:</b> Alfabeto de símbolos de entrada (<b>Σ:</b>);
+    
+  * <b>AlfabetoAuxiliar:</b> Alfabeto auxiliar (<b>V:</b>);
 
 <br>
 
