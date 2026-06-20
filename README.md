@@ -80,6 +80,10 @@ O programa para a máquina de Turing deve ter a seguinte sintaxe:
 
 <br>
 
+Onde:
+
+<br>
+
 Dupla barra (//): Indica que o texto adiante é um comentário.
 
 <br>
@@ -103,6 +107,10 @@ Seção <b>[Parametros]</b>: Parâmetros para a máquina de Turing multifitas. C
   * <b>EstadosTerminais:</b> Conjunto dos estados finais (<b>F:</b>);
 
   * <b>NumeroFitas:</b> Número de fitas da máquina;
+
+<br>
+
+Seção <b>[Programa]</b>: Programa da máquina de Turing (Função de Transição: <b>δ</b>).
 
 <br>
 
