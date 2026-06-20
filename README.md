@@ -42,14 +42,14 @@ O programa para a máquina de Turing deve ter a seguinte estrutura:
 
 <br>
 
+```text
+
 // Este programa verifica se um número binário é divisível por 3.
 // 
 // Exemplo:
 //
 // Entrada: 11
 // Resultado: Aceita
-
-<code>
 
 [Descricao]
 
@@ -76,7 +76,7 @@ O programa para a máquina de Turing deve ter a seguinte estrutura:
 	q2, 1 = q2, 1, D
 	q0, _ = qAccept, _, P
 
-</code>
+```text
 
 
 
